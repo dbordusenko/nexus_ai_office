@@ -2469,7 +2469,7 @@ async function handlePDFUpload(input) {
     // Open AI chat with the uploaded document
     setTimeout(() => {
       showScreen('ai-screen');
-      const header = document.querySelector('#ai-screen .chat-doc-info');
+      const header = document.querySelector('#ai-screen .chat-sub');
       if (header) header.textContent = file.name;
       sendMsg('Summarize this document');
     }, 500);
@@ -2483,20 +2483,25 @@ async function handlePDFUpload(input) {
 }
 
 function addRecentFile(name, pages, size) {
-  const list = document.querySelector('.recent-list');
-  if (!list) return;
-  const ext = name.split('.').pop().toUpperCase();
+  const container = document.querySelector('.recent');
+  if (!container) return;
+  const firstCard = container.querySelector('.doc-card');
   const item = document.createElement('div');
-  item.className = 'recent-item';
+  item.className = 'doc-card';
+  item.setAttribute('onclick', "showScreen('ai-screen')");
   item.innerHTML = `
-    <div class="recent-thumb" style="background:#007AFF"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-    <div class="recent-info">
-      <div class="recent-name">${name}</div>
-      <div class="recent-meta"><span style="background:rgba(0,122,255,0.1);color:#007AFF;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600">${ext}</span> · ${pages}p · ${size}</div>
-      <div class="recent-meta">Just now</div>
+    <div class="doc-thumb" style="background:rgba(0,122,255,0.1)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="doc-thumb-label" style="color:#007AFF">PDF</span>
     </div>
-    <div class="recent-menu">···</div>`;
-  list.insertBefore(item, list.firstChild);
+    <div class="doc-info">
+      <div class="doc-name">${name}</div>
+      <div class="doc-meta"><span class="doc-tag" style="background:rgba(0,122,255,0.1);color:#007AFF">PDF</span> · ${pages}p · ${size}</div>
+      <div class="doc-meta">Just now</div>
+    </div>
+    <div class="doc-menu">···</div>`;
+  if (firstCard) container.insertBefore(item, firstCard);
+  else container.appendChild(item);
 }
 
 // ─── AI Chat ───────────────────────────────────
