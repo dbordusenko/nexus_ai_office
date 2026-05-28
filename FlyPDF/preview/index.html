@@ -161,29 +161,28 @@
   .chips-scroll { display:flex; gap:10px; overflow-x:auto; padding:0 24px; scrollbar-width:none; }
   .chips-scroll::-webkit-scrollbar { display:none; }
   .ai-chip {
-    display:flex; align-items:center; gap:8px;
-    padding:8px 12px;
+    display:flex; align-items:center; gap:6px;
+    padding:7px 10px;
     background:var(--glass-bg);
     backdrop-filter:blur(20px);
     border:1px solid var(--glass-border);
-    border-radius:var(--r-md);
+    border-radius:14px;
     white-space:nowrap;
     cursor:pointer;
-    box-shadow:0 4px 12px rgba(0,0,0,0.06);
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
     transition:transform 0.15s;
     flex-shrink:0;
   }
   .ai-chip:active { transform:scale(0.96); }
   .chip-icon {
-    width:26px; height:26px;
-    border-radius:7px;
+    width:22px; height:22px;
+    border-radius:6px;
     display:flex; align-items:center; justify-content:center;
-    font-size:14px;
     flex-shrink:0;
   }
-  .chip-text { font-size:12px; font-weight:500; color:var(--label); }
-  .chip-action { font-size:11px; font-weight:700; }
-  .chip-chevron { font-size:10px; color:var(--silver); margin-left:4px; }
+  .chip-text { font-size:11px; font-weight:500; color:var(--label); }
+  .chip-action { font-size:10px; font-weight:700; }
+  .chip-chevron { font-size:10px; color:var(--silver); margin-left:2px; }
 
   /* Quick Actions */
   .quick-actions { padding:24px 24px 0; }
@@ -1507,19 +1506,19 @@
           AI Suggestions
         </div>
         <div class="chips-scroll">
-          <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(0,122,255,0.12);color:#007AFF"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
-            <div><div class="chip-text">Contract ready to review</div><div class="chip-action" style="color:#007AFF">Analyze</div></div>
+          <div class="ai-chip" onclick="showScreen('ai-screen');sendMsg('Analyze this contract')">
+            <div class="chip-icon" style="background:rgba(0,122,255,0.12);color:#007AFF"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
+            <div><div class="chip-text">Contract review</div><div class="chip-action" style="color:#007AFF">Analyze</div></div>
             <div class="chip-chevron">›</div>
           </div>
-          <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(94,92,230,0.12);color:#5E5CE6"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-            <div><div class="chip-text">Resume needs compression</div><div class="chip-action" style="color:#5E5CE6">Compress</div></div>
+          <div class="ai-chip" onclick="showScreen('compress-screen')">
+            <div class="chip-icon" style="background:rgba(94,92,230,0.12);color:#5E5CE6"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+            <div><div class="chip-text">Compress resume</div><div class="chip-action" style="color:#5E5CE6">Compress</div></div>
             <div class="chip-chevron">›</div>
           </div>
-          <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(52,199,89,0.12);color:#34C759"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
-            <div><div class="chip-text">Invoice in Russian detected</div><div class="chip-action" style="color:#34C759">Translate</div></div>
+          <div class="ai-chip" onclick="showScreen('translate-screen')">
+            <div class="chip-icon" style="background:rgba(52,199,89,0.12);color:#34C759"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div><div class="chip-text">Invoice in Russian</div><div class="chip-action" style="color:#34C759">Translate</div></div>
             <div class="chip-chevron">›</div>
           </div>
         </div>
