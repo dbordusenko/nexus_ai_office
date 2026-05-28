@@ -121,6 +121,20 @@ const server = createServer(async (req, res) => {
     return json(res, { response: completion.choices[0].message.content, task });
   }
 
+  // Upload document (text extracted client-side via PDF.js)
+  if (url.pathname === '/documents/upload' && req.method === 'POST') {
+    const { filename, text, pages } = JSON.parse(await readBody(req));
+    const id = 'doc_' + Date.now();
+    documents.set(id, { filename, text, pages, uploadedAt: new Date().toISOString() });
+    return json(res, { document_id: id, filename, pages, chars: text.length });
+  }
+
+  // List documents
+  if (url.pathname === '/documents' && req.method === 'GET') {
+    const list = [...documents.entries()].map(([id, d]) => ({ id, filename: d.filename, pages: d.pages, uploadedAt: d.uploadedAt }));
+    return json(res, { documents: list });
+  }
+
   // 404
   json(res, { error: 'Not found' }, 404);
 });
