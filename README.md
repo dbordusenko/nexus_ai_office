@@ -1,42 +1,44 @@
-# Nexus AI Office Standalone
+# FlyPDF
 
-This is a standalone version of the AI Office (Agents) module, extracted from the Nexus MRP project.
+AI-powered PDF toolkit for iOS. Interactive prototype + FastAPI backend with Claude integration.
 
 ## Project Structure
 
-- `frontend/`: React + Vite application
-- `backend/`: FastAPI application
+- `FlyPDF/preview/` — Interactive HTML/CSS/JS prototype (11 screens)
+- `FlyPDF/Sources/` — SwiftUI iOS app source
+- `backend/` — FastAPI + Claude AI backend
 
-## Getting Started
+## Quick Start
 
 ### Backend
 
-1. Navigate to the `backend` folder.
-2. Install dependencies:
-   ```bash
-   pip install fastapi uvicorn anthropic openai python-dotenv
-   ```
-3. Run the backend:
-   ```bash
-   python main.py
-   ```
-   The backend will run on `http://localhost:8001`.
+```bash
+cd backend
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env and add your ANTHROPIC_API_KEY
+uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+```
 
-### Frontend
+Backend runs on `http://localhost:8001`.
 
-1. Navigate to the `frontend` folder.
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the frontend:
-   ```bash
-   npm run dev
-   ```
-   The frontend will run on `http://localhost:5173` (or the next available port).
+### Prototype
+
+Open `FlyPDF/preview/index.html` in a browser. The AI chat auto-detects the backend — falls back to mock responses if unavailable.
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Status check |
+| POST | `/documents/upload` | Upload a document for analysis |
+| POST | `/chat` | Send a message, get a response |
+| POST | `/chat/stream` | Streaming chat (SSE) |
+| POST | `/analyze` | Run a specific analysis task |
 
 ## Features
 
-- **Autonomous Agents**: Powered by Claude 3.5 Sonnet (via Anthropic or OpenRouter).
-- **Interactive Floor Plan**: Visualize and interact with the AI agents in their virtual office.
-- **Tool Calling**: Agents can read/write files and execute shell commands within the project root.
+- PDF analysis with Claude Sonnet 4
+- Streaming AI responses
+- Document upload and context-aware chat
+- 11-screen interactive prototype with SVG icons

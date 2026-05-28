@@ -2441,25 +2441,84 @@ function switchTab(el, name) {
 }
 
 // ─── AI Chat ───────────────────────────────────
-function sendMsg(text) {
+const API_BASE = 'http://localhost:8001';
+let backendAvailable = null;
+
+async function checkBackend() {
+  if (backendAvailable !== null) return backendAvailable;
+  try {
+    const r = await fetch(API_BASE + '/health', {signal: AbortSignal.timeout(1500)});
+    const d = await r.json();
+    backendAvailable = d.status === 'ok' && d.has_key;
+  } catch { backendAvailable = false; }
+  return backendAvailable;
+}
+
+function appendAiBubble(messages, text) {
+  const aiBubble = document.createElement('div');
+  aiBubble.innerHTML = `
+    <div class="bubble bubble-ai">
+      <div class="bubble-ai-avatar">${svgIcons.sparkle}</div>
+      <div>${text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
+    </div>`;
+  messages.appendChild(aiBubble);
+  messages.scrollTop = messages.scrollHeight;
+  return aiBubble;
+}
+
+async function sendMsg(text) {
   const messages = document.getElementById('chatMessages');
   const suggestions = document.getElementById('suggestionsRow');
-
-  // Hide suggestions after first message
   suggestions.style.display = 'none';
 
-  // User bubble
   const userBubble = document.createElement('div');
   userBubble.style.cssText = 'display:flex;justify-content:flex-end';
   userBubble.innerHTML = `<div class="bubble bubble-user">${text}</div>`;
   messages.appendChild(userBubble);
 
-  // Typing indicator
   const typing = document.createElement('div');
   typing.innerHTML = `<div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
   messages.appendChild(typing);
   messages.scrollTop = messages.scrollHeight;
 
+  const live = await checkBackend();
+
+  if (live) {
+    try {
+      const res = await fetch(API_BASE + '/chat/stream', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text}),
+      });
+      typing.remove();
+      const aiBubble = document.createElement('div');
+      aiBubble.innerHTML = `<div class="bubble bubble-ai"><div class="bubble-ai-avatar">${svgIcons.sparkle}</div><div class="ai-stream-text"></div></div>`;
+      messages.appendChild(aiBubble);
+      const streamEl = aiBubble.querySelector('.ai-stream-text');
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, {stream: true});
+        for (const line of chunk.split('\n')) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6);
+          if (data === '[DONE]') break;
+          fullText += data;
+          streamEl.innerHTML = fullText.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+          messages.scrollTop = messages.scrollHeight;
+        }
+      }
+      return;
+    } catch (e) {
+      typing.remove();
+      appendAiBubble(messages, 'Connection lost — showing cached response.');
+    }
+  }
+
+  // Fallback: local mock responses
   setTimeout(() => {
     typing.remove();
     const key = text.toLowerCase();
@@ -2467,15 +2526,8 @@ function sendMsg(text) {
     for(const [k,v] of Object.entries(aiResponses)) {
       if(key.includes(k)) { response = v; break; }
     }
-    const aiBubble = document.createElement('div');
-    aiBubble.innerHTML = `
-      <div class="bubble bubble-ai">
-        <div class="bubble-ai-avatar">${svgIcons.sparkle}</div>
-        <div>${response.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
-      </div>`;
-    messages.appendChild(aiBubble);
-    messages.scrollTop = messages.scrollHeight;
-  }, 1200);
+    appendAiBubble(messages, response);
+  }, 800);
 }
 
 function sendFromInput() {
