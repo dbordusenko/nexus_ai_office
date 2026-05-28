@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlyPDF — iOS Preview</title>
 <style>
+  /* SVG Icon System */
+  .icon { display:inline-flex; align-items:center; justify-content:center; }
+  .icon svg { width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .icon-filled svg { fill:currentColor; stroke:none; }
+</style>
+<style>
   :root {
     --blue: #007AFF;
     --violet: #5E5CE6;
@@ -1420,7 +1426,7 @@
 
 <!-- Dark Mode Toggle -->
 <div class="dark-toggle" onclick="toggleDark()" id="darkToggle">
-  🌙 Dark Mode
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark Mode
 </div>
 
 <!-- iPhone Frame -->
@@ -1501,17 +1507,17 @@
         </div>
         <div class="chips-scroll">
           <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(0,122,255,0.12)">✨</div>
+            <div class="chip-icon" style="background:rgba(0,122,255,0.12);color:#007AFF"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
             <div><div class="chip-text">Contract ready to review</div><div class="chip-action" style="color:#007AFF">Analyze</div></div>
             <div class="chip-chevron">›</div>
           </div>
           <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(94,92,230,0.12)">⬇️</div>
+            <div class="chip-icon" style="background:rgba(94,92,230,0.12);color:#5E5CE6"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
             <div><div class="chip-text">Resume needs compression</div><div class="chip-action" style="color:#5E5CE6">Compress</div></div>
             <div class="chip-chevron">›</div>
           </div>
           <div class="ai-chip">
-            <div class="chip-icon" style="background:rgba(52,199,89,0.12)">🌐</div>
+            <div class="chip-icon" style="background:rgba(52,199,89,0.12);color:#34C759"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
             <div><div class="chip-text">Invoice in Russian detected</div><div class="chip-action" style="color:#34C759">Translate</div></div>
             <div class="chip-chevron">›</div>
           </div>
@@ -1523,38 +1529,38 @@
         <div class="section-title">Quick Actions</div>
         <div class="qa-grid">
           <div class="qa-btn" onclick="showScreen('merge-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#0055D4)">🔗</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#0055D4)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg></div>
             <span class="qa-label">Merge</span>
           </div>
           <div class="qa-btn" onclick="showScreen('compress-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#5E5CE6,#3A37B4)">⬇</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#5E5CE6,#3A37B4)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
             <span class="qa-label">Compress</span>
           </div>
           <div class="qa-btn" onclick="showScreen('conversion-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#AF52DE,#7B2AB6)">🔄</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#AF52DE,#7B2AB6)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
             <span class="qa-label">Convert</span>
           </div>
           <div class="qa-btn" onclick="showScreen('sign-screen');initSignCanvas()">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#34C759,#1E8C3A)">✍️</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#34C759,#1E8C3A)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></div>
             <span class="qa-label">Sign</span>
           </div>
           <div class="qa-btn" onclick="showScreen('scan-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)">📷</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
             <span class="qa-label">Scan</span>
           </div>
           <div class="qa-btn" onclick="showScreen('ai-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#AF52DE)">✨</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#AF52DE)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
             <span class="qa-label">AI Chat</span>
           </div>
           <div class="qa-btn" onclick="showScreen('translate-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#32ADE6,#0076A3)">🌐
-              <div class="qa-crown">👑</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#32ADE6,#0076A3)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <div class="qa-crown"><svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="none"><path d="M2 20h20L18 8l-4 6-2-8-2 8-4-6z"/></svg></div>
             </div>
             <span class="qa-label">Translate</span>
           </div>
           <div class="qa-btn" onclick="showScreen('ocr-screen')">
-            <div class="qa-icon" style="background:linear-gradient(135deg,#FF6B6B,#CC3333)">🔍
-              <div class="qa-crown">👑</div>
+            <div class="qa-icon" style="background:linear-gradient(135deg,#FF6B6B,#CC3333)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+              <div class="qa-crown"><svg width="12" height="12" viewBox="0 0 24 24" fill="#FFD700" stroke="none"><path d="M2 20h20L18 8l-4 6-2-8-2 8-4-6z"/></svg></div>
             </div>
             <span class="qa-label">OCR</span>
           </div>
@@ -1569,7 +1575,7 @@
         </div>
         <div class="doc-card" onclick="showScreen('ai-screen')">
           <div class="doc-thumb" style="background:rgba(94,92,230,0.1)">
-            <span style="font-size:20px">📊</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
             <span class="doc-thumb-label" style="color:#5E5CE6">REPORT</span>
           </div>
           <div class="doc-info">
@@ -1585,7 +1591,7 @@
         </div>
         <div class="doc-card" onclick="showScreen('ai-screen')">
           <div class="doc-thumb" style="background:rgba(0,122,255,0.1)">
-            <span style="font-size:20px">📋</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
             <span class="doc-thumb-label" style="color:#007AFF">CONTRACT</span>
           </div>
           <div class="doc-info">
@@ -1597,11 +1603,11 @@
             </div>
             <div class="doc-date">Yesterday</div>
           </div>
-          <div class="doc-more">⭐</div>
+          <div class="doc-more"><svg width="14" height="14" viewBox="0 0 24 24" fill="#FF9F0A" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         </div>
         <div class="doc-card" onclick="highlightAction(this)">
           <div class="doc-thumb" style="background:rgba(52,199,89,0.1)">
-            <span style="font-size:20px">💳</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
             <span class="doc-thumb-label" style="color:#34C759">INVOICE</span>
           </div>
           <div class="doc-info">
@@ -1617,7 +1623,7 @@
         </div>
         <div class="doc-card" onclick="showScreen('conversion-screen')">
           <div class="doc-thumb" style="background:rgba(175,82,222,0.1)">
-            <span style="font-size:20px">📑</span>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#AF52DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
             <span class="doc-thumb-label" style="color:#AF52DE">PRES.</span>
           </div>
           <div class="doc-info">
@@ -1638,15 +1644,15 @@
     <div class="fab-container">
       <div class="fab-secondary" id="fab1">
         <div class="fab-label">AI Create</div>
-        <div class="fab-mini" style="background:linear-gradient(135deg,#5E5CE6,#AF52DE)">✨</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#5E5CE6,#AF52DE)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
       </div>
       <div class="fab-secondary" id="fab2">
         <div class="fab-label">Import</div>
-        <div class="fab-mini" style="background:linear-gradient(135deg,#007AFF,#0055D4)">📁</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#007AFF,#0055D4)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
       </div>
       <div class="fab-secondary" id="fab3">
         <div class="fab-label">Scan</div>
-        <div class="fab-mini" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)">📷</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       </div>
       <div class="fab-main" id="fabMain" onclick="toggleFAB()">+</div>
     </div>
@@ -1654,19 +1660,19 @@
     <!-- Tab Bar -->
     <div class="tab-bar">
       <div class="tab-item active" onclick="switchTab(this,'home')">
-        <div class="tab-icon">⊞</div>
+        <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div class="tab-label" style="color:#007AFF">Home</div>
       </div>
       <div class="tab-item" onclick="showScreen('conversion-screen');switchTab(this,'tools')">
-        <div class="tab-icon">🔧</div>
+        <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
         <div class="tab-label">Tools</div>
       </div>
       <div class="tab-item" onclick="switchTab(this,'vault')">
-        <div class="tab-icon">🔒</div>
+        <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <div class="tab-label">Vault</div>
       </div>
       <div class="tab-item" onclick="showScreen('paywall-screen');switchTab(this,'profile')">
-        <div class="tab-icon">👤</div>
+        <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="tab-label">Profile</div>
       </div>
     </div>
@@ -1677,17 +1683,17 @@
   <!-- ═══════════════════════════════════ -->
   <div id="ai-screen" class="screen">
     <div class="chat-header">
-      <div class="chat-orb">✨</div>
+      <div class="chat-orb"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
       <div>
         <div class="chat-title">AI Assistant</div>
         <div class="chat-sub">Q4 Financial Report.pdf</div>
       </div>
-      <div class="chat-close" onclick="showScreen('home-screen')">✕</div>
+      <div class="chat-close" onclick="showScreen('home-screen')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
     </div>
 
     <div class="chat-messages" id="chatMessages">
       <div class="welcome-card">
-        <div class="welcome-orb-lg">✨</div>
+        <div class="welcome-orb-lg"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
         <div class="welcome-title">I've analyzed your PDF</div>
         <div class="welcome-sub">Q4 Financial Report · 24 pages · 2.4 MB · Report<br>What would you like to know?</div>
       </div>
@@ -1701,7 +1707,7 @@
     </div>
 
     <div class="chat-input-bar">
-      <div class="mic-btn">🎤</div>
+      <div class="mic-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
       <input class="chat-input" id="chatInput" placeholder="Ask anything about this PDF…"
         onkeydown="if(event.key==='Enter'&&this.value.trim()){sendMsg(this.value);this.value=''}">
       <div class="send-btn" onclick="sendFromInput()">↑</div>
@@ -1720,7 +1726,7 @@
     <!-- Source file card -->
     <div style="padding:0 20px 20px">
       <div style="background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06)">
-        <div style="width:42px;height:52px;background:rgba(255,59,48,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px">📄</div>
+        <div style="width:42px;height:52px;background:rgba(255,59,48,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div>
           <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
           <div style="font-size:12px;color:var(--label3)">24 pages · 2.4 MB</div>
@@ -1731,28 +1737,28 @@
     <div style="padding:0 20px 12px;font-size:20px;font-weight:700;color:var(--label)">Choose format</div>
 
     <div class="conv-grid">
-      <div class="format-card" onclick="startConversion('Word','📝','#2B7CD3','Service_Agreement.docx')">
-        <div class="format-icon-wrap" style="background:rgba(43,124,211,0.12)">📝</div>
+      <div class="format-card" onclick="startConversion('Word','word','#2B7CD3','Service_Agreement.docx')">
+        <div class="format-icon-wrap" style="background:rgba(43,124,211,0.12);color:#2B7CD3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div><div class="format-name">Word</div><div class="format-ext">.docx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('Excel','📊','#217346','Financial_Report.xlsx')">
-        <div class="format-icon-wrap" style="background:rgba(33,115,70,0.12)">📊</div>
+      <div class="format-card" onclick="startConversion('Excel','excel','#217346','Financial_Report.xlsx')">
+        <div class="format-icon-wrap" style="background:rgba(33,115,70,0.12);color:#217346"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <div><div class="format-name">Excel</div><div class="format-ext">.xlsx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('PowerPoint','📑','#D24726','Roadmap_2026.pptx')">
-        <div class="format-icon-wrap" style="background:rgba(210,71,38,0.12)">📑</div>
+      <div class="format-card" onclick="startConversion('PowerPoint','pptx','#D24726','Roadmap_2026.pptx')">
+        <div class="format-icon-wrap" style="background:rgba(210,71,38,0.12);color:#D24726"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
         <div><div class="format-name">PowerPoint</div><div class="format-ext">.pptx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('Images','🖼','#5E5CE6','Report_pages.zip')">
-        <div class="format-icon-wrap" style="background:rgba(94,92,230,0.12)">🖼</div>
+      <div class="format-card" onclick="startConversion('Images','images','#5E5CE6','Report_pages.zip')">
+        <div class="format-icon-wrap" style="background:rgba(94,92,230,0.12);color:#5E5CE6"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
         <div><div class="format-name">Images</div><div class="format-ext">.jpg</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('TXT','📃','#8E8E93','Report_text.txt')">
-        <div class="format-icon-wrap" style="background:rgba(142,142,147,0.12)">📃</div>
+      <div class="format-card" onclick="startConversion('TXT','txt','#8E8E93','Report_text.txt')">
+        <div class="format-icon-wrap" style="background:rgba(142,142,147,0.12);color:#8E8E93"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div><div class="format-name">Plain Text</div><div class="format-ext">.txt</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('EPUB','📚','#FF9F0A','Report.epub')">
-        <div class="format-icon-wrap" style="background:rgba(255,159,10,0.12)">📚</div>
+      <div class="format-card" onclick="startConversion('EPUB','epub','#FF9F0A','Report.epub')">
+        <div class="format-icon-wrap" style="background:rgba(255,159,10,0.12);color:#FF9F0A"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
         <div><div class="format-name">EPUB</div><div class="format-ext">.epub</div></div>
       </div>
     </div>
@@ -1762,9 +1768,9 @@
       <div class="orbit-container">
         <div class="orbit-ring orbit-ring-1"></div>
         <div class="orbit-ring orbit-ring-2"></div>
-        <div class="orbit-planet" id="orbitPlanet1" style="background:rgba(255,59,48,0.9);top:-22px;left:calc(50% - 22px)">📄</div>
-        <div class="orbit-planet" id="orbitPlanet2" style="background:rgba(0,122,255,0.9);bottom:-22px;left:calc(50% - 22px)">📝</div>
-        <div class="orbit-center">🔄</div>
+        <div class="orbit-planet" id="orbitPlanet1" style="background:rgba(255,59,48,0.9);top:-22px;left:calc(50% - 22px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="orbit-planet" id="orbitPlanet2" style="background:rgba(0,122,255,0.9);bottom:-22px;left:calc(50% - 22px)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div class="orbit-center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
       </div>
       <div class="progress-pct" id="progressPct">0%</div>
       <div class="processing-text" id="processingText">Converting to Word…</div>
@@ -1779,11 +1785,11 @@
     <!-- Done overlay -->
     <div class="done-overlay" id="doneOverlay">
       <div id="confettiContainer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="done-check">✅</div>
-      <div class="done-title">Done! 🎉</div>
+      <div class="done-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="done-title">Done!</div>
       <div class="done-name" id="doneFileName">Q4_Financial_Report.docx</div>
       <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-        <div class="btn-primary" onclick="shareFile()">📤 Share File</div>
+        <div class="btn-primary" onclick="shareFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-primary" style="background:var(--glass-bg);backdrop-filter:blur(20px);color:var(--label);box-shadow:none;border:1px solid var(--glass-border)" onclick="backToHome()">Save to Library</div>
       </div>
       <div class="btn-secondary" onclick="backToConversion()">Convert Another</div>
@@ -1794,42 +1800,42 @@
   <!-- SCREEN: PAYWALL -->
   <!-- ═══════════════════════════════════ -->
   <div id="paywall-screen" class="screen">
-    <div class="paywall-close" onclick="showScreen('home-screen')">✕</div>
+    <div class="paywall-close" onclick="showScreen('home-screen')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
 
     <div class="paywall-hero">
-      <div class="paywall-orb">✨</div>
+      <div class="paywall-orb"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
       <div class="paywall-title">Unlock FlyPDF Pro</div>
       <div class="paywall-sub">AI-powered PDF tools. Unlimited.</div>
     </div>
 
     <div class="feature-list">
       <div class="feature-row highlight">
-        <div class="feature-icon">✨</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></div>
         <div class="feature-text bold">Unlimited AI Chat & Analysis</div>
         <div class="feature-check">✓</div>
       </div>
       <div class="feature-row">
-        <div class="feature-icon">🔄</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
         <div class="feature-text">Unlimited PDF Conversions</div>
         <div class="feature-check" style="color:#34C759">✓</div>
       </div>
       <div class="feature-row">
-        <div class="feature-icon">✍️</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></div>
         <div class="feature-text">Unlimited E-Signatures</div>
         <div class="feature-check" style="color:#34C759">✓</div>
       </div>
       <div class="feature-row">
-        <div class="feature-icon">🌐</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#32ADE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
         <div class="feature-text">AI Translation (50+ languages)</div>
         <div class="feature-check" style="color:#34C759">✓</div>
       </div>
       <div class="feature-row">
-        <div class="feature-icon">🔒</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <div class="feature-text">Face ID Encrypted Vault</div>
         <div class="feature-check" style="color:#34C759">✓</div>
       </div>
       <div class="feature-row">
-        <div class="feature-icon">☁️</div>
+        <div class="feature-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#AF52DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg></div>
         <div class="feature-text">iCloud Sync across all devices</div>
         <div class="feature-check" style="color:#34C759">✓</div>
       </div>
@@ -1844,13 +1850,13 @@
       <div class="plan-card selected" onclick="selectPlan(this)">
         <div class="plan-radio"><div class="plan-radio-inner"></div></div>
         <div><div class="plan-name">Annual</div><div class="plan-desc">$2.92/month · Save 42%</div></div>
-        <div class="plan-badge">🔥 Popular</div>
+        <div class="plan-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="#fff" stroke="none" style="vertical-align:middle;margin-right:3px"><path d="M12 23c-3.5 0-8-2.5-8-8.5C4 9 8 4 12 1c4 3 8 8 8 13.5 0 6-4.5 8.5-8 8.5z"/></svg>Popular</div>
         <div class="plan-price">$34.99/yr</div>
       </div>
       <div class="plan-card" onclick="selectPlan(this)">
         <div class="plan-radio"><div class="plan-radio-inner"></div></div>
         <div><div class="plan-name">Lifetime</div><div class="plan-desc">One-time · Forever yours</div></div>
-        <div class="plan-badge" style="background:#AF52DE">💎 Best</div>
+        <div class="plan-badge" style="background:#AF52DE"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M6 3h12l4 6-10 13L2 9z"/></svg>Best</div>
         <div class="plan-price">$149.99</div>
       </div>
     </div>
@@ -1886,7 +1892,7 @@
 
     <!-- Doc banner -->
     <div class="sign-doc-banner">
-      <div class="sign-doc-icon">📄</div>
+      <div class="sign-doc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
       <div>
         <div class="sign-doc-name">Service Agreement 2026.pdf</div>
         <div class="sign-doc-sub">8 pages · 890 KB</div>
@@ -1896,23 +1902,23 @@
 
     <!-- Tabs -->
     <div class="sign-tabs">
-      <div class="sign-tab active" id="signTabDraw" onclick="switchSignTab('draw')">✍️ Draw</div>
+      <div class="sign-tab active" id="signTabDraw" onclick="switchSignTab('draw')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Draw</div>
       <div class="sign-tab" id="signTabType" onclick="switchSignTab('type')">T Type</div>
-      <div class="sign-tab" id="signTabImg" onclick="switchSignTab('img')">🖼 Image</div>
+      <div class="sign-tab" id="signTabImg" onclick="switchSignTab('img')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Image</div>
     </div>
 
     <!-- Canvas -->
     <div class="sign-canvas-wrap">
       <canvas id="signCanvas"></canvas>
       <div class="sign-canvas-hint" id="signHint">
-        <div class="sign-canvas-hint-icon">✍️</div>
+        <div class="sign-canvas-hint-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></div>
         <div class="sign-canvas-hint-text">Draw your signature here</div>
       </div>
     </div>
 
     <!-- Tools row -->
     <div class="sign-tools">
-      <div class="sign-clear-btn" onclick="clearSignature()">🗑 Clear</div>
+      <div class="sign-clear-btn" onclick="clearSignature()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Clear</div>
       <div class="sign-color-row">
         <div class="sign-color active" id="sc0" style="background:#000000" onclick="setSignColor('#000000',0)"></div>
         <div class="sign-color" id="sc1" style="background:#007AFF" onclick="setSignColor('#007AFF',1)"></div>
@@ -1936,16 +1942,16 @@
     </div>
 
     <!-- Place button -->
-    <div class="sign-place-btn" onclick="placeSignature()">📥 Place Signature</div>
+    <div class="sign-place-btn" onclick="placeSignature()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Place Signature</div>
 
     <!-- Success overlay -->
     <div class="sign-success" id="signSuccess">
       <div id="signSuccessConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="sign-success-icon">✅</div>
-      <div class="sign-success-title">Signed! 🎉</div>
+      <div class="sign-success-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="sign-success-title">Signed!</div>
       <div class="sign-success-sub">Service Agreement 2026.pdf</div>
       <div class="sign-success-btns">
-        <div class="btn-primary" onclick="shareSignedFile()">📤 Share Signed Document</div>
+        <div class="btn-primary" onclick="shareSignedFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share Signed Document</div>
         <div class="btn-secondary" onclick="showScreen('home-screen')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);">Back to Home</div>
       </div>
     </div>
@@ -1964,30 +1970,30 @@
         <div class="tool-section-label">Selected Documents</div>
         <div class="merge-file-card">
           <div class="merge-file-num">1</div>
-          <div class="merge-file-icon" style="background:rgba(94,92,230,0.1)"><span>📊</span><span class="merge-file-label" style="color:#5E5CE6">REPORT</span></div>
+          <div class="merge-file-icon" style="background:rgba(94,92,230,0.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="merge-file-label" style="color:#5E5CE6">REPORT</span></div>
           <div><div class="merge-file-name">Q4 Financial Report.pdf</div><div class="merge-file-sub">24p · 2.4 MB</div></div>
           <div class="merge-drag-hint">⠿</div>
         </div>
         <div class="merge-file-card">
           <div class="merge-file-num">2</div>
-          <div class="merge-file-icon" style="background:rgba(0,122,255,0.1)"><span>📋</span><span class="merge-file-label" style="color:#007AFF">CONTRACT</span></div>
+          <div class="merge-file-icon" style="background:rgba(0,122,255,0.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg><span class="merge-file-label" style="color:#007AFF">CONTRACT</span></div>
           <div><div class="merge-file-name">Service Agreement 2026.pdf</div><div class="merge-file-sub">8p · 890 KB</div></div>
           <div class="merge-drag-hint">⠿</div>
         </div>
-        <div class="merge-add-btn" onclick="this.textContent='+ Invoice #1042 — Airbnb.pdf added ✅';this.style.borderStyle='solid';setTimeout(()=>{this.textContent='+ Add Document';this.style.borderStyle='dashed';},2000)">+ Add Document</div>
+        <div class="merge-add-btn" onclick="this.innerHTML='+ Invoice #1042 — Airbnb.pdf added';this.style.borderStyle='solid';this.style.color='var(--success)';setTimeout(()=>{this.textContent='+ Add Document';this.style.borderStyle='dashed';this.style.color='';},2000)">+ Add Document</div>
       </div>
       <div class="tool-section">
         <div class="merge-arrow">↓</div>
         <div class="tool-section-label">Output File</div>
         <div class="merge-output">
-          <div class="merge-output-icon">🗂</div>
+          <div class="merge-output-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
           <div><div class="merge-output-name">Merged_Document.pdf</div><div class="merge-output-sub">32 pages · ~3.3 MB estimated</div></div>
         </div>
-        <div class="btn-primary" onclick="runToolProcess('merge-screen','mergeProc','mergeDone','Merging documents…','Merged_Document.pdf')">🔗 Merge Documents</div>
+        <div class="btn-primary" onclick="runToolProcess('merge-screen','mergeProc','mergeDone','Merging documents…','Merged_Document.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>Merge Documents</div>
       </div>
     </div>
     <div class="tool-overlay" id="mergeProc">
-      <div class="tool-overlay-icon">🔗</div>
+      <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg></div>
       <div class="tool-progress-pct" id="mergePct">0%</div>
       <div class="tool-overlay-title" id="mergeProcText">Merging documents…</div>
       <div class="tool-overlay-sub">Combining 2 PDFs into one file</div>
@@ -1995,11 +2001,11 @@
     </div>
     <div class="tool-overlay" id="mergeDone">
       <div id="mergeDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="success-check">✅</div>
-      <div class="tool-overlay-title">Merged! 🎉</div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">Merged!</div>
       <div class="tool-overlay-sub">Merged_Document.pdf<br>32 pages · 3.2 MB</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('mergeDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2016,7 +2022,7 @@
 
       <!-- Doc card -->
       <div class="compress-doc-card">
-        <div class="compress-thumb"><span>📊</span><span style="font-size:7px;font-weight:700;color:#5E5CE6">REPORT</span></div>
+        <div class="compress-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span style="font-size:7px;font-weight:700;color:#5E5CE6">REPORT</span></div>
         <div style="flex:1">
           <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
           <div style="font-size:12px;color:var(--label3);margin-top:2px">24 pages · 2.4 MB · Contains 8 images</div>
@@ -2030,7 +2036,7 @@
         <!-- Crystal — recommended -->
         <div class="compress-level-card active" id="cmpCrystal" onclick="setCompressLevel('crystal',this)">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:24px">💎</div>
+            <div style="font-size:24px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/><path d="m10 3 2 6"/><path d="m14 3-2 6"/><path d="m6 3 6 6 6-6"/></svg></div>
             <div style="flex:1">
               <div style="display:flex;align-items:center;gap:8px">
                 <span style="font-size:15px;font-weight:700;color:var(--label)">Crystal</span>
@@ -2052,7 +2058,7 @@
         <!-- Smart -->
         <div class="compress-level-card" id="cmpSmart" onclick="setCompressLevel('smart',this)">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:24px">⚡️</div>
+            <div style="font-size:24px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <div style="flex:1">
               <div style="font-size:15px;font-weight:700;color:var(--label)">Smart</div>
               <div style="font-size:12px;color:var(--label3);margin-top:2px">200 DPI · Sharp for screen & print · -54%</div>
@@ -2071,7 +2077,7 @@
         <!-- Compact -->
         <div class="compress-level-card" id="cmpCompact" onclick="setCompressLevel('compact',this)">
           <div style="display:flex;align-items:center;gap:12px">
-            <div style="font-size:24px">📦</div>
+            <div style="font-size:24px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
             <div style="flex:1">
               <div style="font-size:15px;font-weight:700;color:var(--label)">Compact</div>
               <div style="font-size:12px;color:var(--label3);margin-top:2px">150 DPI · For email / web sharing · -73%</div>
@@ -2090,7 +2096,7 @@
 
       <!-- Vector text guarantee -->
       <div style="margin:0 20px 14px;padding:12px 14px;background:rgba(52,199,89,0.08);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);display:flex;align-items:flex-start;gap:10px">
-        <span style="font-size:18px">🔒</span>
+        <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
         <div>
           <div style="font-size:13px;font-weight:700;color:var(--success)">Text is always crystal clear</div>
           <div style="font-size:12px;color:var(--label3);margin-top:3px;line-height:1.4">PDF text is vector-based — it stays perfectly sharp at any zoom level, regardless of compression mode.</div>
@@ -2105,12 +2111,12 @@
       </div>
 
       <div style="padding:0 20px">
-        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…','Q4_Financial_Report_compressed.pdf')">💎 Compress PDF</div>
+        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…','Q4_Financial_Report_compressed.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
       </div>
     </div>
 
     <div class="tool-overlay" id="compressProc">
-      <div class="tool-overlay-icon">⚙️</div>
+      <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
       <div class="tool-progress-pct" id="compressPct">0%</div>
       <div class="tool-overlay-title" id="compressProcTitle">Compressing…</div>
       <div class="tool-overlay-sub" id="compressProcSub">Preserving vector text · Optimising images</div>
@@ -2119,29 +2125,29 @@
 
     <div class="tool-overlay" id="compressDone">
       <div id="compressDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="success-check">✅</div>
-      <div class="tool-overlay-title">Compressed! 🎉</div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">Compressed!</div>
       <div class="tool-overlay-sub">2.4 MB → <strong id="compressFinalSize">1.8 MB</strong><br><span id="compressDoneQuality">Crystal quality · Text &amp; images perfect</span></div>
       <!-- Quality assurance strip -->
       <div style="display:flex;gap:8px;margin-top:4px">
         <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
-          <div style="font-size:16px">📝</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
           <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px">Text</div>
           <div style="font-size:10px;color:var(--label3)">100% sharp</div>
         </div>
         <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
-          <div style="font-size:16px">🖼</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px" id="compressDoneDPI">300 DPI</div>
           <div style="font-size:10px;color:var(--label3)">Images</div>
         </div>
         <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
-          <div style="font-size:16px">🔍</div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px">Readable</div>
           <div style="font-size:10px;color:var(--label3)">Zoom-ready</div>
         </div>
       </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('compressDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2173,12 +2179,12 @@
       <div class="scan-hint-text" id="scanHintText">Hold steady — align document</div>
     </div>
     <div class="scan-bottom-bar">
-      <div class="scan-btn-side">🖼</div>
-      <div class="scan-shutter" onclick="triggerScan()">📷</div>
-      <div class="scan-btn-side">⚡️</div>
+      <div class="scan-btn-side"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+      <div class="scan-shutter" onclick="triggerScan()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+      <div class="scan-btn-side"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
     </div>
     <div class="tool-overlay" id="scanProc">
-      <div class="tool-overlay-icon">🤖</div>
+      <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       <div class="tool-progress-pct" id="scanPct">0%</div>
       <div class="tool-overlay-title" id="scanProcText">Scanning…</div>
       <div class="tool-overlay-sub">AI is detecting edges and enhancing</div>
@@ -2186,11 +2192,11 @@
     </div>
     <div class="tool-overlay" id="scanDone">
       <div id="scanDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="success-check">✅</div>
-      <div class="tool-overlay-title">Scanned! 🎉</div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">Scanned!</div>
       <div class="tool-overlay-sub">AI renamed: <strong>Invoice_Airbnb_Dec2025.pdf</strong><br>1 page · 340 KB · Searchable OCR</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('scanDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2225,7 +2231,7 @@
       <!-- Search bar -->
       <div style="padding:8px 20px 6px">
         <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--card);border-radius:var(--r-md);border:1px solid var(--separator)">
-          <span style="font-size:14px;color:var(--label3)">🔍</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--label3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input id="langSearch" type="text" placeholder="Search language…"
             style="flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--label);font-family:inherit"
             oninput="filterLangs(this.value)">
@@ -2250,15 +2256,15 @@
     <!-- Fixed bottom: doc + CTA -->
     <div style="flex-shrink:0;padding:8px 20px 14px;border-top:1px solid var(--separator)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:var(--r-md);border:0.5px solid var(--separator)">
-        <div style="width:30px;height:36px;border-radius:6px;background:rgba(94,92,230,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;flex-shrink:0">📊<span style="font-size:5px;font-weight:700;color:#5E5CE6">REPORT</span></div>
+        <div style="width:30px;height:36px;border-radius:6px;background:rgba(94,92,230,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span style="font-size:5px;font-weight:700;color:#5E5CE6">REPORT</span></div>
         <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div><div style="font-size:11px;color:var(--label3);margin-top:1px">24 pages · English</div></div>
         <div class="translate-pages-badge">24p</div>
       </div>
-      <div class="btn-primary" id="translateCTA" onclick="startTranslation()">🌐 Translate to Spanish</div>
+      <div class="btn-primary" id="translateCTA" onclick="startTranslation()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Translate to Spanish</div>
     </div>
 
     <div class="tool-overlay" id="translateProc">
-      <div class="tool-overlay-icon">🌐</div>
+      <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#32ADE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
       <div class="tool-progress-pct" id="translatePct">0%</div>
       <div class="tool-overlay-title" id="translateProcText">Translating…</div>
       <div class="tool-overlay-sub" id="translateProcSub">Processing page 1 of 24</div>
@@ -2266,11 +2272,11 @@
     </div>
     <div class="tool-overlay" id="translateDone">
       <div id="translateDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="success-check">✅</div>
-      <div class="tool-overlay-title">Translated! 🎉</div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">Translated!</div>
       <div class="tool-overlay-sub" id="translateDoneFile">Q4_Report_Spanish.pdf<br>24 pages · 100% accuracy</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2294,7 +2300,7 @@
           <div class="ocr-line" id="ocrL5"></div>
           <div class="ocr-line" id="ocrL6" style="width:60%"></div>
         </div>
-        <div class="ocr-highlight" id="ocrHighlight">📌 Text detected — 1,240 words</div>
+        <div class="ocr-highlight" id="ocrHighlight"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>Text detected — 1,240 words</div>
       </div>
       <div class="ocr-stat-row">
         <div class="ocr-stat"><div class="ocr-stat-val" id="ocrWords">—</div><div class="ocr-stat-label">Words</div></div>
@@ -2306,11 +2312,11 @@
         <div class="ocr-result-text" id="ocrResultText"></div>
       </div>
       <div style="padding:0 20px">
-        <div class="btn-primary" onclick="runOCR()">🔍 Extract Text</div>
+        <div class="btn-primary" onclick="runOCR()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>Extract Text</div>
       </div>
     </div>
     <div class="tool-overlay" id="ocrProc">
-      <div class="tool-overlay-icon">🔍</div>
+      <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></div>
       <div class="tool-progress-pct" id="ocrPct">0%</div>
       <div class="tool-overlay-title" id="ocrProcText">Running OCR…</div>
       <div class="tool-overlay-sub">Recognising text in 24 pages</div>
@@ -2318,11 +2324,11 @@
     </div>
     <div class="tool-overlay" id="ocrDone">
       <div id="ocrDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
-      <div class="success-check">✅</div>
-      <div class="tool-overlay-title">OCR Complete! 🎉</div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">OCR Complete!</div>
       <div class="tool-overlay-sub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Export as .txt')">📤 Export as .txt</div>
+        <div class="btn-primary" onclick="toolShareBtn(this,'export')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Export as .txt</div>
         <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2344,11 +2350,20 @@ const onbPages = [
   { title:'Your vault.\nYour rules.', sub:'Face ID protection, iCloud sync,\nend-to-end encrypted.', colors:['#34C759','#30B0C7'] },
 ];
 
+const svgIcons = {
+  sparkle: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>',
+  share: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>',
+  check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+  globe: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+  pen: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+  image: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+};
+
 const aiResponses = {
   'summarize this':   'This Q4 Financial Report (24 pages) shows revenue of **$4.2M** (+23% YoY). EBITDA improved to 18%. SaaS revenue is now 67% of total revenue. Net profit: $840K. ARR: $16.8M.',
-  'key numbers':      '📊 Key numbers:\n• Revenue: $4.2M (+23%)\n• Gross Margin: 72%\n• Net Profit: $840K\n• ARR: $16.8M\n• Customers: 1,240 (+34%)',
-  'any red flags?':   '⚠️ Found 2 concerns:\n1. Top 3 customers = 41% of ARR (concentration risk)\n2. Cash burn increased 18% QoQ — cash runway ~14 months.',
-  'export to excel':  '📊 Found 3 tables in this document (pages 8, 14, 19). Converting to Excel now…\n\n✅ Q4_Financial_Tables.xlsx ready — 3 sheets extracted.',
+  'key numbers':      'Key numbers:\n• Revenue: $4.2M (+23%)\n• Gross Margin: 72%\n• Net Profit: $840K\n• ARR: $16.8M\n• Customers: 1,240 (+34%)',
+  'any red flags?':   'Found 2 concerns:\n1. Top 3 customers = 41% of ARR (concentration risk)\n2. Cash burn increased 18% QoQ — cash runway ~14 months.',
+  'export to excel':  'Found 3 tables in this document (pages 8, 14, 19). Converting to Excel now…\n\nQ4_Financial_Tables.xlsx ready — 3 sheets extracted.',
 };
 
 // ─── Clock ─────────────────────────────────────
@@ -2370,7 +2385,7 @@ function toggleDark() {
   isDark = !isDark;
   document.getElementById('iphone').classList.toggle('dark', isDark);
   const btn = document.getElementById('darkToggle');
-  btn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  btn.innerHTML = isDark ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>Light Mode' : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>Dark Mode';
 }
 
 // ─── Screen nav ────────────────────────────────
@@ -2394,7 +2409,7 @@ function nextOnboardingPage() {
     dots.forEach((d,i) => d.classList.toggle('active', i === onbPage));
     if(onbPage === 3) {
       document.getElementById('onbBtnText').textContent = 'Get Started';
-      document.getElementById('onbBtnIcon').textContent = '✨';
+      document.getElementById('onbBtnIcon').innerHTML = svgIcons.sparkle;
     }
   } else {
     skipOnboarding();
@@ -2454,7 +2469,7 @@ function sendMsg(text) {
     const aiBubble = document.createElement('div');
     aiBubble.innerHTML = `
       <div class="bubble bubble-ai">
-        <div class="bubble-ai-avatar">✨</div>
+        <div class="bubble-ai-avatar">${svgIcons.sparkle}</div>
         <div>${response.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
       </div>`;
     messages.appendChild(aiBubble);
@@ -2475,7 +2490,6 @@ function startConversion(format, emoji, color, filename) {
   overlay.classList.add('show');
   document.getElementById('processingText').textContent = `Converting to ${format}…`;
   document.getElementById('orbitPlanet2').style.background = color + 'E6';
-  document.getElementById('orbitPlanet2').textContent = emoji;
   document.getElementById('doneFileName').textContent = filename;
 
   let pct = 0;
@@ -2519,10 +2533,10 @@ function spawnConfetti() {
 
 function shareFile() {
   const btn = event.target;
-  btn.textContent = '✅ Copied to clipboard!';
+  btn.innerHTML = svgIcons.check + 'Copied to clipboard!';
   btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
   setTimeout(() => {
-    btn.textContent = '📤 Share File';
+    btn.innerHTML = svgIcons.share + 'Share File';
     btn.style.background = 'linear-gradient(135deg,#007AFF,#5E5CE6)';
   }, 2000);
 }
@@ -2548,7 +2562,7 @@ function selectPlan(el) {
 
 function purchasePro() {
   const btn = event.target;
-  btn.textContent = '✅ Welcome to FlyPDF Pro!';
+  btn.innerHTML = svgIcons.check + 'Welcome to FlyPDF Pro!';
   btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
   setTimeout(() => showScreen('home-screen'), 1800);
 }
@@ -2604,11 +2618,12 @@ function spawnConfettiIn(container) {
   }
 }
 
-function toolShareBtn(btn, originalText) {
-  btn.textContent = '✅ Copied to clipboard!';
+function toolShareBtn(btn, type) {
+  btn.innerHTML = svgIcons.check + 'Copied to clipboard!';
   btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+  const label = type === 'export' ? 'Export as .txt' : 'Share File';
   setTimeout(()=>{
-    btn.textContent = originalText;
+    btn.innerHTML = svgIcons.share + label;
     btn.style.background = '';
   }, 2000);
 }
@@ -2679,7 +2694,7 @@ function switchSignTab(tab) {
   const hint = document.getElementById('signHint');
   if(tab === 'draw') {
     canvas.style.display = 'block';
-    hint.querySelector('.sign-canvas-hint-icon').textContent = '✍️';
+    hint.querySelector('.sign-canvas-hint-icon').innerHTML = svgIcons.pen;
     hint.querySelector('.sign-canvas-hint-text').textContent = 'Draw your signature here';
     if(!signHasDrawn) hint.style.opacity = '1';
   } else if(tab === 'type') {
@@ -2690,7 +2705,7 @@ function switchSignTab(tab) {
   } else {
     canvas.style.display = 'none';
     hint.style.opacity = '1';
-    hint.querySelector('.sign-canvas-hint-icon').textContent = '🖼';
+    hint.querySelector('.sign-canvas-hint-icon').innerHTML = svgIcons.image;
     hint.querySelector('.sign-canvas-hint-text').textContent = 'Upload signature image';
   }
 }
@@ -2723,16 +2738,16 @@ function placeSignature() {
 
 function shareSignedFile() {
   const btn = event.target;
-  btn.textContent = '✅ Copied to clipboard!';
+  btn.innerHTML = svgIcons.check + 'Copied to clipboard!';
   btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
-  setTimeout(()=>{ btn.textContent='📤 Share Signed Document'; btn.style.background=''; }, 2000);
+  setTimeout(()=>{ btn.innerHTML = svgIcons.share + 'Share Signed Document'; btn.style.background=''; }, 2000);
 }
 
 // ─── Compress level ──────────────────────────────
 const compressData = {
-  crystal: { size:'1.8 MB', save:'-25%', dpi:'300 DPI', quality:'Crystal quality · Text &amp; images perfect',    btnIcon:'💎' },
-  smart:   { size:'1.1 MB', save:'-54%', dpi:'200 DPI', quality:'Smart quality · Text perfect · Images sharp',    btnIcon:'⚡️' },
-  compact: { size:'640 KB', save:'-73%', dpi:'150 DPI', quality:'Compact · Text perfect · Images readable',       btnIcon:'📦' },
+  crystal: { size:'1.8 MB', save:'-25%', dpi:'300 DPI', quality:'Crystal quality · Text &amp; images perfect',    btnLabel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF' },
+  smart:   { size:'1.1 MB', save:'-54%', dpi:'200 DPI', quality:'Smart quality · Text perfect · Images sharp',    btnLabel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Compress PDF' },
+  compact: { size:'640 KB', save:'-73%', dpi:'150 DPI', quality:'Compact · Text perfect · Images readable',       btnLabel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Compress PDF' },
 };
 function setCompressLevel(level, el) {
   document.querySelectorAll('.compress-level-card').forEach(c=>c.classList.remove('active'));
@@ -2745,12 +2760,12 @@ function setCompressLevel(level, el) {
   document.getElementById('compressDoneDPI').textContent = d.dpi;
   // Update CTA button icon
   const btn = document.querySelector('#compress-screen .btn-primary');
-  if(btn && !btn.id) btn.textContent = d.btnIcon + ' Compress PDF';
+  if(btn && !btn.id) btn.innerHTML = d.btnLabel;
 }
 
 // ─── Scan ────────────────────────────────────────
 function triggerScan() {
-  document.getElementById('scanHintText').textContent = '✅ Document captured!';
+  document.getElementById('scanHintText').innerHTML = svgIcons.check + 'Document captured!';
   runToolProcess('scan-screen','scanProc','scanDone','Processing scan…','Invoice_Airbnb_Dec2025.pdf');
   // update proc texts
   const t = document.querySelector('#scanProc .tool-overlay-title');
@@ -2813,7 +2828,7 @@ function selectTranslateLang(code, el) {
   if(!l) return;
   document.getElementById('tToFlag').textContent = l.flag;
   document.getElementById('tToName').textContent = l.name;
-  document.getElementById('translateCTA').textContent = '🌐 Translate to ' + l.name;
+  document.getElementById('translateCTA').innerHTML = svgIcons.globe + 'Translate to ' + l.name;
   document.getElementById('translateDoneFile').innerHTML =
     `Q4_Report_${l.name}.pdf<br>24 pages · 100% accuracy`;
 }
