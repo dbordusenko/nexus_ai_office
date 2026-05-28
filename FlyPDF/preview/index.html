@@ -844,6 +844,10 @@
     from { opacity:0; transform:translateY(20px) scale(0.95); }
     to   { opacity:1; transform:translateY(0) scale(1); }
   }
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to   { opacity:1; }
+  }
   @keyframes breathe {
     0%,100% { transform:scale(1); }
     50%      { transform:scale(1.06); }
@@ -2119,8 +2123,9 @@
         <div class="compress-size-card after"><div class="compress-size-label">Compressed</div><div class="compress-size-val" id="compressAfterSize">1.8 MB</div><div class="compress-size-sub" id="compressSavePct">-25% saved</div></div>
       </div>
 
-      <div style="padding:0 20px">
+      <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
         <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…','Q4_Financial_Report_compressed.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
+        <div class="btn-primary" style="background:linear-gradient(135deg,#34C759,#28a745)" onclick="runToolProcess('compress-screen','compressProc','extractDone','Extracting files…','Q4_Financial_Report_extracted/')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Extract Files from PDF</div>
       </div>
     </div>
 
@@ -2137,7 +2142,6 @@
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">Compressed!</div>
       <div class="tool-overlay-sub">2.4 MB → <strong id="compressFinalSize">1.8 MB</strong><br><span id="compressDoneQuality">Crystal quality · Text &amp; images perfect</span></div>
-      <!-- Quality assurance strip -->
       <div style="display:flex;gap:8px;margin-top:4px">
         <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -2156,8 +2160,37 @@
         </div>
       </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" onclick="showShareSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('compressDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+
+    <!-- Extract Done overlay -->
+    <div class="tool-overlay" id="extractDone">
+      <div style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="tool-overlay-title">Extracted!</div>
+      <div class="tool-overlay-sub">Found <strong>8 images</strong> and <strong>3 tables</strong></div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;width:100%">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px;background:rgba(0,122,255,0.06);border-radius:var(--r-md);border:1px solid rgba(0,122,255,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Images (8)</div><div style="font-size:11px;color:var(--label3)">PNG · 4.2 MB total</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px;background:rgba(52,199,89,0.06);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Tables (3)</div><div style="font-size:11px;color:var(--label3)">XLSX · 48 KB total</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px;background:rgba(94,92,230,0.06);border-radius:var(--r-md);border:1px solid rgba(94,92,230,0.15)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Text (24 pages)</div><div style="font-size:11px;color:var(--label3)">TXT · 12 KB</div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+      </div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="showShareSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save All</div>
+        <div class="btn-secondary-tool" onclick="closeDone('extractDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
   </div>
@@ -2460,7 +2493,7 @@ async function handlePDFUpload(input) {
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;display:flex;align-items:center;gap:8px;';
   toast.innerHTML = '<span style="animation:spin 1s linear infinite;display:inline-block">⏳</span> Processing ' + file.name + '...';
-  document.body.appendChild(toast);
+  (document.querySelector('.iphone') || document.body).appendChild(toast);
 
   try {
     // Extract text using PDF.js
@@ -2584,7 +2617,7 @@ function shareDoc() {
   const toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
   toast.textContent = 'Share sheet for ' + name;
-  document.body.appendChild(toast);
+  (document.querySelector('.iphone') || document.body).appendChild(toast);
   setTimeout(() => toast.remove(), 2000);
 }
 
@@ -2820,13 +2853,22 @@ function spawnConfettiIn(container) {
 }
 
 function toolShareBtn(btn, type) {
-  btn.innerHTML = svgIcons.check + 'Copied to clipboard!';
-  btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
-  const label = type === 'export' ? 'Export as .txt' : 'Share File';
-  setTimeout(()=>{
-    btn.innerHTML = svgIcons.share + label;
-    btn.style.background = '';
-  }, 2000);
+  showShareSheet();
+}
+
+function showShareSheet() {
+  if (navigator.share) {
+    navigator.share({title:'FlyPDF Document',text:'Shared from FlyPDF'}).catch(()=>{});
+  } else {
+    // Fallback: show feedback on the button that called this
+    const btn = event?.target?.closest('.btn-primary');
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = svgIcons.check + ' Copied to clipboard!';
+      btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+      setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+    }
+  }
 }
 
 // ─── Sign ────────────────────────────────────────
