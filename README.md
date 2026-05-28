@@ -16,11 +16,11 @@ AI-powered PDF toolkit for iOS. Interactive prototype + FastAPI backend with Cla
 cd backend
 pip install -r requirements.txt
 cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
+# Edit .env and add your GROQ_API_KEY (free at console.groq.com)
 uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
-Backend runs on `http://localhost:8001`.
+Backend runs on `http://localhost:8001`. Uses **Groq** (Llama 3.3 70B) — free tier.
 
 ### Prototype
 
@@ -38,7 +38,7 @@ Open `FlyPDF/preview/index.html` in a browser. The AI chat auto-detects the back
 
 ## Features
 
-- PDF analysis with Claude Sonnet 4
+- PDF analysis with Llama 3.3 70B via Groq (free)
 - Streaming AI responses
 - Document upload and context-aware chat
 - 11-screen interactive prototype with SVG icons

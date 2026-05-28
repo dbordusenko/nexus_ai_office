@@ -1,7 +1,7 @@
 import os
 from contextlib import asynccontextmanager
 
-import anthropic
+from groq import Groq
 from dotenv import load_dotenv
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,17 +10,23 @@ from pydantic import BaseModel
 
 load_dotenv()
 
-client: anthropic.Anthropic | None = None
+client: Groq | None = None
+
+SYSTEM_PROMPT = (
+    "You are FlyPDF AI Assistant — a helpful PDF analysis tool. "
+    "Be concise and use markdown formatting. "
+    "When analyzing documents, highlight key numbers with **bold**."
+)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global client
-    api_key = os.getenv("ANTHROPIC_API_KEY")
+    api_key = os.getenv("GROQ_API_KEY")
     if not api_key:
-        print("WARNING: ANTHROPIC_API_KEY not set — AI endpoints will fail")
+        print("WARNING: GROQ_API_KEY not set — AI endpoints will fail")
     else:
-        client = anthropic.Anthropic(api_key=api_key)
+        client = Groq(api_key=api_key)
     yield
 
 
@@ -33,7 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-20250514")
+MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 documents: dict[str, dict] = {}
 
@@ -48,6 +54,17 @@ class AnalyzeRequest(BaseModel):
     task: str = "summarize"
 
 
+def build_messages(user_text: str, document_id: str | None = None) -> list[dict]:
+    content = user_text
+    if document_id and document_id in documents:
+        doc = documents[document_id]
+        content = f"<document>\n{doc['filename']}\n\n{doc['text'][:20000]}\n</document>\n\n{user_text}"
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": content},
+    ]
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "model": MODEL, "has_key": client is not None}
@@ -57,20 +74,14 @@ def health():
 async def upload_document(file: UploadFile = File(...)):
     content = await file.read()
     doc_id = f"doc_{len(documents) + 1}"
-
     text = content.decode("utf-8", errors="ignore")[:50000]
-
     documents[doc_id] = {
         "id": doc_id,
         "filename": file.filename,
         "size": len(content),
         "text": text,
     }
-    return {
-        "document_id": doc_id,
-        "filename": file.filename,
-        "size": len(content),
-    }
+    return {"document_id": doc_id, "filename": file.filename, "size": len(content)}
 
 
 @app.post("/chat")
@@ -78,24 +89,13 @@ async def chat(req: ChatRequest):
     if not client:
         raise HTTPException(503, "API key not configured")
 
-    system = "You are FlyPDF AI Assistant — a helpful PDF analysis tool. Be concise and use markdown formatting. When analyzing documents, highlight key numbers with **bold**."
-
-    messages = [{"role": "user", "content": req.message}]
-
-    if req.document_id and req.document_id in documents:
-        doc = documents[req.document_id]
-        doc_context = f"Document: {doc['filename']}\n\n{doc['text'][:20000]}"
-        messages = [
-            {"role": "user", "content": f"<document>\n{doc_context}\n</document>\n\n{req.message}"},
-        ]
-
-    response = client.messages.create(
+    messages = build_messages(req.message, req.document_id)
+    response = client.chat.completions.create(
         model=MODEL,
-        max_tokens=1024,
-        system=system,
         messages=messages,
+        max_tokens=1024,
     )
-    return {"response": response.content[0].text}
+    return {"response": response.choices[0].message.content}
 
 
 @app.post("/chat/stream")
@@ -103,26 +103,19 @@ async def chat_stream(req: ChatRequest):
     if not client:
         raise HTTPException(503, "API key not configured")
 
-    system = "You are FlyPDF AI Assistant — a helpful PDF analysis tool. Be concise and use markdown formatting. When analyzing documents, highlight key numbers with **bold**."
-
-    messages = [{"role": "user", "content": req.message}]
-
-    if req.document_id and req.document_id in documents:
-        doc = documents[req.document_id]
-        doc_context = f"Document: {doc['filename']}\n\n{doc['text'][:20000]}"
-        messages = [
-            {"role": "user", "content": f"<document>\n{doc_context}\n</document>\n\n{req.message}"},
-        ]
+    messages = build_messages(req.message, req.document_id)
 
     def generate():
-        with client.messages.stream(
+        stream = client.chat.completions.create(
             model=MODEL,
-            max_tokens=1024,
-            system=system,
             messages=messages,
-        ) as stream:
-            for text in stream.text_stream:
-                yield f"data: {text}\n\n"
+            max_tokens=1024,
+            stream=True,
+        )
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content
+            if delta:
+                yield f"data: {delta}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(generate(), media_type="text/event-stream")
@@ -136,23 +129,18 @@ async def analyze(req: AnalyzeRequest):
     if req.document_id not in documents:
         raise HTTPException(404, "Document not found")
 
-    doc = documents[req.document_id]
-
     prompts = {
         "summarize": "Summarize this document concisely. Highlight key figures with **bold**.",
-        "key_numbers": "Extract all key numbers, metrics, and financial figures from this document. Format as a bullet list.",
+        "key_numbers": "Extract all key numbers, metrics, and financial figures. Format as a bullet list.",
         "red_flags": "Identify any potential concerns, risks, or red flags in this document.",
         "extract_tables": "Identify and describe any tables found in this document.",
     }
 
     prompt = prompts.get(req.task, req.task)
-
-    response = client.messages.create(
+    messages = build_messages(prompt, req.document_id)
+    response = client.chat.completions.create(
         model=MODEL,
+        messages=messages,
         max_tokens=1024,
-        system="You are FlyPDF AI Assistant. Analyze the provided document and respond concisely with markdown.",
-        messages=[
-            {"role": "user", "content": f"<document>\n{doc['filename']}\n\n{doc['text'][:20000]}\n</document>\n\n{prompt}"},
-        ],
     )
-    return {"response": response.content[0].text, "task": req.task}
+    return {"response": response.choices[0].message.content, "task": req.task}
