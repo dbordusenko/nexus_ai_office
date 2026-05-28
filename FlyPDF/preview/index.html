@@ -2465,7 +2465,7 @@ async function handlePDFUpload(input) {
   try {
     // Extract text using PDF.js
     const rawBuffer = await file.arrayBuffer();
-    const pdfBytes = new Uint8Array(new Uint8Array(rawBuffer));
+    const pdfBytes = Array.from(new Uint8Array(rawBuffer));
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytes)}).promise;
     let text = '';
@@ -2549,8 +2549,7 @@ async function openDocViewer(name, pages, size, pdfData) {
 
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const copy = pdfData instanceof Uint8Array ? pdfData.slice() : new Uint8Array(pdfData);
-    const pdf = await pdfjsLib.getDocument({data: copy}).promise;
+    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfData)}).promise;
     container.innerHTML = '';
     const maxPages = Math.min(pdf.numPages, 20);
     for (let i = 1; i <= maxPages; i++) {
