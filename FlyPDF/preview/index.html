@@ -2464,10 +2464,10 @@ async function handlePDFUpload(input) {
 
   try {
     // Extract text using PDF.js
-    const originalBuffer = await file.arrayBuffer();
-    const arrayBuffer = originalBuffer.slice(0);
+    const rawBuffer = await file.arrayBuffer();
+    const pdfBytes = new Uint8Array(rawBuffer);
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+    const pdf = await pdfjsLib.getDocument({data: pdfBytes.slice()}).promise;
     let text = '';
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
@@ -2498,7 +2498,7 @@ async function handlePDFUpload(input) {
 
     // Open document viewer with rendered PDF pages
     setTimeout(() => {
-      openDocViewer(file.name, pdf.numPages, (file.size / 1024).toFixed(0) + ' KB', originalBuffer);
+      openDocViewer(file.name, pdf.numPages, (file.size / 1024).toFixed(0) + ' KB', pdfBytes);
       const header = document.querySelector('#ai-screen .chat-sub');
       if (header) header.textContent = file.name;
     }, 500);
@@ -2549,7 +2549,8 @@ async function openDocViewer(name, pages, size, pdfData) {
 
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf = await pdfjsLib.getDocument({data: pdfData.slice(0)}).promise;
+    const copy = pdfData instanceof Uint8Array ? pdfData.slice() : new Uint8Array(pdfData);
+    const pdf = await pdfjsLib.getDocument({data: copy}).promise;
     container.innerHTML = '';
     const maxPages = Math.min(pdf.numPages, 20);
     for (let i = 1; i <= maxPages; i++) {
