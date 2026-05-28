@@ -1,0 +1,2851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlyPDF — iOS Preview</title>
+<style>
+  :root {
+    --blue: #007AFF;
+    --violet: #5E5CE6;
+    --ultra-violet: #AF52DE;
+    --success: #34C759;
+    --warning: #FF9F0A;
+    --error: #FF3B30;
+    --silver: #8E8E93;
+    --mist: #F2F2F7;
+    --graphite: #1C1C1E;
+    --soft-graphite: #2C2C2E;
+    --r-sm: 12px; --r-md: 18px; --r-lg: 24px; --r-xl: 32px;
+    --bg: #F2F2F7;
+    --card: #FFFFFF;
+    --label: #000000;
+    --label2: #3C3C43;
+    --label3: #8E8E93;
+    --separator: rgba(60,60,67,0.12);
+    --glass-bg: rgba(255,255,255,0.72);
+    --glass-border: rgba(255,255,255,0.8);
+  }
+  .dark {
+    --bg: #000000;
+    --card: #1C1C1E;
+    --label: #FFFFFF;
+    --label2: rgba(235,235,245,0.6);
+    --label3: rgba(235,235,245,0.3);
+    --separator: rgba(255,255,255,0.1);
+    --glass-bg: rgba(28,28,30,0.72);
+    --glass-border: rgba(255,255,255,0.12);
+    --mist: #000000;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body {
+    background: linear-gradient(135deg, #0A0A0F 0%, #0D1B2A 50%, #0A0A1A 100%);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', sans-serif;
+    overflow:hidden;
+  }
+
+  /* iPhone Frame */
+  .iphone {
+    width: 393px;
+    height: 852px;
+    background: var(--bg);
+    border-radius: 54px;
+    overflow: hidden;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #2a2a2a,
+      0 0 0 4px #1a1a1a,
+      0 40px 120px rgba(0,0,0,0.8),
+      0 0 60px rgba(0,122,255,0.15);
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .iphone::before {
+    content:'';
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    width:120px; height:34px;
+    background:#000;
+    border-radius:0 0 22px 22px;
+    z-index:100;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height:54px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    padding:0 28px 10px;
+    position:relative;
+    z-index:10;
+  }
+  .status-time { font-size:15px; font-weight:600; color:var(--label); }
+  .status-icons { display:flex; gap:6px; align-items:center; }
+  .status-icons svg { fill:var(--label); }
+
+  /* Screens */
+  .screen {
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+    padding-top:54px; /* always start content below status bar */
+  }
+  .screen.active { display:flex; }
+
+  /* ───── HOME SCREEN ───── */
+  .home-content {
+    flex:1;
+    overflow-y:auto;
+    overflow-x:hidden;
+    padding-bottom:90px;
+    scrollbar-width:none;
+  }
+  .home-content::-webkit-scrollbar { display:none; }
+
+  .home-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px 24px 0;
+  }
+  .home-greeting { font-size:12px; color:var(--label3); margin-bottom:2px; font-weight:500; }
+  .home-title { font-size:34px; font-weight:900; color:var(--label); letter-spacing:-0.5px; }
+  .header-actions { display:flex; gap:10px; }
+  .header-btn {
+    width:40px; height:40px;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:var(--r-md);
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    cursor:pointer;
+    transition:transform 0.15s;
+  }
+  .header-btn:active { transform:scale(0.92); }
+  .avatar {
+    width:40px; height:40px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; font-weight:700; color:#fff;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,122,255,0.3);
+  }
+
+  /* AI Strip */
+  .ai-strip { padding:20px 0 0; }
+  .section-label {
+    display:flex; align-items:center; gap:6px;
+    padding:0 24px 10px;
+    font-size:11px; font-weight:700;
+    color:var(--label3);
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+  }
+  .section-label svg { fill:var(--blue); }
+  .chips-scroll { display:flex; gap:10px; overflow-x:auto; padding:0 24px; scrollbar-width:none; }
+  .chips-scroll::-webkit-scrollbar { display:none; }
+  .ai-chip {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-md);
+    white-space:nowrap;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.06);
+    transition:transform 0.15s;
+    flex-shrink:0;
+  }
+  .ai-chip:active { transform:scale(0.96); }
+  .chip-icon {
+    width:30px; height:30px;
+    border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+  }
+  .chip-text { font-size:12px; font-weight:500; color:var(--label); }
+  .chip-action { font-size:11px; font-weight:700; }
+  .chip-chevron { font-size:10px; color:var(--silver); margin-left:4px; }
+
+  /* Quick Actions */
+  .quick-actions { padding:24px 24px 0; }
+  .section-title {
+    font-size:20px; font-weight:700; color:var(--label);
+    margin-bottom:16px; letter-spacing:-0.3px;
+  }
+  .qa-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .qa-btn {
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    cursor:pointer;
+    transition:transform 0.15s;
+  }
+  .qa-btn:active { transform:scale(0.92); }
+  .qa-icon {
+    width:58px; height:58px;
+    border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06);
+    position:relative;
+  }
+  .qa-crown {
+    position:absolute; top:-5px; right:-5px;
+    width:17px; height:17px;
+    background:var(--warning);
+    border-radius:50%;
+    font-size:8px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .qa-label { font-size:11px; color:var(--label3); font-weight:500; }
+
+  /* Recent Docs */
+  .recent { padding:24px 24px 0; }
+  .recent-header {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:16px;
+  }
+  .see-all { font-size:15px; color:var(--blue); cursor:pointer; font-weight:400; }
+  .doc-card {
+    display:flex; align-items:center; gap:14px;
+    padding:14px;
+    background:var(--card);
+    border-radius:var(--r-lg);
+    margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    border:0.5px solid var(--separator);
+    cursor:pointer;
+    transition:transform 0.15s;
+  }
+  .doc-card:active { transform:scale(0.98); }
+  .doc-thumb {
+    width:50px; height:62px;
+    border-radius:10px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:3px; flex-shrink:0;
+    font-size:20px;
+  }
+  .doc-thumb-label { font-size:7px; font-weight:700; text-transform:uppercase; }
+  .doc-info { flex:1; min-width:0; }
+  .doc-name { font-size:15px; font-weight:500; color:var(--label); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .doc-meta { display:flex; align-items:center; gap:6px; margin-top:4px; }
+  .type-badge {
+    font-size:10px; font-weight:700;
+    padding:2px 7px;
+    border-radius:100px;
+  }
+  .doc-sep { color:var(--silver); font-size:11px; }
+  .doc-pages { font-size:12px; color:var(--label3); }
+  .doc-date { font-size:12px; color:var(--label3); margin-top:3px; }
+  .doc-more { color:var(--silver); font-size:16px; cursor:pointer; padding:4px; }
+
+  /* FAB */
+  .fab-container {
+    position:absolute;
+    bottom:96px; right:24px;
+    display:flex; flex-direction:column; align-items:flex-end; gap:14px;
+  }
+  .fab-secondary {
+    display:flex; align-items:center; gap:10px;
+    opacity:0; transform:translateY(20px) scale(0.8);
+    transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events:none;
+  }
+  .fab-secondary.visible {
+    opacity:1; transform:translateY(0) scale(1);
+    pointer-events:all;
+  }
+  .fab-secondary:nth-child(1) { transition-delay:0.0s; }
+  .fab-secondary:nth-child(2) { transition-delay:0.05s; }
+  .fab-secondary:nth-child(3) { transition-delay:0.10s; }
+  .fab-label {
+    font-size:13px; font-weight:500;
+    padding:7px 13px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:100px;
+    color:var(--label);
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  }
+  .fab-mini {
+    width:48px; height:48px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  }
+  .fab-main {
+    width:62px; height:62px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; color:#fff;
+    box-shadow:0 8px 24px rgba(0,122,255,0.5), 0 0 40px rgba(0,122,255,0.2);
+    cursor:pointer;
+    transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    user-select:none;
+  }
+  .fab-main.open { transform:rotate(45deg); }
+
+  /* Tab Bar */
+  .tab-bar {
+    position:absolute;
+    bottom:24px; left:24px; right:24px;
+    height:64px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-xl);
+    display:flex; align-items:center;
+    box-shadow:0 8px 24px rgba(0,0,0,0.08);
+    z-index:50;
+  }
+  .tab-item {
+    flex:1;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:3px;
+    cursor:pointer;
+    transition:all 0.2s;
+    padding:8px 0;
+  }
+  .tab-icon { font-size:22px; transition:transform 0.2s; }
+  .tab-item.active .tab-icon { transform:scale(1.1); }
+  .tab-label { font-size:10px; font-weight:700; letter-spacing:0.2px; }
+  .tab-item.active .tab-label { color:var(--blue); }
+  .tab-item:not(.active) .tab-label { color:var(--silver); }
+  .tab-item:not(.active) .tab-icon { filter:grayscale(1) opacity(0.75); }
+  .iphone:not(.dark) .tab-item:not(.active) .tab-icon { filter:grayscale(1) opacity(0.55) brightness(0.3); }
+
+  /* ───── AI CHAT SCREEN ───── */
+  #ai-screen {
+    background:var(--bg);
+  }
+  .chat-header {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 20px 14px;
+    border-bottom:1px solid var(--separator);
+  }
+  .chat-orb {
+    width:40px; height:40px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px;
+    box-shadow:0 4px 12px rgba(0,122,255,0.35);
+    flex-shrink:0;
+  }
+  .chat-title { font-size:16px; font-weight:700; color:var(--label); }
+  .chat-sub { font-size:12px; color:var(--label3); }
+  .chat-close {
+    margin-left:auto;
+    font-size:26px; color:var(--label3);
+    cursor:pointer; line-height:1;
+  }
+  .chat-messages {
+    flex:1;
+    overflow-y:auto;
+    padding:16px;
+    display:flex; flex-direction:column; gap:10px;
+    scrollbar-width:none;
+  }
+  .chat-messages::-webkit-scrollbar { display:none; }
+
+  .welcome-card {
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-xl);
+    padding:28px 20px;
+    text-align:center;
+    margin-bottom:6px;
+    animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .welcome-orb-lg {
+    width:64px; height:64px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; margin:0 auto 14px;
+    box-shadow:0 8px 24px rgba(0,122,255,0.4);
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .welcome-title { font-size:18px; font-weight:700; color:var(--label); margin-bottom:6px; }
+  .welcome-sub { font-size:13px; color:var(--label3); line-height:1.5; }
+
+  .bubble {
+    max-width:75%;
+    padding:10px 14px;
+    border-radius:18px;
+    font-size:15px;
+    line-height:1.45;
+    animation:slideUp 0.3s ease;
+  }
+  .bubble-ai {
+    background:var(--glass-bg);
+    backdrop-filter:blur(10px);
+    border:0.5px solid var(--separator);
+    color:var(--label);
+    align-self:flex-start;
+    border-bottom-left-radius:4px;
+    display:flex; gap:8px; align-items:flex-start;
+  }
+  .bubble-ai-avatar {
+    width:24px; height:24px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; flex-shrink:0;
+    margin-top:1px;
+  }
+  .bubble-user {
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    color:#fff;
+    align-self:flex-end;
+    border-bottom-right-radius:4px;
+    box-shadow:0 4px 12px rgba(0,122,255,0.3);
+  }
+  .typing {
+    display:flex; gap:4px; align-items:center;
+    padding:12px 14px;
+    background:var(--glass-bg);
+    backdrop-filter:blur(10px);
+    border:0.5px solid var(--separator);
+    border-radius:18px;
+    border-bottom-left-radius:4px;
+    width:fit-content;
+    animation:slideUp 0.3s ease;
+  }
+  .typing-dot {
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--silver);
+    animation:typingBounce 0.8s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay:0.15s; }
+  .typing-dot:nth-child(3) { animation-delay:0.30s; }
+
+  .suggestions-row {
+    display:flex; gap:8px;
+    overflow-x:auto; padding:6px 16px;
+    scrollbar-width:none;
+  }
+  .suggestions-row::-webkit-scrollbar { display:none; }
+  .suggestion-chip {
+    padding:8px 14px;
+    background:rgba(0,122,255,0.1);
+    border:1px solid rgba(0,122,255,0.2);
+    border-radius:100px;
+    font-size:13px; font-weight:500;
+    color:var(--blue);
+    white-space:nowrap;
+    cursor:pointer;
+    transition:transform 0.15s, background 0.15s;
+    flex-shrink:0;
+  }
+  .suggestion-chip:active { transform:scale(0.95); background:rgba(0,122,255,0.18); }
+
+  .chat-input-bar {
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    border-top:1px solid var(--separator);
+  }
+  .mic-btn {
+    width:40px; height:40px;
+    border-radius:var(--r-md);
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; cursor:pointer;
+    flex-shrink:0;
+  }
+  .chat-input {
+    flex:1;
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-md);
+    padding:10px 14px;
+    font-size:15px;
+    color:var(--label);
+    outline:none;
+    font-family:inherit;
+  }
+  .chat-input::placeholder { color:var(--label3); }
+  .send-btn {
+    width:40px; height:40px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,122,255,0.35);
+    flex-shrink:0;
+    transition:transform 0.15s;
+  }
+  .send-btn:active { transform:scale(0.9); }
+
+  /* ───── CONVERSION SCREEN ───── */
+  #conversion-screen { background:var(--bg); }
+  .conv-header {
+    display:flex; align-items:center; gap:12px;
+    padding:12px 20px 16px;
+  }
+  .back-btn {
+    width:38px; height:38px;
+    border-radius:var(--r-sm);
+    background:var(--glass-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; cursor:pointer;
+    transition:transform 0.15s;
+  }
+  .back-btn:active { transform:scale(0.92); }
+  .conv-title { font-size:22px; font-weight:700; color:var(--label); }
+  .conv-grid {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    padding:0 20px 20px;
+  }
+  .format-card {
+    background:var(--card);
+    border-radius:var(--r-lg);
+    padding:20px 16px;
+    display:flex; flex-direction:column;
+    align-items:center; gap:12px;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    border:0.5px solid var(--separator);
+    transition:transform 0.15s;
+  }
+  .format-card:active { transform:scale(0.95); }
+  .format-icon-wrap {
+    width:64px; height:64px;
+    border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px;
+  }
+  .format-name { font-size:15px; font-weight:700; color:var(--label); }
+  .format-ext { font-size:12px; color:var(--label3); }
+
+  /* Processing overlay */
+  .processing-overlay {
+    position:absolute;
+    inset:0;
+    background:var(--bg);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:24px;
+    z-index:200;
+  }
+  .processing-overlay.show { display:flex; }
+  .orbit-container {
+    width:220px; height:220px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .orbit-ring {
+    position:absolute;
+    border-radius:50%;
+    border:1px dashed rgba(0,122,255,0.25);
+  }
+  .orbit-ring-1 { width:180px; height:180px; animation:spinOrbit 3s linear infinite; }
+  .orbit-ring-2 { width:220px; height:220px; animation:spinOrbit 4s linear infinite reverse; }
+  .orbit-planet {
+    position:absolute;
+    width:44px; height:56px;
+    border-radius:8px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:3px; font-size:18px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    font-weight:700;
+  }
+  .orbit-center {
+    width:72px; height:72px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px;
+    box-shadow:0 8px 24px rgba(0,122,255,0.5);
+    animation:orbPulse 1.5s ease-in-out infinite;
+    position:relative; z-index:1;
+  }
+  .progress-bar-wrap { width:260px; }
+  .progress-track {
+    height:6px;
+    background:var(--separator);
+    border-radius:100px;
+    overflow:hidden;
+  }
+  .progress-fill {
+    height:100%;
+    background:linear-gradient(90deg,var(--blue),var(--violet));
+    border-radius:100px;
+    transition:width 0.4s ease;
+  }
+  .progress-pct { font-size:48px; font-weight:900; color:var(--blue); font-variant-numeric:tabular-nums; text-align:center; }
+  .processing-text { font-size:20px; font-weight:700; color:var(--label); text-align:center; }
+  .processing-sub { font-size:13px; color:var(--label3); text-align:center; }
+
+  /* Done overlay */
+  .done-overlay {
+    position:absolute;
+    inset:0;
+    background:var(--bg);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    padding:40px;
+    z-index:201;
+  }
+  .done-overlay.show { display:flex; animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .done-check {
+    width:100px; height:100px;
+    border-radius:50%;
+    background:rgba(52,199,89,0.12);
+    display:flex; align-items:center; justify-content:center;
+    font-size:52px;
+    animation:checkBounce 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .done-title { font-size:28px; font-weight:900; color:var(--label); text-align:center; }
+  .done-name { font-size:15px; color:var(--label3); text-align:center; }
+  .btn-primary {
+    width:100%;
+    padding:17px;
+    border-radius:var(--r-lg);
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    color:#fff;
+    font-size:17px; font-weight:700;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(0,122,255,0.35);
+    transition:transform 0.15s;
+  }
+  .btn-primary:active { transform:scale(0.97); }
+  .btn-secondary {
+    font-size:16px; font-weight:500;
+    color:var(--label3);
+    text-align:center;
+    cursor:pointer;
+    padding:12px;
+  }
+
+  /* ───── ONBOARDING SCREEN ───── */
+  #onboarding-screen {
+    background:linear-gradient(135deg,#007AFF,#5E5CE6);
+    transition:background 0.7s ease;
+  }
+  .onb-skip {
+    position:absolute; top:62px; right:20px;
+    background:rgba(255,255,255,0.2);
+    border-radius:100px;
+    padding:10px 20px;
+    font-size:15px; color:#fff; cursor:pointer;
+    font-weight:400; z-index:10;
+    backdrop-filter:blur(10px);
+  }
+  .onb-illustration {
+    flex:1;
+    display:flex; align-items:center; justify-content:center;
+    position:relative; overflow:hidden;
+  }
+  .onb-circle {
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.08);
+    animation:breathe 3s ease-in-out infinite;
+  }
+  .onb-circle-1 { width:200px; height:200px; }
+  .onb-circle-2 { width:270px; height:270px; animation-delay:0.5s; animation-direction:reverse; }
+
+  /* Flying papers */
+  .papers-wrap { position:relative; width:200px; height:220px; }
+  .paper {
+    position:absolute;
+    width:88px; height:114px;
+    background:rgba(255,255,255,0.95);
+    border-radius:10px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.15);
+    display:flex; flex-direction:column;
+    gap:5px; padding:14px 12px;
+  }
+  .paper-line { height:5px; border-radius:2px; background:rgba(0,0,0,0.12); }
+  .paper-line:first-child { background:rgba(0,0,0,0.22); }
+  .paper:nth-child(1) { left:0; top:40px; transform:rotate(-20deg); animation:paper1 1.8s ease-in-out infinite alternate; }
+  .paper:nth-child(2) { left:28px; top:16px; transform:rotate(-7deg); animation:paper2 1.6s ease-in-out infinite alternate; }
+  .paper:nth-child(3) { left:56px; top:0; transform:rotate(0deg); animation:paper3 1.4s ease-in-out infinite alternate; z-index:2; }
+  .paper:nth-child(4) { left:84px; top:16px; transform:rotate(8deg); animation:paper2 1.7s ease-in-out 0.2s infinite alternate; }
+  .paper:nth-child(5) { left:110px; top:40px; transform:rotate(20deg); animation:paper1 1.9s ease-in-out 0.1s infinite alternate; }
+
+  .onb-text { padding:0 32px 0; }
+  .onb-title { font-size:42px; font-weight:900; color:#fff; line-height:1.1; margin-bottom:14px; letter-spacing:-0.5px; }
+  .onb-sub { font-size:18px; color:rgba(255,255,255,0.85); line-height:1.5; margin-bottom:0; }
+  .onb-nav {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:32px 32px 48px;
+  }
+  .onb-dots { display:flex; gap:6px; align-items:center; }
+  .onb-dot {
+    height:7px; border-radius:100px;
+    background:rgba(255,255,255,0.4);
+    transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .onb-dot.active { background:rgba(255,255,255,1); width:28px; }
+  .onb-dot:not(.active) { width:7px; }
+  .onb-btn {
+    background:#fff;
+    border-radius:100px;
+    padding:16px 26px;
+    font-size:17px; font-weight:700;
+    color:var(--blue);
+    cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.18);
+    transition:transform 0.15s;
+  }
+  .onb-btn:active { transform:scale(0.95); }
+
+  /* ───── PAYWALL SCREEN ───── */
+  #paywall-screen {
+    background:linear-gradient(160deg,#050A1A,#0D1B2A,#0A0A1A);
+    overflow-y:auto;
+    scrollbar-width:none;
+  }
+  #paywall-screen::-webkit-scrollbar { display:none; }
+  .paywall-close {
+    position:absolute; top:62px; right:20px;
+    font-size:30px; color:rgba(255,255,255,0.4);
+    cursor:pointer; z-index:10; line-height:1;
+  }
+  .paywall-hero { text-align:center; padding:16px 24px 24px; }
+  .paywall-orb {
+    width:90px; height:90px;
+    border-radius:50%;
+    margin:0 auto 20px;
+    background:rgba(255,255,255,0.06);
+    display:flex; align-items:center; justify-content:center;
+    font-size:44px;
+    animation:pulse 2s ease-in-out infinite;
+  }
+  .paywall-title { font-size:32px; font-weight:900; color:#fff; margin-bottom:10px; }
+  .paywall-sub { font-size:18px; color:rgba(255,255,255,0.6); }
+  .feature-list { padding:0 20px 20px; display:flex; flex-direction:column; gap:8px; }
+  .feature-row {
+    display:flex; align-items:center; gap:14px;
+    padding:13px 14px;
+    background:rgba(255,255,255,0.04);
+    border-radius:var(--r-sm);
+  }
+  .feature-row.highlight {
+    background:rgba(0,122,255,0.12);
+    border:1px solid rgba(0,122,255,0.3);
+  }
+  .feature-icon { font-size:16px; width:28px; text-align:center; }
+  .feature-text { font-size:15px; color:rgba(255,255,255,0.88); flex:1; }
+  .feature-text.bold { font-weight:700; color:#fff; }
+  .feature-check { color:var(--success); font-size:13px; font-weight:700; }
+
+  .plan-picker { padding:0 20px 20px; display:flex; flex-direction:column; gap:10px; }
+  .plan-card {
+    display:flex; align-items:center; gap:12px;
+    padding:15px;
+    border-radius:var(--r-md);
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .plan-card.selected {
+    background:rgba(0,122,255,0.2);
+    border-color:var(--blue);
+    border-width:2px;
+  }
+  .plan-radio {
+    width:22px; height:22px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .plan-radio-inner {
+    width:12px; height:12px;
+    border-radius:50%;
+    background:var(--blue);
+    display:none;
+  }
+  .plan-card.selected .plan-radio-inner { display:block; }
+  .plan-name { font-size:15px; font-weight:700; color:#fff; }
+  .plan-desc { font-size:12px; color:rgba(255,255,255,0.5); }
+  .plan-price { font-size:15px; font-weight:700; color:#fff; margin-left:auto; }
+  .plan-badge {
+    font-size:10px; font-weight:700; color:#fff;
+    padding:3px 8px;
+    background:var(--blue);
+    border-radius:100px;
+  }
+  .paywall-cta { padding:0 20px 30px; }
+  .paywall-legal {
+    text-align:center;
+    font-size:11px; color:rgba(255,255,255,0.3);
+    padding:10px 20px 40px;
+    display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+  }
+
+  /* Dark mode toggle */
+  .dark-toggle {
+    position:fixed;
+    top:24px; left:50%;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:100px;
+    padding:8px 16px;
+    display:flex; align-items:center; gap:8px;
+    cursor:pointer;
+    z-index:999;
+    font-size:13px; color:#fff; font-weight:600;
+    transition:transform 0.15s;
+    white-space:nowrap;
+  }
+  .dark-toggle:active { transform:translateX(-50%) scale(0.96); }
+
+  /* Animations */
+  @keyframes slideUp {
+    from { opacity:0; transform:translateY(20px) scale(0.95); }
+    to   { opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes breathe {
+    0%,100% { transform:scale(1); }
+    50%      { transform:scale(1.06); }
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow:0 8px 24px rgba(0,122,255,0.4); transform:scale(1); }
+    50%      { box-shadow:0 12px 32px rgba(0,122,255,0.6); transform:scale(1.05); }
+  }
+  @keyframes typingBounce {
+    0%,100% { transform:scaleY(0.7); opacity:0.5; }
+    50%      { transform:scaleY(1.3); opacity:1; }
+  }
+  @keyframes spinOrbit {
+    from { transform:rotate(0deg); }
+    to   { transform:rotate(360deg); }
+  }
+  @keyframes orbPulse {
+    0%,100% { transform:scale(1); }
+    50%      { transform:scale(1.08); }
+  }
+  @keyframes checkBounce {
+    from { transform:scale(0.3); opacity:0; }
+    to   { transform:scale(1); opacity:1; }
+  }
+  @keyframes paper1 {
+    from { transform:rotate(-20deg) translateY(0); }
+    to   { transform:rotate(-22deg) translateY(-8px); }
+  }
+  @keyframes paper2 {
+    from { transform:rotate(-7deg) translateY(0); }
+    to   { transform:rotate(-5deg) translateY(-6px); }
+  }
+  @keyframes paper3 {
+    from { transform:rotate(0deg) translateY(0); }
+    to   { transform:rotate(2deg) translateY(-10px); }
+  }
+  @keyframes confettiFall {
+    0%   { transform:translateY(-20px) rotate(0deg); opacity:1; }
+    100% { transform:translateY(400px) rotate(720deg); opacity:0; }
+  }
+  .confetti-piece {
+    position:absolute;
+    width:8px; height:8px;
+    border-radius:2px;
+    animation:confettiFall 1.5s ease-in forwards;
+    pointer-events:none;
+  }
+  .page-dots {
+    position:absolute;
+    bottom:8px; left:50%; transform:translateX(-50%);
+    display:flex; gap:5px; z-index:100;
+  }
+  .page-dot { width:4px; height:4px; border-radius:50%; background:rgba(0,0,0,0.15); }
+  .dark .page-dot { background:rgba(255,255,255,0.15); }
+
+  /* ───── SIGN SCREEN ───── */
+  #sign-screen { background:var(--bg); }
+  .sign-header {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 20px 14px;
+    border-bottom:1px solid var(--separator);
+  }
+  .sign-back {
+    width:34px; height:34px;
+    border-radius:50%;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; cursor:pointer;
+    transition:transform 0.15s;
+  }
+  .sign-back:active { transform:scale(0.9); }
+  .sign-title { font-size:17px; font-weight:700; color:var(--label); flex:1; }
+  .sign-done-btn {
+    font-size:15px; font-weight:700; color:var(--blue);
+    cursor:pointer; padding:4px 8px;
+  }
+
+  .sign-doc-banner {
+    display:flex; align-items:center; gap:10px;
+    margin:14px 20px;
+    padding:12px 14px;
+    background:var(--card);
+    border-radius:var(--r-md);
+    border:0.5px solid var(--separator);
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+  }
+  .sign-doc-icon {
+    width:36px; height:44px;
+    border-radius:8px;
+    background:rgba(94,92,230,0.12);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    font-size:16px; flex-shrink:0;
+  }
+  .sign-doc-name { font-size:13px; font-weight:600; color:var(--label); }
+  .sign-doc-sub { font-size:11px; color:var(--label3); margin-top:2px; }
+  .sign-page-badge {
+    margin-left:auto;
+    font-size:11px; font-weight:700; color:var(--blue);
+    background:rgba(0,122,255,0.1);
+    padding:4px 9px; border-radius:100px;
+  }
+
+  .sign-tabs {
+    display:flex; gap:0;
+    margin:0 20px 14px;
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+    border-radius:var(--r-md);
+    padding:3px;
+  }
+  .sign-tab {
+    flex:1; text-align:center;
+    padding:8px 0;
+    font-size:13px; font-weight:600; color:var(--label3);
+    border-radius:calc(var(--r-md) - 3px);
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .sign-tab.active {
+    background:var(--blue);
+    color:#fff;
+    box-shadow:0 2px 8px rgba(0,122,255,0.35);
+  }
+
+  .sign-canvas-wrap {
+    margin:0 20px;
+    border-radius:var(--r-lg);
+    overflow:hidden;
+    border:2px dashed var(--blue);
+    background:var(--card);
+    position:relative;
+    height:180px;
+  }
+  .sign-canvas-wrap canvas {
+    width:100%; height:100%;
+    display:block; cursor:crosshair;
+    touch-action:none;
+  }
+  .sign-canvas-hint {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center; pointer-events:none;
+    transition:opacity 0.3s;
+  }
+  .sign-canvas-hint-icon { font-size:28px; margin-bottom:6px; }
+  .sign-canvas-hint-text { font-size:13px; color:var(--label3); font-weight:500; }
+
+  .sign-tools {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 20px 0;
+  }
+  .sign-clear-btn {
+    display:flex; align-items:center; gap:6px;
+    font-size:13px; font-weight:600; color:var(--error);
+    cursor:pointer; padding:8px 12px;
+    border-radius:var(--r-sm);
+    background:rgba(255,59,48,0.08);
+    transition:transform 0.15s;
+  }
+  .sign-clear-btn:active { transform:scale(0.95); }
+  .sign-color-row { display:flex; gap:8px; align-items:center; }
+  .sign-color {
+    width:24px; height:24px; border-radius:50%;
+    cursor:pointer; border:2px solid transparent;
+    transition:transform 0.15s;
+  }
+  .sign-color.active { border-color:var(--blue); transform:scale(1.2); }
+  .sign-color:active { transform:scale(0.9); }
+
+  .sign-thickness-row {
+    display:flex; gap:8px; align-items:center;
+    padding:12px 20px 0;
+  }
+  .sign-thick-label { font-size:12px; color:var(--label3); font-weight:500; margin-right:4px; }
+  .sign-thick-btn {
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; border-radius:50%;
+    background:var(--glass-bg); border:1px solid var(--glass-border);
+    transition:all 0.15s;
+  }
+  .sign-thick-btn.active { background:var(--blue); border-color:var(--blue); }
+
+  .sign-place-btn {
+    margin:16px 20px 0;
+    padding:16px;
+    border-radius:var(--r-lg);
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    color:#fff; font-size:17px; font-weight:700;
+    text-align:center; cursor:pointer;
+    box-shadow:0 8px 20px rgba(0,122,255,0.4);
+    transition:transform 0.15s;
+  }
+  .sign-place-btn:active { transform:scale(0.97); }
+
+  /* Sign success overlay */
+  .sign-success {
+    position:absolute; inset:0;
+    background:var(--bg);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:16px;
+    opacity:0; pointer-events:none;
+    transition:opacity 0.3s;
+    z-index:50;
+  }
+  .sign-success.show { opacity:1; pointer-events:all; }
+  .sign-success-icon {
+    width:80px; height:80px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#34C759,#1E8C3A);
+    display:flex; align-items:center; justify-content:center;
+    font-size:36px;
+    animation:checkBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow:0 12px 32px rgba(52,199,89,0.4);
+  }
+  .sign-success-title { font-size:24px; font-weight:900; color:var(--label); }
+  .sign-success-sub { font-size:15px; color:var(--label3); }
+  .sign-success-btns { display:flex; flex-direction:column; gap:10px; width:100%; padding:0 24px; margin-top:8px; }
+
+  @keyframes signPen {
+    0%   { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  /* ───── SHARED TOOL SCREEN ───── */
+  .tool-screen-header {
+    display:flex; align-items:center; gap:12px;
+    padding:10px 20px 14px;
+    border-bottom:1px solid var(--separator);
+    flex-shrink:0;
+  }
+  .tool-back {
+    width:34px; height:34px; border-radius:50%;
+    background:var(--glass-bg); border:1px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; cursor:pointer; transition:transform 0.15s;
+    color:var(--label);
+  }
+  .tool-back:active { transform:scale(0.9); }
+  .tool-screen-title { font-size:17px; font-weight:700; color:var(--label); flex:1; }
+  .tool-content { flex:1; overflow-y:auto; padding-bottom:30px; scrollbar-width:none; }
+  .tool-content::-webkit-scrollbar { display:none; }
+  .tool-section { padding:16px 20px 0; }
+  .tool-section-label { font-size:12px; font-weight:700; color:var(--label3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+
+  /* Processing / Done shared overlay (reusable) */
+  .tool-overlay {
+    position:absolute; inset:0; z-index:60;
+    background:var(--bg);
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:14px; padding:30px;
+    opacity:0; pointer-events:none; transition:opacity 0.3s;
+  }
+  .tool-overlay.show { opacity:1; pointer-events:all; }
+  .tool-overlay-icon { font-size:52px; }
+  .tool-overlay-title { font-size:22px; font-weight:800; color:var(--label); text-align:center; }
+  .tool-overlay-sub { font-size:14px; color:var(--label3); text-align:center; line-height:1.5; }
+  .tool-progress-wrap { width:100%; background:var(--separator); border-radius:100px; height:6px; overflow:hidden; }
+  .tool-progress-fill { height:6px; border-radius:100px; background:linear-gradient(90deg,var(--blue),var(--violet)); width:0%; transition:width 0.2s; }
+  .tool-progress-pct { font-size:28px; font-weight:800; color:var(--blue); }
+  .tool-btn-row { display:flex; flex-direction:column; gap:10px; width:100%; margin-top:8px; }
+  .btn-primary {
+    display:block; width:100%; padding:16px;
+    border-radius:var(--r-lg); text-align:center;
+    font-size:17px; font-weight:700; color:#fff; cursor:pointer;
+    background:linear-gradient(135deg,var(--blue),var(--violet));
+    box-shadow:0 8px 20px rgba(0,122,255,0.35);
+    transition:transform 0.15s;
+  }
+  .btn-primary:active { transform:scale(0.97); }
+  .btn-secondary-tool {
+    display:block; width:100%; padding:14px;
+    border-radius:var(--r-lg); text-align:center;
+    font-size:15px; font-weight:600; color:var(--label); cursor:pointer;
+    background:var(--glass-bg); border:1px solid var(--glass-border);
+    transition:transform 0.15s;
+  }
+  .btn-secondary-tool:active { transform:scale(0.97); }
+  .success-check {
+    width:80px; height:80px; border-radius:50%;
+    background:linear-gradient(135deg,#34C759,#1E8C3A);
+    display:flex; align-items:center; justify-content:center;
+    font-size:36px;
+    box-shadow:0 12px 32px rgba(52,199,89,0.4);
+    animation:checkBounce 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* ───── MERGE SCREEN ───── */
+  #merge-screen { background:var(--bg); }
+  .merge-file-card {
+    display:flex; align-items:center; gap:12px;
+    padding:14px; background:var(--card);
+    border-radius:var(--r-lg); margin-bottom:10px;
+    border:0.5px solid var(--separator);
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  .merge-file-num {
+    width:28px; height:28px; border-radius:50%;
+    background:var(--blue); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0;
+  }
+  .merge-file-icon {
+    width:40px; height:48px; border-radius:8px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:2px; font-size:16px; flex-shrink:0;
+  }
+  .merge-file-label { font-size:7px; font-weight:700; text-transform:uppercase; }
+  .merge-file-name { font-size:14px; font-weight:600; color:var(--label); }
+  .merge-file-sub { font-size:12px; color:var(--label3); margin-top:2px; }
+  .merge-drag-hint { font-size:11px; color:var(--label3); margin-left:auto; }
+  .merge-add-btn {
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px; border-radius:var(--r-lg);
+    border:2px dashed var(--blue); color:var(--blue);
+    font-size:15px; font-weight:600; cursor:pointer;
+    transition:background 0.2s;
+  }
+  .merge-add-btn:active { background:rgba(0,122,255,0.05); }
+  .merge-arrow {
+    text-align:center; font-size:22px; color:var(--label3);
+    padding:4px 0 8px;
+  }
+  .merge-output {
+    display:flex; align-items:center; gap:12px;
+    padding:14px; background:rgba(0,122,255,0.06);
+    border-radius:var(--r-lg); border:1px solid rgba(0,122,255,0.2);
+    margin-bottom:14px;
+  }
+  .merge-output-icon { font-size:22px; }
+  .merge-output-name { font-size:14px; font-weight:600; color:var(--blue); }
+  .merge-output-sub { font-size:12px; color:var(--label3); }
+
+  /* ───── COMPRESS SCREEN ───── */
+  #compress-screen { background:var(--bg); }
+  .compress-doc-card {
+    margin:0 20px 16px;
+    padding:16px; background:var(--card);
+    border-radius:var(--r-lg); border:0.5px solid var(--separator);
+    display:flex; align-items:center; gap:14px;
+  }
+  .compress-thumb {
+    width:52px; height:64px; border-radius:10px;
+    background:rgba(94,92,230,0.1); flex-shrink:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:3px; font-size:20px;
+  }
+  .compress-size-row {
+    display:flex; gap:10px; margin:0 20px 16px;
+    justify-content:space-between;
+  }
+  .compress-size-card {
+    flex:1; padding:12px 14px; border-radius:var(--r-md);
+    background:var(--card); border:0.5px solid var(--separator); text-align:center;
+  }
+  .compress-size-label { font-size:11px; color:var(--label3); font-weight:600; text-transform:uppercase; letter-spacing:0.4px; }
+  .compress-size-val { font-size:20px; font-weight:800; color:var(--label); margin-top:4px; }
+  .compress-size-sub { font-size:11px; color:var(--label3); margin-top:2px; }
+  .compress-size-card.after .compress-size-val { color:var(--success); }
+  .compress-level-row {
+    display:flex; gap:8px; margin:0 20px 16px;
+  }
+  .compress-level {
+    flex:1; padding:12px 6px; border-radius:var(--r-md);
+    background:var(--card); border:1.5px solid var(--separator);
+    text-align:center; cursor:pointer; transition:all 0.2s;
+  }
+  .compress-level.active {
+    background:rgba(0,122,255,0.1);
+    border-color:var(--blue);
+  }
+  .compress-level-icon { font-size:20px; }
+  .compress-level-name { font-size:12px; font-weight:700; color:var(--label); margin-top:4px; }
+  .compress-level-desc { font-size:10px; color:var(--label3); margin-top:2px; }
+  .compress-level.active .compress-level-name { color:var(--blue); }
+
+  .compress-level-card {
+    padding:14px; background:var(--card);
+    border-radius:var(--r-lg); border:1.5px solid var(--separator);
+    cursor:pointer; transition:all 0.2s;
+  }
+  .compress-level-card.active {
+    border-color:var(--blue);
+    background:rgba(0,122,255,0.04);
+    box-shadow:0 4px 16px rgba(0,122,255,0.12);
+  }
+  .compress-level-card:active { transform:scale(0.98); }
+  .compress-quality-bar-row {
+    display:flex; gap:16px; margin-top:10px;
+    padding-top:10px; border-top:1px solid var(--separator);
+  }
+  .compress-qbar-item {
+    flex:1; display:flex; align-items:center; gap:6px;
+    font-size:11px; color:var(--label3); font-weight:500;
+  }
+  .compress-qbar {
+    flex:1; height:5px; border-radius:100px;
+    background:var(--separator); overflow:hidden;
+  }
+  .compress-qbar-fill { height:5px; border-radius:100px; transition:width 0.4s; }
+
+  /* ───── SCAN SCREEN ───── */
+  #scan-screen { background:#000; }
+  #scan-screen .tool-screen-header { background:#000; border-color:rgba(255,255,255,0.1); }
+  #scan-screen .tool-back { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.15); color:#fff; }
+  #scan-screen .tool-screen-title { color:#fff; }
+  .scan-viewfinder {
+    flex:1; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.85);
+    overflow:hidden;
+  }
+  .scan-paper-mock {
+    width:240px; height:310px;
+    background:linear-gradient(135deg,#f0f0f0,#e8e8e8);
+    border-radius:4px; position:relative; overflow:hidden;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  }
+  .scan-paper-lines { padding:20px 16px; }
+  .scan-paper-line {
+    height:8px; background:rgba(0,0,0,0.12);
+    border-radius:4px; margin-bottom:8px;
+  }
+  .scan-paper-line:nth-child(3) { width:70%; }
+  .scan-paper-line:nth-child(6) { width:80%; }
+  .scan-paper-line:nth-child(8) { width:55%; }
+  .scan-laser {
+    position:absolute; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,transparent,#007AFF,#5E5CE6,#007AFF,transparent);
+    box-shadow:0 0 12px rgba(0,122,255,0.8);
+    animation:scanLaser 2s ease-in-out infinite;
+  }
+  @keyframes scanLaser {
+    0%   { top:0%; opacity:1; }
+    50%  { top:calc(100% - 2px); opacity:1; }
+    51%  { opacity:0; }
+    52%  { top:0%; opacity:0; }
+    53%  { opacity:1; }
+    100% { top:calc(100% - 2px); opacity:1; }
+  }
+  .scan-corner {
+    position:absolute; width:22px; height:22px;
+    border-color:#007AFF; border-style:solid; border-width:0;
+  }
+  .scan-corner.tl { top:-2px; left:-2px; border-top-width:3px; border-left-width:3px; border-radius:3px 0 0 0; }
+  .scan-corner.tr { top:-2px; right:-2px; border-top-width:3px; border-right-width:3px; border-radius:0 3px 0 0; }
+  .scan-corner.bl { bottom:-2px; left:-2px; border-bottom-width:3px; border-left-width:3px; border-radius:0 0 0 3px; }
+  .scan-corner.br { bottom:-2px; right:-2px; border-bottom-width:3px; border-right-width:3px; border-radius:0 0 3px 0; }
+  .scan-hint-text {
+    position:absolute; bottom:16px; left:50%;
+    transform:translateX(-50%); color:rgba(255,255,255,0.6);
+    font-size:13px; font-weight:500; white-space:nowrap;
+  }
+  .scan-bottom-bar {
+    height:100px; background:#000;
+    display:flex; align-items:center; justify-content:center; gap:32px;
+    flex-shrink:0;
+  }
+  .scan-btn-side {
+    width:44px; height:44px; border-radius:50%;
+    background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; cursor:pointer;
+  }
+  .scan-shutter {
+    width:72px; height:72px; border-radius:50%;
+    background:#fff; cursor:pointer;
+    border:4px solid rgba(255,255,255,0.3);
+    box-shadow:0 0 0 4px rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; transition:transform 0.15s;
+  }
+  .scan-shutter:active { transform:scale(0.92); }
+
+  /* ───── TRANSLATE SCREEN ───── */
+  #translate-screen { background:var(--bg); }
+  .translate-lang-row {
+    display:flex; align-items:center; gap:10px;
+    margin:0 20px 16px;
+  }
+  .translate-lang-btn {
+    flex:1; padding:14px 12px;
+    background:var(--card); border-radius:var(--r-md);
+    border:1.5px solid var(--separator);
+    text-align:center; cursor:pointer; transition:all 0.2s;
+  }
+  .translate-lang-btn:active { transform:scale(0.97); }
+  .translate-lang-code { font-size:22px; margin-bottom:4px; }
+  .translate-lang-name { font-size:14px; font-weight:700; color:var(--label); }
+  .translate-lang-full { font-size:11px; color:var(--label3); margin-top:2px; }
+  .translate-swap-btn {
+    width:40px; height:40px; border-radius:50%;
+    background:rgba(0,122,255,0.1); border:1px solid rgba(0,122,255,0.2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; cursor:pointer; flex-shrink:0;
+    transition:transform 0.3s;
+  }
+  .translate-swap-btn:active { transform:rotate(180deg); }
+  .translate-lang-grid {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:8px; margin:0 20px 16px;
+  }
+  .translate-lang-chip {
+    padding:10px 6px; border-radius:var(--r-md);
+    background:var(--card); border:1.5px solid var(--separator);
+    text-align:center; cursor:pointer; transition:all 0.2s;
+    font-size:18px;
+  }
+  .translate-lang-chip span { display:block; font-size:10px; font-weight:600; color:var(--label3); margin-top:3px; }
+  .translate-lang-chip.active { background:rgba(0,122,255,0.1); border-color:var(--blue); }
+  .translate-lang-chip.active span { color:var(--blue); }
+  .translate-doc-preview {
+    margin:0 20px 16px; padding:14px;
+    background:var(--card); border-radius:var(--r-lg);
+    border:0.5px solid var(--separator);
+    display:flex; align-items:center; gap:12px;
+  }
+  .translate-pages-badge {
+    font-size:12px; font-weight:700; color:var(--violet);
+    background:rgba(94,92,230,0.1); padding:4px 10px; border-radius:100px;
+    margin-left:auto; white-space:nowrap;
+  }
+
+  /* ───── OCR SCREEN ───── */
+  #ocr-screen { background:var(--bg); }
+  .ocr-doc-preview {
+    margin:14px 20px; border-radius:var(--r-lg);
+    overflow:hidden; border:0.5px solid var(--separator);
+    background:var(--card); height:190px; position:relative;
+  }
+  .ocr-doc-inner { padding:14px; }
+  .ocr-line {
+    height:9px; border-radius:4px;
+    background:var(--separator); margin-bottom:9px;
+    position:relative; overflow:hidden;
+  }
+  .ocr-line::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(90deg,transparent,rgba(0,122,255,0.3),transparent);
+    transform:translateX(-100%);
+  }
+  .ocr-line.scanning::after {
+    animation:ocrScan 1.2s ease-in-out infinite;
+  }
+  @keyframes ocrScan {
+    0%   { transform:translateX(-100%); }
+    100% { transform:translateX(100%); }
+  }
+  .ocr-line:nth-child(3) { width:65%; }
+  .ocr-line:nth-child(5) { width:80%; }
+  .ocr-line:nth-child(7) { width:50%; }
+  .ocr-highlight {
+    position:absolute; left:14px; right:14px; top:18px; height:28px;
+    background:rgba(0,122,255,0.08); border-radius:4px;
+    border-left:3px solid var(--blue);
+    display:flex; align-items:center;
+    padding-left:8px; font-size:11px; font-weight:500; color:var(--blue);
+    opacity:0; transition:opacity 0.4s;
+  }
+  .ocr-highlight.show { opacity:1; }
+  .ocr-result-card {
+    margin:0 20px 12px; padding:14px;
+    background:var(--card); border-radius:var(--r-lg);
+    border:0.5px solid var(--separator);
+  }
+  .ocr-result-title { font-size:13px; font-weight:700; color:var(--label3); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+  .ocr-result-text { font-size:13px; color:var(--label); line-height:1.5; }
+  .ocr-stat-row { display:flex; gap:10px; margin:0 20px 14px; }
+  .ocr-stat {
+    flex:1; padding:12px; background:var(--card);
+    border-radius:var(--r-md); border:0.5px solid var(--separator); text-align:center;
+  }
+  .ocr-stat-val { font-size:20px; font-weight:800; color:var(--blue); }
+  .ocr-stat-label { font-size:11px; color:var(--label3); margin-top:3px; }
+</style>
+</head>
+<body>
+
+<!-- Dark Mode Toggle -->
+<div class="dark-toggle" onclick="toggleDark()" id="darkToggle">
+  🌙 Dark Mode
+</div>
+
+<!-- iPhone Frame -->
+<div class="iphone" id="iphone">
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span class="status-time" id="statusTime">9:41</span>
+    <div class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12"><rect x="0" y="3" width="3" height="9" rx="1" opacity="0.3"/><rect x="4" y="2" width="3" height="10" rx="1" opacity="0.5"/><rect x="8" y="1" width="3" height="11" rx="1" opacity="0.7"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
+      <svg width="15" height="12" viewBox="0 0 15 12"><path d="M7.5 2.5C9.8 2.5 11.8 3.5 13.2 5L14.5 3.7C12.7 1.9 10.2.8 7.5.8 4.8.8 2.3 1.9.5 3.7l1.3 1.3C3.2 3.5 5.2 2.5 7.5 2.5zM7.5 5.5C8.9 5.5 10.1 6.1 11 7L12.3 5.7C11 4.4 9.3 3.6 7.5 3.6c-1.8 0-3.5.8-4.8 2.1L4 7c.9-.9 2.1-1.5 3.5-1.5zM7.5 8.5c.7 0 1.4.3 1.9.8L7.5 11.5 5.6 9.3c.5-.5 1.2-.8 1.9-.8z"/></svg>
+      <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.35"/><rect x="23" y="3.5" width="2" height="5" rx="1" opacity="0.4"/><rect x="1.2" y="2.2" width="18" height="7.6" rx="1.5" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: ONBOARDING -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="onboarding-screen" class="screen active">
+    <div class="onb-skip" onclick="skipOnboarding()">Skip</div>
+
+    <div class="onb-illustration">
+      <div class="onb-circle onb-circle-2"></div>
+      <div class="onb-circle onb-circle-1"></div>
+      <div class="papers-wrap">
+        <div class="paper"><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div></div>
+        <div class="paper"><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div></div>
+        <div class="paper"><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div></div>
+        <div class="paper"><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div></div>
+        <div class="paper"><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div><div class="paper-line"></div></div>
+      </div>
+    </div>
+
+    <div class="onb-text">
+      <div class="onb-title" id="onbTitle">PDF without<br>friction.</div>
+      <div class="onb-sub" id="onbSub">The fastest AI PDF toolkit for iPhone and iPad.</div>
+    </div>
+
+    <div class="onb-nav">
+      <div class="onb-dots" id="onbDots">
+        <div class="onb-dot active"></div>
+        <div class="onb-dot"></div>
+        <div class="onb-dot"></div>
+        <div class="onb-dot"></div>
+      </div>
+      <div class="onb-btn" id="onbBtn" onclick="nextOnboardingPage()">
+        <span id="onbBtnText">Next</span>
+        <span id="onbBtnIcon">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: HOME -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="home-screen" class="screen">
+    <div class="home-content">
+
+      <!-- Header -->
+      <div class="home-header">
+        <div>
+          <div class="home-greeting" id="greetingText">Good morning</div>
+          <div class="home-title">FlyPDF</div>
+        </div>
+        <div class="header-actions">
+          <div class="header-btn" onclick="showScreen('home-screen')">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="12" x2="17" y2="17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="avatar">D</div>
+        </div>
+      </div>
+
+      <!-- AI Suggestions -->
+      <div class="ai-strip">
+        <div class="section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+          AI Suggestions
+        </div>
+        <div class="chips-scroll">
+          <div class="ai-chip">
+            <div class="chip-icon" style="background:rgba(0,122,255,0.12)">✨</div>
+            <div><div class="chip-text">Contract ready to review</div><div class="chip-action" style="color:#007AFF">Analyze</div></div>
+            <div class="chip-chevron">›</div>
+          </div>
+          <div class="ai-chip">
+            <div class="chip-icon" style="background:rgba(94,92,230,0.12)">⬇️</div>
+            <div><div class="chip-text">Resume needs compression</div><div class="chip-action" style="color:#5E5CE6">Compress</div></div>
+            <div class="chip-chevron">›</div>
+          </div>
+          <div class="ai-chip">
+            <div class="chip-icon" style="background:rgba(52,199,89,0.12)">🌐</div>
+            <div><div class="chip-text">Invoice in Russian detected</div><div class="chip-action" style="color:#34C759">Translate</div></div>
+            <div class="chip-chevron">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="section-title">Quick Actions</div>
+        <div class="qa-grid">
+          <div class="qa-btn" onclick="showScreen('merge-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#0055D4)">🔗</div>
+            <span class="qa-label">Merge</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('compress-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#5E5CE6,#3A37B4)">⬇</div>
+            <span class="qa-label">Compress</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('conversion-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#AF52DE,#7B2AB6)">🔄</div>
+            <span class="qa-label">Convert</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('sign-screen');initSignCanvas()">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#34C759,#1E8C3A)">✍️</div>
+            <span class="qa-label">Sign</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('scan-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)">📷</div>
+            <span class="qa-label">Scan</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('ai-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#AF52DE)">✨</div>
+            <span class="qa-label">AI Chat</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('translate-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#32ADE6,#0076A3)">🌐
+              <div class="qa-crown">👑</div>
+            </div>
+            <span class="qa-label">Translate</span>
+          </div>
+          <div class="qa-btn" onclick="showScreen('ocr-screen')">
+            <div class="qa-icon" style="background:linear-gradient(135deg,#FF6B6B,#CC3333)">🔍
+              <div class="qa-crown">👑</div>
+            </div>
+            <span class="qa-label">OCR</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Docs -->
+      <div class="recent">
+        <div class="recent-header">
+          <div class="section-title" style="margin-bottom:0">Recent</div>
+          <div class="see-all">See All</div>
+        </div>
+        <div class="doc-card" onclick="showScreen('ai-screen')">
+          <div class="doc-thumb" style="background:rgba(94,92,230,0.1)">
+            <span style="font-size:20px">📊</span>
+            <span class="doc-thumb-label" style="color:#5E5CE6">REPORT</span>
+          </div>
+          <div class="doc-info">
+            <div class="doc-name">Q4 Financial Report.pdf</div>
+            <div class="doc-meta">
+              <span class="type-badge" style="color:#5E5CE6;background:rgba(94,92,230,0.12)">Report</span>
+              <span class="doc-sep">·</span>
+              <span class="doc-pages">24p · 2.4 MB</span>
+            </div>
+            <div class="doc-date">Today, 10:32</div>
+          </div>
+          <div class="doc-more">···</div>
+        </div>
+        <div class="doc-card" onclick="showScreen('ai-screen')">
+          <div class="doc-thumb" style="background:rgba(0,122,255,0.1)">
+            <span style="font-size:20px">📋</span>
+            <span class="doc-thumb-label" style="color:#007AFF">CONTRACT</span>
+          </div>
+          <div class="doc-info">
+            <div class="doc-name">Service Agreement 2026.pdf</div>
+            <div class="doc-meta">
+              <span class="type-badge" style="color:#007AFF;background:rgba(0,122,255,0.12)">Contract</span>
+              <span class="doc-sep">·</span>
+              <span class="doc-pages">8p · 890 KB</span>
+            </div>
+            <div class="doc-date">Yesterday</div>
+          </div>
+          <div class="doc-more">⭐</div>
+        </div>
+        <div class="doc-card" onclick="highlightAction(this)">
+          <div class="doc-thumb" style="background:rgba(52,199,89,0.1)">
+            <span style="font-size:20px">💳</span>
+            <span class="doc-thumb-label" style="color:#34C759">INVOICE</span>
+          </div>
+          <div class="doc-info">
+            <div class="doc-name">Invoice #1042 — Airbnb.pdf</div>
+            <div class="doc-meta">
+              <span class="type-badge" style="color:#34C759;background:rgba(52,199,89,0.12)">Invoice</span>
+              <span class="doc-sep">·</span>
+              <span class="doc-pages">2p · 145 KB</span>
+            </div>
+            <div class="doc-date">May 24</div>
+          </div>
+          <div class="doc-more">···</div>
+        </div>
+        <div class="doc-card" onclick="showScreen('conversion-screen')">
+          <div class="doc-thumb" style="background:rgba(175,82,222,0.1)">
+            <span style="font-size:20px">📑</span>
+            <span class="doc-thumb-label" style="color:#AF52DE">PRES.</span>
+          </div>
+          <div class="doc-info">
+            <div class="doc-name">Product Roadmap 2026.pdf</div>
+            <div class="doc-meta">
+              <span class="type-badge" style="color:#AF52DE;background:rgba(175,82,222,0.12)">Presentation</span>
+              <span class="doc-sep">·</span>
+              <span class="doc-pages">16p · 5.1 MB</span>
+            </div>
+            <div class="doc-date">May 22</div>
+          </div>
+          <div class="doc-more">···</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAB -->
+    <div class="fab-container">
+      <div class="fab-secondary" id="fab1">
+        <div class="fab-label">AI Create</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#5E5CE6,#AF52DE)">✨</div>
+      </div>
+      <div class="fab-secondary" id="fab2">
+        <div class="fab-label">Import</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#007AFF,#0055D4)">📁</div>
+      </div>
+      <div class="fab-secondary" id="fab3">
+        <div class="fab-label">Scan</div>
+        <div class="fab-mini" style="background:linear-gradient(135deg,#FF9F0A,#CC7A00)">📷</div>
+      </div>
+      <div class="fab-main" id="fabMain" onclick="toggleFAB()">+</div>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <div class="tab-item active" onclick="switchTab(this,'home')">
+        <div class="tab-icon">⊞</div>
+        <div class="tab-label" style="color:#007AFF">Home</div>
+      </div>
+      <div class="tab-item" onclick="showScreen('conversion-screen');switchTab(this,'tools')">
+        <div class="tab-icon">🔧</div>
+        <div class="tab-label">Tools</div>
+      </div>
+      <div class="tab-item" onclick="switchTab(this,'vault')">
+        <div class="tab-icon">🔒</div>
+        <div class="tab-label">Vault</div>
+      </div>
+      <div class="tab-item" onclick="showScreen('paywall-screen');switchTab(this,'profile')">
+        <div class="tab-icon">👤</div>
+        <div class="tab-label">Profile</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: AI CHAT -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="ai-screen" class="screen">
+    <div class="chat-header">
+      <div class="chat-orb">✨</div>
+      <div>
+        <div class="chat-title">AI Assistant</div>
+        <div class="chat-sub">Q4 Financial Report.pdf</div>
+      </div>
+      <div class="chat-close" onclick="showScreen('home-screen')">✕</div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome-card">
+        <div class="welcome-orb-lg">✨</div>
+        <div class="welcome-title">I've analyzed your PDF</div>
+        <div class="welcome-sub">Q4 Financial Report · 24 pages · 2.4 MB · Report<br>What would you like to know?</div>
+      </div>
+    </div>
+
+    <div class="suggestions-row" id="suggestionsRow">
+      <div class="suggestion-chip" onclick="sendMsg('Summarize this')">Summarize this</div>
+      <div class="suggestion-chip" onclick="sendMsg('Key numbers')">Key numbers</div>
+      <div class="suggestion-chip" onclick="sendMsg('Any red flags?')">Any red flags?</div>
+      <div class="suggestion-chip" onclick="sendMsg('Export to Excel')">Export to Excel</div>
+    </div>
+
+    <div class="chat-input-bar">
+      <div class="mic-btn">🎤</div>
+      <input class="chat-input" id="chatInput" placeholder="Ask anything about this PDF…"
+        onkeydown="if(event.key==='Enter'&&this.value.trim()){sendMsg(this.value);this.value=''}">
+      <div class="send-btn" onclick="sendFromInput()">↑</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: CONVERSION -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="conversion-screen" class="screen">
+    <div class="conv-header">
+      <div class="back-btn" onclick="showScreen('home-screen')">‹</div>
+      <div class="conv-title">Convert PDF</div>
+    </div>
+
+    <!-- Source file card -->
+    <div style="padding:0 20px 20px">
+      <div style="background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06)">
+        <div style="width:42px;height:52px;background:rgba(255,59,48,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px">📄</div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
+          <div style="font-size:12px;color:var(--label3)">24 pages · 2.4 MB</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:0 20px 12px;font-size:20px;font-weight:700;color:var(--label)">Choose format</div>
+
+    <div class="conv-grid">
+      <div class="format-card" onclick="startConversion('Word','📝','#2B7CD3','Service_Agreement.docx')">
+        <div class="format-icon-wrap" style="background:rgba(43,124,211,0.12)">📝</div>
+        <div><div class="format-name">Word</div><div class="format-ext">.docx</div></div>
+      </div>
+      <div class="format-card" onclick="startConversion('Excel','📊','#217346','Financial_Report.xlsx')">
+        <div class="format-icon-wrap" style="background:rgba(33,115,70,0.12)">📊</div>
+        <div><div class="format-name">Excel</div><div class="format-ext">.xlsx</div></div>
+      </div>
+      <div class="format-card" onclick="startConversion('PowerPoint','📑','#D24726','Roadmap_2026.pptx')">
+        <div class="format-icon-wrap" style="background:rgba(210,71,38,0.12)">📑</div>
+        <div><div class="format-name">PowerPoint</div><div class="format-ext">.pptx</div></div>
+      </div>
+      <div class="format-card" onclick="startConversion('Images','🖼','#5E5CE6','Report_pages.zip')">
+        <div class="format-icon-wrap" style="background:rgba(94,92,230,0.12)">🖼</div>
+        <div><div class="format-name">Images</div><div class="format-ext">.jpg</div></div>
+      </div>
+      <div class="format-card" onclick="startConversion('TXT','📃','#8E8E93','Report_text.txt')">
+        <div class="format-icon-wrap" style="background:rgba(142,142,147,0.12)">📃</div>
+        <div><div class="format-name">Plain Text</div><div class="format-ext">.txt</div></div>
+      </div>
+      <div class="format-card" onclick="startConversion('EPUB','📚','#FF9F0A','Report.epub')">
+        <div class="format-icon-wrap" style="background:rgba(255,159,10,0.12)">📚</div>
+        <div><div class="format-name">EPUB</div><div class="format-ext">.epub</div></div>
+      </div>
+    </div>
+
+    <!-- Processing overlay -->
+    <div class="processing-overlay" id="processingOverlay">
+      <div class="orbit-container">
+        <div class="orbit-ring orbit-ring-1"></div>
+        <div class="orbit-ring orbit-ring-2"></div>
+        <div class="orbit-planet" id="orbitPlanet1" style="background:rgba(255,59,48,0.9);top:-22px;left:calc(50% - 22px)">📄</div>
+        <div class="orbit-planet" id="orbitPlanet2" style="background:rgba(0,122,255,0.9);bottom:-22px;left:calc(50% - 22px)">📝</div>
+        <div class="orbit-center">🔄</div>
+      </div>
+      <div class="progress-pct" id="progressPct">0%</div>
+      <div class="processing-text" id="processingText">Converting to Word…</div>
+      <div class="processing-sub">Preserving formatting · Extracting tables</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Done overlay -->
+    <div class="done-overlay" id="doneOverlay">
+      <div id="confettiContainer" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="done-check">✅</div>
+      <div class="done-title">Done! 🎉</div>
+      <div class="done-name" id="doneFileName">Q4_Financial_Report.docx</div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%">
+        <div class="btn-primary" onclick="shareFile()">📤 Share File</div>
+        <div class="btn-primary" style="background:var(--glass-bg);backdrop-filter:blur(20px);color:var(--label);box-shadow:none;border:1px solid var(--glass-border)" onclick="backToHome()">Save to Library</div>
+      </div>
+      <div class="btn-secondary" onclick="backToConversion()">Convert Another</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: PAYWALL -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="paywall-screen" class="screen">
+    <div class="paywall-close" onclick="showScreen('home-screen')">✕</div>
+
+    <div class="paywall-hero">
+      <div class="paywall-orb">✨</div>
+      <div class="paywall-title">Unlock FlyPDF Pro</div>
+      <div class="paywall-sub">AI-powered PDF tools. Unlimited.</div>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-row highlight">
+        <div class="feature-icon">✨</div>
+        <div class="feature-text bold">Unlimited AI Chat & Analysis</div>
+        <div class="feature-check">✓</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🔄</div>
+        <div class="feature-text">Unlimited PDF Conversions</div>
+        <div class="feature-check" style="color:#34C759">✓</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">✍️</div>
+        <div class="feature-text">Unlimited E-Signatures</div>
+        <div class="feature-check" style="color:#34C759">✓</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🌐</div>
+        <div class="feature-text">AI Translation (50+ languages)</div>
+        <div class="feature-check" style="color:#34C759">✓</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-text">Face ID Encrypted Vault</div>
+        <div class="feature-check" style="color:#34C759">✓</div>
+      </div>
+      <div class="feature-row">
+        <div class="feature-icon">☁️</div>
+        <div class="feature-text">iCloud Sync across all devices</div>
+        <div class="feature-check" style="color:#34C759">✓</div>
+      </div>
+    </div>
+
+    <div class="plan-picker">
+      <div class="plan-card" onclick="selectPlan(this)">
+        <div class="plan-radio"><div class="plan-radio-inner"></div></div>
+        <div><div class="plan-name">Monthly</div><div class="plan-desc">Billed monthly</div></div>
+        <div class="plan-price">$4.99/mo</div>
+      </div>
+      <div class="plan-card selected" onclick="selectPlan(this)">
+        <div class="plan-radio"><div class="plan-radio-inner"></div></div>
+        <div><div class="plan-name">Annual</div><div class="plan-desc">$2.92/month · Save 42%</div></div>
+        <div class="plan-badge">🔥 Popular</div>
+        <div class="plan-price">$34.99/yr</div>
+      </div>
+      <div class="plan-card" onclick="selectPlan(this)">
+        <div class="plan-radio"><div class="plan-radio-inner"></div></div>
+        <div><div class="plan-name">Lifetime</div><div class="plan-desc">One-time · Forever yours</div></div>
+        <div class="plan-badge" style="background:#AF52DE">💎 Best</div>
+        <div class="plan-price">$149.99</div>
+      </div>
+    </div>
+
+    <div class="paywall-cta">
+      <div class="btn-primary" onclick="purchasePro()">Start 7-Day Free Trial</div>
+    </div>
+    <div class="paywall-legal">
+      <span>Restore Purchases</span>
+      <span>Privacy Policy</span>
+      <span>Terms of Use</span>
+    </div>
+  </div>
+
+  <!-- ═══ SIGN SCREEN ═══ -->
+  <div class="screen" id="sign-screen">
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="status-time" id="signTime"></span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg>
+      </div>
+    </div>
+
+    <!-- Header -->
+    <div class="sign-header">
+      <div class="sign-back" onclick="showScreen('home-screen')">‹</div>
+      <span class="sign-title">Sign Document</span>
+      <span class="sign-done-btn" onclick="placeSignature()">Done</span>
+    </div>
+
+    <!-- Doc banner -->
+    <div class="sign-doc-banner">
+      <div class="sign-doc-icon">📄</div>
+      <div>
+        <div class="sign-doc-name">Service Agreement 2026.pdf</div>
+        <div class="sign-doc-sub">8 pages · 890 KB</div>
+      </div>
+      <div class="sign-page-badge">Page 7 of 8</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="sign-tabs">
+      <div class="sign-tab active" id="signTabDraw" onclick="switchSignTab('draw')">✍️ Draw</div>
+      <div class="sign-tab" id="signTabType" onclick="switchSignTab('type')">T Type</div>
+      <div class="sign-tab" id="signTabImg" onclick="switchSignTab('img')">🖼 Image</div>
+    </div>
+
+    <!-- Canvas -->
+    <div class="sign-canvas-wrap">
+      <canvas id="signCanvas"></canvas>
+      <div class="sign-canvas-hint" id="signHint">
+        <div class="sign-canvas-hint-icon">✍️</div>
+        <div class="sign-canvas-hint-text">Draw your signature here</div>
+      </div>
+    </div>
+
+    <!-- Tools row -->
+    <div class="sign-tools">
+      <div class="sign-clear-btn" onclick="clearSignature()">🗑 Clear</div>
+      <div class="sign-color-row">
+        <div class="sign-color active" id="sc0" style="background:#000000" onclick="setSignColor('#000000',0)"></div>
+        <div class="sign-color" id="sc1" style="background:#007AFF" onclick="setSignColor('#007AFF',1)"></div>
+        <div class="sign-color" id="sc2" style="background:#5E5CE6" onclick="setSignColor('#5E5CE6',2)"></div>
+        <div class="sign-color" id="sc3" style="background:#34C759" onclick="setSignColor('#34C759',3)"></div>
+      </div>
+    </div>
+
+    <!-- Thickness row -->
+    <div class="sign-thickness-row">
+      <span class="sign-thick-label">Size</span>
+      <div class="sign-thick-btn active" id="st0" style="width:28px;height:28px;" onclick="setSignThick(1.5,0)">
+        <div style="width:3px;height:3px;border-radius:50%;background:currentColor"></div>
+      </div>
+      <div class="sign-thick-btn" id="st1" style="width:32px;height:32px;" onclick="setSignThick(3,1)">
+        <div style="width:6px;height:6px;border-radius:50%;background:currentColor"></div>
+      </div>
+      <div class="sign-thick-btn" id="st2" style="width:36px;height:36px;" onclick="setSignThick(5,2)">
+        <div style="width:9px;height:9px;border-radius:50%;background:currentColor"></div>
+      </div>
+    </div>
+
+    <!-- Place button -->
+    <div class="sign-place-btn" onclick="placeSignature()">📥 Place Signature</div>
+
+    <!-- Success overlay -->
+    <div class="sign-success" id="signSuccess">
+      <div id="signSuccessConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="sign-success-icon">✅</div>
+      <div class="sign-success-title">Signed! 🎉</div>
+      <div class="sign-success-sub">Service Agreement 2026.pdf</div>
+      <div class="sign-success-btns">
+        <div class="btn-primary" onclick="shareSignedFile()">📤 Share Signed Document</div>
+        <div class="btn-secondary" onclick="showScreen('home-screen')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MERGE SCREEN ═══ -->
+  <div class="screen" id="merge-screen">
+    <div class="status-bar"><span class="status-time"></span><div class="status-icons"><svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg></div></div>
+    <div class="tool-screen-header">
+      <div class="tool-back" onclick="showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title">Merge PDFs</span>
+      <span style="font-size:13px;color:var(--label3)">2 files</span>
+    </div>
+    <div class="tool-content">
+      <div class="tool-section">
+        <div class="tool-section-label">Selected Documents</div>
+        <div class="merge-file-card">
+          <div class="merge-file-num">1</div>
+          <div class="merge-file-icon" style="background:rgba(94,92,230,0.1)"><span>📊</span><span class="merge-file-label" style="color:#5E5CE6">REPORT</span></div>
+          <div><div class="merge-file-name">Q4 Financial Report.pdf</div><div class="merge-file-sub">24p · 2.4 MB</div></div>
+          <div class="merge-drag-hint">⠿</div>
+        </div>
+        <div class="merge-file-card">
+          <div class="merge-file-num">2</div>
+          <div class="merge-file-icon" style="background:rgba(0,122,255,0.1)"><span>📋</span><span class="merge-file-label" style="color:#007AFF">CONTRACT</span></div>
+          <div><div class="merge-file-name">Service Agreement 2026.pdf</div><div class="merge-file-sub">8p · 890 KB</div></div>
+          <div class="merge-drag-hint">⠿</div>
+        </div>
+        <div class="merge-add-btn" onclick="this.textContent='+ Invoice #1042 — Airbnb.pdf added ✅';this.style.borderStyle='solid';setTimeout(()=>{this.textContent='+ Add Document';this.style.borderStyle='dashed';},2000)">+ Add Document</div>
+      </div>
+      <div class="tool-section">
+        <div class="merge-arrow">↓</div>
+        <div class="tool-section-label">Output File</div>
+        <div class="merge-output">
+          <div class="merge-output-icon">🗂</div>
+          <div><div class="merge-output-name">Merged_Document.pdf</div><div class="merge-output-sub">32 pages · ~3.3 MB estimated</div></div>
+        </div>
+        <div class="btn-primary" onclick="runToolProcess('merge-screen','mergeProc','mergeDone','Merging documents…','Merged_Document.pdf')">🔗 Merge Documents</div>
+      </div>
+    </div>
+    <div class="tool-overlay" id="mergeProc">
+      <div class="tool-overlay-icon">🔗</div>
+      <div class="tool-progress-pct" id="mergePct">0%</div>
+      <div class="tool-overlay-title" id="mergeProcText">Merging documents…</div>
+      <div class="tool-overlay-sub">Combining 2 PDFs into one file</div>
+      <div class="tool-progress-wrap"><div class="tool-progress-fill" id="mergeFill"></div></div>
+    </div>
+    <div class="tool-overlay" id="mergeDone">
+      <div id="mergeDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check">✅</div>
+      <div class="tool-overlay-title">Merged! 🎉</div>
+      <div class="tool-overlay-sub">Merged_Document.pdf<br>32 pages · 3.2 MB</div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-secondary-tool" onclick="closeDone('mergeDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ COMPRESS SCREEN ═══ -->
+  <div class="screen" id="compress-screen">
+    <div class="status-bar"><span class="status-time"></span><div class="status-icons"><svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg></div></div>
+    <div class="tool-screen-header">
+      <div class="tool-back" onclick="showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title">Compress PDF</span>
+    </div>
+    <div class="tool-content">
+
+      <!-- Doc card -->
+      <div class="compress-doc-card">
+        <div class="compress-thumb"><span>📊</span><span style="font-size:7px;font-weight:700;color:#5E5CE6">REPORT</span></div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
+          <div style="font-size:12px;color:var(--label3);margin-top:2px">24 pages · 2.4 MB · Contains 8 images</div>
+        </div>
+      </div>
+
+      <!-- Quality modes -->
+      <div style="padding:0 20px 10px"><div class="tool-section-label">Quality Mode</div></div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding:0 20px;margin-bottom:14px">
+
+        <!-- Crystal — recommended -->
+        <div class="compress-level-card active" id="cmpCrystal" onclick="setCompressLevel('crystal',this)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:24px">💎</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:15px;font-weight:700;color:var(--label)">Crystal</span>
+                <span style="font-size:10px;font-weight:700;color:#fff;background:var(--blue);padding:2px 8px;border-radius:100px">RECOMMENDED</span>
+              </div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">300 DPI · Images print-ready · -25%</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:var(--success)">1.8 MB</div>
+              <div style="font-size:10px;color:var(--label3)">result</div>
+            </div>
+          </div>
+          <div class="compress-quality-bar-row">
+            <div class="compress-qbar-item"><span>Text</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:100%;background:var(--success)"></div></div><span style="color:var(--success);font-weight:700">Perfect</span></div>
+            <div class="compress-qbar-item"><span>Images</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:100%;background:var(--success)"></div></div><span style="color:var(--success);font-weight:700">300 DPI</span></div>
+          </div>
+        </div>
+
+        <!-- Smart -->
+        <div class="compress-level-card" id="cmpSmart" onclick="setCompressLevel('smart',this)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:24px">⚡️</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;color:var(--label)">Smart</div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">200 DPI · Sharp for screen & print · -54%</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:var(--blue)">1.1 MB</div>
+              <div style="font-size:10px;color:var(--label3)">result</div>
+            </div>
+          </div>
+          <div class="compress-quality-bar-row">
+            <div class="compress-qbar-item"><span>Text</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:100%;background:var(--success)"></div></div><span style="color:var(--success);font-weight:700">Perfect</span></div>
+            <div class="compress-qbar-item"><span>Images</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:83%;background:var(--blue)"></div></div><span style="color:var(--blue);font-weight:700">200 DPI</span></div>
+          </div>
+        </div>
+
+        <!-- Compact -->
+        <div class="compress-level-card" id="cmpCompact" onclick="setCompressLevel('compact',this)">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="font-size:24px">📦</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:700;color:var(--label)">Compact</div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">150 DPI · For email / web sharing · -73%</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:16px;font-weight:800;color:var(--warning)">640 KB</div>
+              <div style="font-size:10px;color:var(--label3)">result</div>
+            </div>
+          </div>
+          <div class="compress-quality-bar-row">
+            <div class="compress-qbar-item"><span>Text</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:100%;background:var(--success)"></div></div><span style="color:var(--success);font-weight:700">Perfect</span></div>
+            <div class="compress-qbar-item"><span>Images</span><div class="compress-qbar"><div class="compress-qbar-fill" style="width:62%;background:var(--warning)"></div></div><span style="color:var(--warning);font-weight:700">150 DPI</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vector text guarantee -->
+      <div style="margin:0 20px 14px;padding:12px 14px;background:rgba(52,199,89,0.08);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:18px">🔒</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--success)">Text is always crystal clear</div>
+          <div style="font-size:12px;color:var(--label3);margin-top:3px;line-height:1.4">PDF text is vector-based — it stays perfectly sharp at any zoom level, regardless of compression mode.</div>
+        </div>
+      </div>
+
+      <!-- Size preview -->
+      <div class="compress-size-row">
+        <div class="compress-size-card"><div class="compress-size-label">Original</div><div class="compress-size-val">2.4 MB</div><div class="compress-size-sub">Before</div></div>
+        <div style="display:flex;align-items:center;font-size:20px;color:var(--label3)">→</div>
+        <div class="compress-size-card after"><div class="compress-size-label">Compressed</div><div class="compress-size-val" id="compressAfterSize">1.8 MB</div><div class="compress-size-sub" id="compressSavePct">-25% saved</div></div>
+      </div>
+
+      <div style="padding:0 20px">
+        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…','Q4_Financial_Report_compressed.pdf')">💎 Compress PDF</div>
+      </div>
+    </div>
+
+    <div class="tool-overlay" id="compressProc">
+      <div class="tool-overlay-icon">⚙️</div>
+      <div class="tool-progress-pct" id="compressPct">0%</div>
+      <div class="tool-overlay-title" id="compressProcTitle">Compressing…</div>
+      <div class="tool-overlay-sub" id="compressProcSub">Preserving vector text · Optimising images</div>
+      <div class="tool-progress-wrap"><div class="tool-progress-fill" id="compressFill"></div></div>
+    </div>
+
+    <div class="tool-overlay" id="compressDone">
+      <div id="compressDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check">✅</div>
+      <div class="tool-overlay-title">Compressed! 🎉</div>
+      <div class="tool-overlay-sub">2.4 MB → <strong id="compressFinalSize">1.8 MB</strong><br><span id="compressDoneQuality">Crystal quality · Text &amp; images perfect</span></div>
+      <!-- Quality assurance strip -->
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
+          <div style="font-size:16px">📝</div>
+          <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px">Text</div>
+          <div style="font-size:10px;color:var(--label3)">100% sharp</div>
+        </div>
+        <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
+          <div style="font-size:16px">🖼</div>
+          <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px" id="compressDoneDPI">300 DPI</div>
+          <div style="font-size:10px;color:var(--label3)">Images</div>
+        </div>
+        <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
+          <div style="font-size:16px">🔍</div>
+          <div style="font-size:11px;font-weight:700;color:var(--success);margin-top:3px">Readable</div>
+          <div style="font-size:10px;color:var(--label3)">Zoom-ready</div>
+        </div>
+      </div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-secondary-tool" onclick="closeDone('compressDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCAN SCREEN ═══ -->
+  <div class="screen" id="scan-screen">
+    <div class="status-bar" style="position:relative;z-index:10"><span class="status-time" style="color:#fff"></span><div class="status-icons" style="filter:invert(1)"><svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg></div></div>
+    <div class="tool-screen-header" style="background:#000;border-color:rgba(255,255,255,0.1)">
+      <div class="tool-back" style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.15);color:#fff" onclick="showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title" style="color:#fff">Scan Document</span>
+      <span style="font-size:13px;color:rgba(255,255,255,0.4)">Auto</span>
+    </div>
+    <div class="scan-viewfinder">
+      <div style="position:relative">
+        <div class="scan-paper-mock" id="scanPaperMock">
+          <div class="scan-paper-lines">
+            <div class="scan-paper-line"></div><div class="scan-paper-line"></div>
+            <div class="scan-paper-line"></div><div class="scan-paper-line"></div>
+            <div class="scan-paper-line"></div><div class="scan-paper-line"></div>
+            <div class="scan-paper-line"></div><div class="scan-paper-line"></div>
+            <div class="scan-paper-line"></div>
+          </div>
+          <div class="scan-laser" id="scanLaser"></div>
+        </div>
+        <div class="scan-corner tl"></div><div class="scan-corner tr"></div>
+        <div class="scan-corner bl"></div><div class="scan-corner br"></div>
+      </div>
+      <div class="scan-hint-text" id="scanHintText">Hold steady — align document</div>
+    </div>
+    <div class="scan-bottom-bar">
+      <div class="scan-btn-side">🖼</div>
+      <div class="scan-shutter" onclick="triggerScan()">📷</div>
+      <div class="scan-btn-side">⚡️</div>
+    </div>
+    <div class="tool-overlay" id="scanProc">
+      <div class="tool-overlay-icon">🤖</div>
+      <div class="tool-progress-pct" id="scanPct">0%</div>
+      <div class="tool-overlay-title" id="scanProcText">Scanning…</div>
+      <div class="tool-overlay-sub">AI is detecting edges and enhancing</div>
+      <div class="tool-progress-wrap"><div class="tool-progress-fill" id="scanFill"></div></div>
+    </div>
+    <div class="tool-overlay" id="scanDone">
+      <div id="scanDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check">✅</div>
+      <div class="tool-overlay-title">Scanned! 🎉</div>
+      <div class="tool-overlay-sub">AI renamed: <strong>Invoice_Airbnb_Dec2025.pdf</strong><br>1 page · 340 KB · Searchable OCR</div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-secondary-tool" onclick="closeDone('scanDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TRANSLATE SCREEN ═══ -->
+  <div class="screen" id="translate-screen">
+    <div class="status-bar"><span class="status-time"></span><div class="status-icons"><svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg></div></div>
+    <div class="tool-screen-header">
+      <div class="tool-back" onclick="showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title">Translate PDF</span>
+      <span style="font-size:12px;color:var(--label3);font-weight:600">50+ langs</span>
+    </div>
+
+    <!-- Fixed top: from→to selector -->
+    <div style="flex-shrink:0">
+      <div style="padding:10px 20px 0"><div class="tool-section-label">Translate from → to</div></div>
+      <div class="translate-lang-row">
+        <div class="translate-lang-btn">
+          <div class="translate-lang-code">🇺🇸</div>
+          <div class="translate-lang-name">English</div>
+          <div class="translate-lang-full">Source language</div>
+        </div>
+        <div class="translate-swap-btn" onclick="swapTranslateLangs()">⇄</div>
+        <div class="translate-lang-btn" id="tLangTo">
+          <div class="translate-lang-code" id="tToFlag">🇪🇸</div>
+          <div class="translate-lang-name" id="tToName">Spanish</div>
+          <div class="translate-lang-full">Target language</div>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div style="padding:8px 20px 6px">
+        <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--card);border-radius:var(--r-md);border:1px solid var(--separator)">
+          <span style="font-size:14px;color:var(--label3)">🔍</span>
+          <input id="langSearch" type="text" placeholder="Search language…"
+            style="flex:1;background:none;border:none;outline:none;font-size:14px;color:var(--label);font-family:inherit"
+            oninput="filterLangs(this.value)">
+        </div>
+      </div>
+
+      <div style="padding:0 20px 6px;display:flex;align-items:center;justify-content:space-between">
+        <div class="tool-section-label" style="margin:0">Select Language</div>
+        <span style="font-size:11px;color:var(--label3)" id="langCount">24 languages</span>
+      </div>
+    </div>
+
+    <!-- Scrollable language grid -->
+    <div style="position:relative;flex:1;overflow:hidden;min-height:0">
+      <div id="langGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 20px 10px;overflow-y:auto;height:100%;scrollbar-width:none;-webkit-overflow-scrolling:touch">
+        <!-- populated by JS -->
+      </div>
+      <!-- Fade bottom gradient -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:32px;background:linear-gradient(transparent,var(--bg));pointer-events:none"></div>
+    </div>
+
+    <!-- Fixed bottom: doc + CTA -->
+    <div style="flex-shrink:0;padding:8px 20px 14px;border-top:1px solid var(--separator)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:var(--r-md);border:0.5px solid var(--separator)">
+        <div style="width:30px;height:36px;border-radius:6px;background:rgba(94,92,230,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:12px;flex-shrink:0">📊<span style="font-size:5px;font-weight:700;color:#5E5CE6">REPORT</span></div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div><div style="font-size:11px;color:var(--label3);margin-top:1px">24 pages · English</div></div>
+        <div class="translate-pages-badge">24p</div>
+      </div>
+      <div class="btn-primary" id="translateCTA" onclick="startTranslation()">🌐 Translate to Spanish</div>
+    </div>
+
+    <div class="tool-overlay" id="translateProc">
+      <div class="tool-overlay-icon">🌐</div>
+      <div class="tool-progress-pct" id="translatePct">0%</div>
+      <div class="tool-overlay-title" id="translateProcText">Translating…</div>
+      <div class="tool-overlay-sub" id="translateProcSub">Processing page 1 of 24</div>
+      <div class="tool-progress-wrap"><div class="tool-progress-fill" id="translateFill"></div></div>
+    </div>
+    <div class="tool-overlay" id="translateDone">
+      <div id="translateDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check">✅</div>
+      <div class="tool-overlay-title">Translated! 🎉</div>
+      <div class="tool-overlay-sub" id="translateDoneFile">Q4_Report_Spanish.pdf<br>24 pages · 100% accuracy</div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Share File')">📤 Share File</div>
+        <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ OCR SCREEN ═══ -->
+  <div class="screen" id="ocr-screen">
+    <div class="status-bar"><span class="status-time"></span><div class="status-icons"><svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0.5" width="3" height="11.5" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C5.6 2.4 3.4 3.4 1.8 5L0 3.2C2.1 1.2 4.9 0 8 0s5.9 1.2 8 3.2L14.2 5C12.6 3.4 10.4 2.4 8 2.4z" opacity=".3"/><path d="M8 5.6c-1.6 0-3 .6-4.1 1.6L2 5.4C3.5 4 5.6 3.2 8 3.2s4.5.8 6 2.2L12.1 7.2C11 6.2 9.6 5.6 8 5.6z"/><path d="M8 8.8c-.8 0-1.5.3-2 .8L8 12l2-2.4c-.5-.5-1.2-.8-2-.8z"/></svg><svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".35"/><rect x="1.5" y="2.5" width="17" height="7" rx="2" fill="currentColor"/><path d="M23 4.5v3a1.5 1.5 0 000-3z"/></svg></div></div>
+    <div class="tool-screen-header">
+      <div class="tool-back" onclick="showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title">Extract Text (OCR)</span>
+    </div>
+    <div class="tool-content">
+      <div class="ocr-doc-preview" id="ocrPreview">
+        <div class="ocr-doc-inner">
+          <div class="ocr-line" id="ocrL0" style="width:90%"></div>
+          <div class="ocr-line" id="ocrL1"></div>
+          <div class="ocr-line" id="ocrL2"></div>
+          <div class="ocr-line" id="ocrL3" style="width:70%"></div>
+          <div class="ocr-line" id="ocrL4"></div>
+          <div class="ocr-line" id="ocrL5"></div>
+          <div class="ocr-line" id="ocrL6" style="width:60%"></div>
+        </div>
+        <div class="ocr-highlight" id="ocrHighlight">📌 Text detected — 1,240 words</div>
+      </div>
+      <div class="ocr-stat-row">
+        <div class="ocr-stat"><div class="ocr-stat-val" id="ocrWords">—</div><div class="ocr-stat-label">Words</div></div>
+        <div class="ocr-stat"><div class="ocr-stat-val" id="ocrPages">24</div><div class="ocr-stat-label">Pages</div></div>
+        <div class="ocr-stat"><div class="ocr-stat-val" id="ocrAccuracy">—</div><div class="ocr-stat-label">Accuracy</div></div>
+      </div>
+      <div class="ocr-result-card" id="ocrResultCard" style="display:none">
+        <div class="ocr-result-title">Extracted Text Preview</div>
+        <div class="ocr-result-text" id="ocrResultText"></div>
+      </div>
+      <div style="padding:0 20px">
+        <div class="btn-primary" onclick="runOCR()">🔍 Extract Text</div>
+      </div>
+    </div>
+    <div class="tool-overlay" id="ocrProc">
+      <div class="tool-overlay-icon">🔍</div>
+      <div class="tool-progress-pct" id="ocrPct">0%</div>
+      <div class="tool-overlay-title" id="ocrProcText">Running OCR…</div>
+      <div class="tool-overlay-sub">Recognising text in 24 pages</div>
+      <div class="tool-progress-wrap"><div class="tool-progress-fill" id="ocrFill"></div></div>
+    </div>
+    <div class="tool-overlay" id="ocrDone">
+      <div id="ocrDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+      <div class="success-check">✅</div>
+      <div class="tool-overlay-title">OCR Complete! 🎉</div>
+      <div class="tool-overlay-sub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
+      <div class="tool-btn-row">
+        <div class="btn-primary" onclick="toolShareBtn(this,'📤 Export as .txt')">📤 Export as .txt</div>
+        <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /iphone -->
+
+<script>
+// ─── State ────────────────────────────────────
+let fabOpen = false;
+let onbPage = 0;
+let isDark = false;
+let convInterval = null;
+
+const onbPages = [
+  { title:'PDF without\nfriction.', sub:'The fastest AI PDF toolkit\nfor iPhone and iPad.', colors:['#007AFF','#5E5CE6'] },
+  { title:'AI that reads\nyour PDFs.', sub:'Ask questions, get summaries,\ntranslate and analyze contracts.', colors:['#5E5CE6','#AF52DE'] },
+  { title:'Convert\nanything.', sub:'PDF to Word, Excel, PPTX.\nIn seconds. No watermarks.', colors:['#FF9F0A','#FF6B35'] },
+  { title:'Your vault.\nYour rules.', sub:'Face ID protection, iCloud sync,\nend-to-end encrypted.', colors:['#34C759','#30B0C7'] },
+];
+
+const aiResponses = {
+  'summarize this':   'This Q4 Financial Report (24 pages) shows revenue of **$4.2M** (+23% YoY). EBITDA improved to 18%. SaaS revenue is now 67% of total revenue. Net profit: $840K. ARR: $16.8M.',
+  'key numbers':      '📊 Key numbers:\n• Revenue: $4.2M (+23%)\n• Gross Margin: 72%\n• Net Profit: $840K\n• ARR: $16.8M\n• Customers: 1,240 (+34%)',
+  'any red flags?':   '⚠️ Found 2 concerns:\n1. Top 3 customers = 41% of ARR (concentration risk)\n2. Cash burn increased 18% QoQ — cash runway ~14 months.',
+  'export to excel':  '📊 Found 3 tables in this document (pages 8, 14, 19). Converting to Excel now…\n\n✅ Q4_Financial_Tables.xlsx ready — 3 sheets extracted.',
+};
+
+// ─── Clock ─────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('statusTime').textContent = h + ':' + m;
+  const hour = now.getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : hour < 21 ? 'Good evening' : 'Good night';
+  const el = document.getElementById('greetingText');
+  if(el) el.textContent = greet;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ─── Dark mode ─────────────────────────────────
+function toggleDark() {
+  isDark = !isDark;
+  document.getElementById('iphone').classList.toggle('dark', isDark);
+  const btn = document.getElementById('darkToggle');
+  btn.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// ─── Screen nav ────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(fabOpen) toggleFAB();
+  if(id === 'translate-screen') renderLangGrid();
+}
+
+// ─── Onboarding ────────────────────────────────
+function nextOnboardingPage() {
+  if(onbPage < 3) {
+    onbPage++;
+    const p = onbPages[onbPage];
+    document.getElementById('onbTitle').innerHTML = p.title.replace('\n','<br>');
+    document.getElementById('onbSub').innerHTML = p.sub.replace('\n','<br>');
+    document.getElementById('onboarding-screen').style.background =
+      `linear-gradient(135deg,${p.colors[0]},${p.colors[1]})`;
+    const dots = document.querySelectorAll('.onb-dot');
+    dots.forEach((d,i) => d.classList.toggle('active', i === onbPage));
+    if(onbPage === 3) {
+      document.getElementById('onbBtnText').textContent = 'Get Started';
+      document.getElementById('onbBtnIcon').textContent = '✨';
+    }
+  } else {
+    skipOnboarding();
+  }
+}
+function skipOnboarding() {
+  showScreen('home-screen');
+}
+
+// ─── FAB ───────────────────────────────────────
+function toggleFAB() {
+  fabOpen = !fabOpen;
+  document.getElementById('fabMain').classList.toggle('open', fabOpen);
+  ['fab1','fab2','fab3'].forEach((id,i) => {
+    const el = document.getElementById(id);
+    setTimeout(() => el.classList.toggle('visible', fabOpen), fabOpen ? i*60 : (2-i)*40);
+  });
+}
+
+function highlightAction(el) {
+  el.style.transform = 'scale(0.9)';
+  setTimeout(() => el.style.transform = '', 200);
+}
+
+function switchTab(el, name) {
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── AI Chat ───────────────────────────────────
+function sendMsg(text) {
+  const messages = document.getElementById('chatMessages');
+  const suggestions = document.getElementById('suggestionsRow');
+
+  // Hide suggestions after first message
+  suggestions.style.display = 'none';
+
+  // User bubble
+  const userBubble = document.createElement('div');
+  userBubble.style.cssText = 'display:flex;justify-content:flex-end';
+  userBubble.innerHTML = `<div class="bubble bubble-user">${text}</div>`;
+  messages.appendChild(userBubble);
+
+  // Typing indicator
+  const typing = document.createElement('div');
+  typing.innerHTML = `<div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  messages.appendChild(typing);
+  messages.scrollTop = messages.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const key = text.toLowerCase();
+    let response = 'Based on my analysis, I found relevant information. Would you like a detailed breakdown?';
+    for(const [k,v] of Object.entries(aiResponses)) {
+      if(key.includes(k)) { response = v; break; }
+    }
+    const aiBubble = document.createElement('div');
+    aiBubble.innerHTML = `
+      <div class="bubble bubble-ai">
+        <div class="bubble-ai-avatar">✨</div>
+        <div>${response.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
+      </div>`;
+    messages.appendChild(aiBubble);
+    messages.scrollTop = messages.scrollHeight;
+  }, 1200);
+}
+
+function sendFromInput() {
+  const input = document.getElementById('chatInput');
+  if(input.value.trim()) { sendMsg(input.value); input.value = ''; }
+}
+
+// ─── Conversion ────────────────────────────────
+let convTarget = '';
+function startConversion(format, emoji, color, filename) {
+  convTarget = filename;
+  const overlay = document.getElementById('processingOverlay');
+  overlay.classList.add('show');
+  document.getElementById('processingText').textContent = `Converting to ${format}…`;
+  document.getElementById('orbitPlanet2').style.background = color + 'E6';
+  document.getElementById('orbitPlanet2').textContent = emoji;
+  document.getElementById('doneFileName').textContent = filename;
+
+  let pct = 0;
+  clearInterval(convInterval);
+  convInterval = setInterval(() => {
+    pct = Math.min(100, pct + Math.random() * 8 + 2);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+    if(pct >= 100) {
+      clearInterval(convInterval);
+      setTimeout(() => {
+        overlay.classList.remove('show');
+        const done = document.getElementById('doneOverlay');
+        done.classList.add('show');
+        spawnConfetti();
+      }, 300);
+    }
+  }, 200);
+}
+
+function spawnConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#007AFF','#5E5CE6','#34C759','#FF9F0A','#AF52DE'];
+  for(let i=0; i<24; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left:${20+Math.random()*60}%;
+      top:${-10+Math.random()*20}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      transform:rotate(${Math.random()*360}deg);
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1.2+Math.random()*0.8}s;
+      width:${6+Math.random()*6}px;
+      height:${6+Math.random()*6}px;
+    `;
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 2500);
+  }
+}
+
+function shareFile() {
+  const btn = event.target;
+  btn.textContent = '✅ Copied to clipboard!';
+  btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+  setTimeout(() => {
+    btn.textContent = '📤 Share File';
+    btn.style.background = 'linear-gradient(135deg,#007AFF,#5E5CE6)';
+  }, 2000);
+}
+
+function backToHome() {
+  document.getElementById('doneOverlay').classList.remove('show');
+  document.getElementById('processingOverlay').classList.remove('show');
+  showScreen('home-screen');
+}
+
+function backToConversion() {
+  document.getElementById('doneOverlay').classList.remove('show');
+  document.getElementById('processingOverlay').classList.remove('show');
+  document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressPct').textContent = '0%';
+}
+
+// ─── Paywall ───────────────────────────────────
+function selectPlan(el) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function purchasePro() {
+  const btn = event.target;
+  btn.textContent = '✅ Welcome to FlyPDF Pro!';
+  btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+  setTimeout(() => showScreen('home-screen'), 1800);
+}
+
+// ─── Shared tool process runner ──────────────────
+function runToolProcess(screenId, procId, doneId, label, filename) {
+  const proc = document.getElementById(procId);
+  const pctEl = document.getElementById(procId.replace('Proc','') + 'Pct') ||
+                document.getElementById(procId + 'Pct');
+  const fillEl = document.getElementById(procId.replace('Proc','') + 'Fill') ||
+                 document.getElementById(procId + 'Fill');
+  // find pct/fill inside proc overlay
+  const pctInner = proc.querySelector('.tool-progress-pct');
+  const fillInner = proc.querySelector('.tool-progress-fill');
+
+  proc.classList.add('show');
+  let pct = 0;
+  const iv = setInterval(() => {
+    pct = Math.min(100, pct + Math.random() * 7 + 3);
+    if(pctInner) pctInner.textContent = Math.round(pct) + '%';
+    if(fillInner) fillInner.style.width = pct + '%';
+    // translate special sub text
+    if(procId === 'translateProc') {
+      const sub = document.getElementById('translateProcSub');
+      if(sub) sub.textContent = `Processing page ${Math.min(24,Math.ceil(pct/4.2))} of 24`;
+    }
+    if(pct >= 100) {
+      clearInterval(iv);
+      setTimeout(() => {
+        proc.classList.remove('show');
+        const done = document.getElementById(doneId);
+        done.classList.add('show');
+        // confetti
+        const cc = done.querySelector('[id$="Confetti"]');
+        if(cc) spawnConfettiIn(cc);
+      }, 300);
+    }
+  }, 180);
+}
+
+function closeDone(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+function spawnConfettiIn(container) {
+  const colors = ['#007AFF','#5E5CE6','#34C759','#FF9F0A','#AF52DE'];
+  for(let i=0;i<20;i++){
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.cssText = `left:${15+Math.random()*70}%;top:${-10+Math.random()*20}%;background:${colors[Math.floor(Math.random()*colors.length)]};transform:rotate(${Math.random()*360}deg);animation-delay:${Math.random()*0.4}s;animation-duration:${1.2+Math.random()*0.8}s;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;`;
+    container.appendChild(p);
+    setTimeout(()=>p.remove(), 2500);
+  }
+}
+
+function toolShareBtn(btn, originalText) {
+  btn.textContent = '✅ Copied to clipboard!';
+  btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+  setTimeout(()=>{
+    btn.textContent = originalText;
+    btn.style.background = '';
+  }, 2000);
+}
+
+// ─── Sign ────────────────────────────────────────
+let signCtx, signDrawing = false, signColor = '#000000', signThick = 1.5, signHasDrawn = false;
+
+function initSignCanvas() {
+  const canvas = document.getElementById('signCanvas');
+  if(!canvas) return;
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth || 353;
+  canvas.height = wrap.clientHeight || 180;
+  signCtx = canvas.getContext('2d');
+  signCtx.strokeStyle = signColor;
+  signCtx.lineWidth = signThick;
+  signCtx.lineCap = 'round';
+  signCtx.lineJoin = 'round';
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * (canvas.width/r.width),
+             y: (src.clientY - r.top)  * (canvas.height/r.height) };
+  }
+  canvas.onmousedown = canvas.ontouchstart = (e) => {
+    e.preventDefault(); signDrawing = true;
+    const p = getPos(e);
+    signCtx.beginPath(); signCtx.moveTo(p.x, p.y);
+    document.getElementById('signHint').style.opacity = '0';
+    signHasDrawn = true;
+  };
+  canvas.onmousemove = canvas.ontouchmove = (e) => {
+    e.preventDefault();
+    if(!signDrawing) return;
+    const p = getPos(e);
+    signCtx.lineTo(p.x, p.y); signCtx.stroke();
+  };
+  canvas.onmouseup = canvas.ontouchend = () => { signDrawing = false; };
+}
+
+function clearSignature() {
+  if(!signCtx) return;
+  const canvas = document.getElementById('signCanvas');
+  signCtx.clearRect(0, 0, canvas.width, canvas.height);
+  signHasDrawn = false;
+  document.getElementById('signHint').style.opacity = '1';
+}
+
+function setSignColor(color, idx) {
+  signColor = color;
+  if(signCtx) { signCtx.strokeStyle = color; }
+  document.querySelectorAll('.sign-color').forEach((el,i) => el.classList.toggle('active', i === idx));
+}
+
+function setSignThick(size, idx) {
+  signThick = size;
+  if(signCtx) signCtx.lineWidth = size;
+  document.querySelectorAll('.sign-thick-btn').forEach((el,i) => el.classList.toggle('active', i === idx));
+}
+
+function switchSignTab(tab) {
+  ['draw','type','img'].forEach(t => {
+    document.getElementById('signTab' + t.charAt(0).toUpperCase() + t.slice(1))
+            .classList.toggle('active', t === tab);
+  });
+  const canvas = document.getElementById('signCanvas');
+  const hint = document.getElementById('signHint');
+  if(tab === 'draw') {
+    canvas.style.display = 'block';
+    hint.querySelector('.sign-canvas-hint-icon').textContent = '✍️';
+    hint.querySelector('.sign-canvas-hint-text').textContent = 'Draw your signature here';
+    if(!signHasDrawn) hint.style.opacity = '1';
+  } else if(tab === 'type') {
+    canvas.style.display = 'none';
+    hint.style.opacity = '1';
+    hint.querySelector('.sign-canvas-hint-icon').textContent = 'Aa';
+    hint.querySelector('.sign-canvas-hint-text').textContent = 'Type your name to generate signature';
+  } else {
+    canvas.style.display = 'none';
+    hint.style.opacity = '1';
+    hint.querySelector('.sign-canvas-hint-icon').textContent = '🖼';
+    hint.querySelector('.sign-canvas-hint-text').textContent = 'Upload signature image';
+  }
+}
+
+function placeSignature() {
+  if(!signHasDrawn) {
+    // draw a demo signature so it's always functional
+    if(signCtx) {
+      const c = document.getElementById('signCanvas');
+      signCtx.clearRect(0,0,c.width,c.height);
+      signCtx.strokeStyle = '#000'; signCtx.lineWidth = 2;
+      signCtx.beginPath();
+      signCtx.moveTo(40,100); signCtx.bezierCurveTo(80,60,120,140,160,90);
+      signCtx.bezierCurveTo(200,50,240,120,280,80);
+      signCtx.stroke();
+      signCtx.beginPath();
+      signCtx.moveTo(40,115); signCtx.lineTo(280,115);
+      signCtx.strokeStyle = '#007AFF'; signCtx.lineWidth = 1;
+      signCtx.stroke();
+      signHasDrawn = true;
+    }
+    setTimeout(() => placeSignature(), 300);
+    return;
+  }
+  const success = document.getElementById('signSuccess');
+  success.classList.add('show');
+  const cc = document.getElementById('signSuccessConfetti');
+  if(cc) spawnConfettiIn(cc);
+}
+
+function shareSignedFile() {
+  const btn = event.target;
+  btn.textContent = '✅ Copied to clipboard!';
+  btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+  setTimeout(()=>{ btn.textContent='📤 Share Signed Document'; btn.style.background=''; }, 2000);
+}
+
+// ─── Compress level ──────────────────────────────
+const compressData = {
+  crystal: { size:'1.8 MB', save:'-25%', dpi:'300 DPI', quality:'Crystal quality · Text &amp; images perfect',    btnIcon:'💎' },
+  smart:   { size:'1.1 MB', save:'-54%', dpi:'200 DPI', quality:'Smart quality · Text perfect · Images sharp',    btnIcon:'⚡️' },
+  compact: { size:'640 KB', save:'-73%', dpi:'150 DPI', quality:'Compact · Text perfect · Images readable',       btnIcon:'📦' },
+};
+function setCompressLevel(level, el) {
+  document.querySelectorAll('.compress-level-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const d = compressData[level];
+  document.getElementById('compressAfterSize').textContent = d.size;
+  document.getElementById('compressSavePct').textContent = d.save + ' saved';
+  document.getElementById('compressFinalSize').textContent = d.size;
+  document.getElementById('compressDoneQuality').innerHTML = d.quality;
+  document.getElementById('compressDoneDPI').textContent = d.dpi;
+  // Update CTA button icon
+  const btn = document.querySelector('#compress-screen .btn-primary');
+  if(btn && !btn.id) btn.textContent = d.btnIcon + ' Compress PDF';
+}
+
+// ─── Scan ────────────────────────────────────────
+function triggerScan() {
+  document.getElementById('scanHintText').textContent = '✅ Document captured!';
+  runToolProcess('scan-screen','scanProc','scanDone','Processing scan…','Invoice_Airbnb_Dec2025.pdf');
+  // update proc texts
+  const t = document.querySelector('#scanProc .tool-overlay-title');
+  setTimeout(()=>{ if(t) t.textContent = 'AI enhancing…'; }, 1200);
+  setTimeout(()=>{ if(t) t.textContent = 'AI renaming document…'; }, 2400);
+}
+
+// ─── Translate ───────────────────────────────────
+const translateLangs = [
+  { code:'es', flag:'🇪🇸', name:'Spanish'     },
+  { code:'fr', flag:'🇫🇷', name:'French'      },
+  { code:'de', flag:'🇩🇪', name:'German'      },
+  { code:'zh', flag:'🇨🇳', name:'Chinese'     },
+  { code:'ja', flag:'🇯🇵', name:'Japanese'    },
+  { code:'pt', flag:'🇧🇷', name:'Portuguese'  },
+  { code:'uk', flag:'🇺🇦', name:'Ukrainian'   },
+  { code:'ar', flag:'🇸🇦', name:'Arabic'      },
+  { code:'it', flag:'🇮🇹', name:'Italian'     },
+  { code:'ko', flag:'🇰🇷', name:'Korean'      },
+  { code:'ru', flag:'🇷🇺', name:'Russian'     },
+  { code:'hi', flag:'🇮🇳', name:'Hindi'       },
+  { code:'nl', flag:'🇳🇱', name:'Dutch'       },
+  { code:'tr', flag:'🇹🇷', name:'Turkish'     },
+  { code:'pl', flag:'🇵🇱', name:'Polish'      },
+  { code:'sv', flag:'🇸🇪', name:'Swedish'     },
+  { code:'zt', flag:'🇹🇼', name:'Trad. Chinese'},
+  { code:'vi', flag:'🇻🇳', name:'Vietnamese'  },
+  { code:'th', flag:'🇹🇭', name:'Thai'        },
+  { code:'el', flag:'🇬🇷', name:'Greek'       },
+  { code:'he', flag:'🇮🇱', name:'Hebrew'      },
+  { code:'id', flag:'🇮🇩', name:'Indonesian'  },
+  { code:'cs', flag:'🇨🇿', name:'Czech'       },
+  { code:'ro', flag:'🇷🇴', name:'Romanian'    },
+];
+let currentTargetLang = 'es';
+
+function renderLangGrid(filter) {
+  const grid = document.getElementById('langGrid');
+  if(!grid) return;
+  const q = (filter||'').toLowerCase();
+  const visible = q
+    ? translateLangs.filter(l => l.name.toLowerCase().includes(q) || l.code.includes(q))
+    : translateLangs;
+  const count = document.getElementById('langCount');
+  if(count) count.textContent = visible.length + ' language' + (visible.length!==1?'s':'');
+  grid.innerHTML = visible.map(l => `
+    <div onclick="selectTranslateLang('${l.code}',this)"
+      style="display:flex;flex-direction:column;align-items:center;padding:10px 4px;border-radius:var(--r-md);border:1.5px solid ${l.code===currentTargetLang?'var(--blue)':'var(--separator)'};background:${l.code===currentTargetLang?'rgba(0,122,255,0.06)':'var(--card)'};cursor:pointer;transition:all 0.15s;gap:4px">
+      <span style="font-size:22px;line-height:1">${l.flag}</span>
+      <span style="font-size:10px;font-weight:600;color:var(--label);text-align:center;line-height:1.2">${l.name}</span>
+    </div>`).join('');
+}
+
+function filterLangs(q) { renderLangGrid(q); }
+
+function selectTranslateLang(code, el) {
+  currentTargetLang = code;
+  renderLangGrid(document.getElementById('langSearch')?.value || '');
+  const l = translateLangs.find(x=>x.code===code);
+  if(!l) return;
+  document.getElementById('tToFlag').textContent = l.flag;
+  document.getElementById('tToName').textContent = l.name;
+  document.getElementById('translateCTA').textContent = '🌐 Translate to ' + l.name;
+  document.getElementById('translateDoneFile').innerHTML =
+    `Q4_Report_${l.name}.pdf<br>24 pages · 100% accuracy`;
+}
+
+function swapTranslateLangs() {
+  const swapBtn = document.querySelector('.translate-swap-btn');
+  swapBtn.style.transform = 'rotate(180deg)';
+  setTimeout(()=>swapBtn.style.transform = '', 300);
+}
+
+function startTranslation() {
+  runToolProcess('translate-screen','translateProc','translateDone','Translating…','Q4_Report.pdf');
+}
+
+// ─── OCR ─────────────────────────────────────────
+function runOCR() {
+  // Animate scan lines
+  document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
+  setTimeout(()=>{
+    document.getElementById('ocrHighlight').classList.add('show');
+  }, 600);
+  runToolProcess('ocr-screen','ocrProc','ocrDone','Running OCR…','Q4_Financial_Report_OCR.pdf');
+  // After done overlay shows, populate stats
+  setTimeout(()=>{
+    document.getElementById('ocrWords').textContent = '1,240';
+    document.getElementById('ocrAccuracy').textContent = '99%';
+    document.getElementById('ocrResultCard').style.display = 'block';
+    document.getElementById('ocrResultText').textContent =
+      'Q4 2025 Financial Report\n\nTotal Revenue: $4,200,000\nGross Margin: 72%\nNet Profit: $840,000\nARR: $16.8M…';
+    document.querySelectorAll('[id^="ocrL"]').forEach(l=>l.classList.remove('scanning'));
+  }, 4500);
+}
+</script>
+</body>
+</html>
