@@ -2465,9 +2465,9 @@ async function handlePDFUpload(input) {
   try {
     // Extract text using PDF.js
     const rawBuffer = await file.arrayBuffer();
-    const pdfBytes = new Uint8Array(rawBuffer);
+    const pdfBytes = new Uint8Array(new Uint8Array(rawBuffer));
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf = await pdfjsLib.getDocument({data: pdfBytes.slice()}).promise;
+    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfBytes)}).promise;
     let text = '';
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
