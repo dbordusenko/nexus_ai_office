@@ -1673,7 +1673,8 @@
         <div id="docViewerMeta" style="font-size:12px;color:var(--secondary-label)">0 pages · 0 KB</div>
       </div>
       <div style="display:flex;gap:8px">
-        <div onclick="shareDoc()" style="width:34px;height:34px;border-radius:50%;background:rgba(0,122,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+        <div onclick="downloadFile(document.getElementById('docViewerName').textContent,this)" style="width:34px;height:34px;border-radius:50%;background:rgba(0,122,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer" title="Save"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div onclick="shareDoc()" style="width:34px;height:34px;border-radius:50%;background:rgba(0,122,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer" title="Share"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
         <div onclick="showScreen('home-screen')" style="width:34px;height:34px;border-radius:50%;background:rgba(0,122,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
       </div>
     </div>
@@ -1802,8 +1803,8 @@
       <div class="done-title">Done!</div>
       <div class="done-name" id="doneFileName">Q4_Financial_Report.docx</div>
       <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-        <div class="btn-primary" onclick="shareFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
-        <div class="btn-primary" style="background:var(--glass-bg);backdrop-filter:blur(20px);color:var(--label);box-shadow:none;border:1px solid var(--glass-border)" onclick="backToHome()">Save to Library</div>
+        <div class="btn-primary" onclick="downloadFile(convTarget,this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" style="background:var(--glass-bg);backdrop-filter:blur(20px);color:var(--label);box-shadow:none;border:1px solid var(--glass-border)" onclick="shareFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
       </div>
       <div class="btn-secondary" onclick="backToConversion()">Convert Another</div>
     </div>
@@ -1964,8 +1965,9 @@
       <div class="sign-success-title">Signed!</div>
       <div class="sign-success-sub">Service Agreement 2026.pdf</div>
       <div class="sign-success-btns">
-        <div class="btn-primary" onclick="shareSignedFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share Signed Document</div>
-        <div class="btn-secondary" onclick="showScreen('home-screen')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);">Back to Home</div>
+        <div class="btn-primary" onclick="downloadFile('Service_Agreement_2026_signed.pdf',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Signed Document</div>
+        <div class="btn-secondary" onclick="shareSignedFile()" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-secondary" onclick="showScreen('home-screen');document.getElementById('signSuccess').classList.remove('show')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;">Back to Home</div>
       </div>
     </div>
   </div>
@@ -2018,7 +2020,8 @@
       <div class="tool-overlay-title">Merged!</div>
       <div class="tool-overlay-sub">Merged_Document.pdf<br>32 pages · 3.2 MB</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" onclick="downloadFile('Merged_Document.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('mergeDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2160,7 +2163,8 @@
         </div>
       </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="showShareSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" onclick="downloadCompressedPDF()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Compressed PDF</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('compressDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2189,7 +2193,7 @@
         </div>
       </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="showShareSheet()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save All</div>
+        <div class="btn-primary" onclick="downloadFile('Q4_Financial_Report_extracted.zip',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save All</div>
         <div class="btn-secondary-tool" onclick="closeDone('extractDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2238,7 +2242,8 @@
       <div class="tool-overlay-title">Scanned!</div>
       <div class="tool-overlay-sub">AI renamed: <strong>Invoice_Airbnb_Dec2025.pdf</strong><br>1 page · 340 KB · Searchable OCR</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" onclick="downloadFile('Invoice_Airbnb_Dec2025.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('scanDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2318,7 +2323,8 @@
       <div class="tool-overlay-title">Translated!</div>
       <div class="tool-overlay-sub" id="translateDoneFile">Q4_Report_Spanish.pdf<br>24 pages · 100% accuracy</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" onclick="downloadFile('Q4_Report_Translated.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2370,7 +2376,8 @@
       <div class="tool-overlay-title">OCR Complete!</div>
       <div class="tool-overlay-sub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="toolShareBtn(this,'export')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Export as .txt</div>
+        <div class="btn-primary" onclick="downloadFile('Q4_Financial_Report_OCR.txt',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2614,11 +2621,43 @@ async function openDocViewer(name, pages, size, pdfData) {
 
 function shareDoc() {
   const name = document.getElementById('docViewerName').textContent;
-  const toast = document.createElement('div');
-  toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
-  toast.textContent = 'Share sheet for ' + name;
-  (document.querySelector('.iphone') || document.body).appendChild(toast);
-  setTimeout(() => toast.remove(), 2000);
+  if (navigator.share) {
+    navigator.share({title: name, text: 'Shared from FlyPDF'}).catch(()=>{});
+  } else {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:60px;left:50%;transform:translateX(-50%);background:#34C759;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+    toast.textContent = 'Link copied to clipboard!';
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+  }
+}
+
+function downloadFile(filename, btn) {
+  if (lastPdfData) {
+    const blob = new Blob([new Uint8Array(lastPdfData)], {type: 'application/pdf'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    const blob = new Blob(['[FlyPDF] Simulated file: ' + filename], {type: 'application/octet-stream'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = svgIcons.check + ' Saved!';
+    btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+  }
+}
+
+function downloadCompressedPDF() {
+  const btn = event.target.closest('.btn-primary');
+  const size = document.getElementById('compressFinalSize').textContent;
+  downloadFile('Q4_Financial_Report_compressed.pdf', btn);
 }
 
 // ─── AI Chat ───────────────────────────────────
