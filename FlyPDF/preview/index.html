@@ -3522,47 +3522,77 @@ function setCompressLevel(level, el) {
 async function compressPDF() {
   if (!lastPdfData) { showNoPdfToast(); return; }
   lastProcessedBlob = null;
-  const scaleMap = {crystal: 2.5, smart: 1.67, compact: 1.25};
-  const qualityMap = {crystal: 0.92, smart: 0.75, compact: 0.55};
-  const scale = scaleMap[selectedCompressLevel] || 2.5;
-  const quality = qualityMap[selectedCompressLevel] || 0.92;
+  const scaleMap = {crystal: 1.0, smart: 0.75, compact: 0.5};
+  const qualityMap = {crystal: 0.7, smart: 0.5, compact: 0.35};
+  const scale = scaleMap[selectedCompressLevel] || 1.0;
+  const quality = qualityMap[selectedCompressLevel] || 0.7;
 
-  // Show original size
   const origSize = lastPdfData.length;
   document.querySelector('#compress-screen .compress-size-card .compress-size-val').textContent = formatFileSize(origSize);
 
   runRealToolProcess('compress-screen', 'compressProc', 'compressDone', async (updateProgress) => {
-    updateProgress(0, 'Compressing…', 'Rendering pages at optimised quality');
+    updateProgress(0, 'Compressing…', 'Optimising PDF');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+
+    // Step 1: try re-saving with pdf-lib (strips unused objects, re-compresses)
+    updateProgress(5, 'Compressing…', 'Removing unused data');
+    let repackBytes;
+    try {
+      const repack = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+      repackBytes = await repack.save();
+    } catch(e) { repackBytes = null; }
+
+    // If re-save already reduced size enough (>15%), use that for crystal quality
+    if (repackBytes && repackBytes.length < origSize * 0.85 && selectedCompressLevel === 'crystal') {
+      lastProcessedBlob = new Blob([repackBytes], {type: 'application/pdf'});
+      const compSize = repackBytes.length;
+      const savedPct = Math.round((1 - compSize / origSize) * 100);
+      document.getElementById('compressAfterSize').textContent = formatFileSize(compSize);
+      document.getElementById('compressSavePct').textContent = '-' + savedPct + '% saved';
+      document.getElementById('compressFinalSize').textContent = formatFileSize(compSize);
+      document.getElementById('compressDoneQuality').innerHTML = 'Compressed from ' + formatFileSize(origSize) + ' to ' + formatFileSize(compSize);
+      return;
+    }
+
+    // Step 2: rasterize pages at reduced quality
+    updateProgress(10, 'Compressing…', 'Rendering pages at reduced quality');
+    const sourceData = repackBytes && repackBytes.length < origSize ? repackBytes : new Uint8Array(lastPdfData);
+    const pdf = await pdfjsLib.getDocument({data: sourceData}).promise;
     const newPdf = await PDFLib.PDFDocument.create();
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const viewport = page.getViewport({scale});
+      const origViewport = page.getViewport({scale: 1.0});
+      const renderViewport = page.getViewport({scale});
       const canvas = document.createElement('canvas');
-      canvas.width = viewport.width; canvas.height = viewport.height;
+      canvas.width = renderViewport.width; canvas.height = renderViewport.height;
       const ctx = canvas.getContext('2d');
-      await page.render({canvasContext: ctx, viewport}).promise;
+      await page.render({canvasContext: ctx, viewport: renderViewport}).promise;
       const jpegDataUrl = canvas.toDataURL('image/jpeg', quality);
       const jpegBase64 = jpegDataUrl.split(',')[1];
       const jpegBytes = Uint8Array.from(atob(jpegBase64), c => c.charCodeAt(0));
       const img = await newPdf.embedJpg(jpegBytes);
-      const p = newPdf.addPage([img.width, img.height]);
-      p.drawImage(img, {x: 0, y: 0, width: img.width, height: img.height});
-      updateProgress(Math.round(i / pdf.numPages * 95), null, 'Page ' + i + ' of ' + pdf.numPages);
+      const p = newPdf.addPage([origViewport.width, origViewport.height]);
+      p.drawImage(img, {x: 0, y: 0, width: origViewport.width, height: origViewport.height});
+      updateProgress(10 + Math.round(i / pdf.numPages * 85), null, 'Page ' + i + ' of ' + pdf.numPages);
     }
 
     const pdfBytes = await newPdf.save();
-    lastProcessedBlob = new Blob([pdfBytes], {type: 'application/pdf'});
-    const compSize = pdfBytes.length;
-    const savedPct = Math.round((1 - compSize / origSize) * 100);
+
+    // Use the smallest result between rasterized and re-packed
+    let finalBytes = pdfBytes;
+    if (repackBytes && repackBytes.length < pdfBytes.length) finalBytes = repackBytes;
+    if (finalBytes.length >= origSize) finalBytes = pdfBytes.length < origSize ? pdfBytes : (repackBytes && repackBytes.length < origSize ? repackBytes : pdfBytes);
+
+    lastProcessedBlob = new Blob([finalBytes], {type: 'application/pdf'});
+    const compSize = finalBytes.length;
+    const savedPct = Math.max(0, Math.round((1 - compSize / origSize) * 100));
     document.getElementById('compressAfterSize').textContent = formatFileSize(compSize);
-    document.getElementById('compressSavePct').textContent = '-' + savedPct + '% saved';
+    document.getElementById('compressSavePct').textContent = savedPct > 0 ? '-' + savedPct + '% saved' : 'Optimised';
     document.getElementById('compressFinalSize').textContent = formatFileSize(compSize);
     document.getElementById('compressDoneQuality').innerHTML =
-      origSize > compSize ? 'Compressed from ' + formatFileSize(origSize) + ' to ' + formatFileSize(compSize)
-                          : 'File is already optimised';
+      compSize < origSize ? 'Compressed from ' + formatFileSize(origSize) + ' to ' + formatFileSize(compSize)
+                          : 'File is already well optimised (' + formatFileSize(compSize) + ')';
   });
 }
 
