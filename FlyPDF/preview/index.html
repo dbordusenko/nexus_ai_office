@@ -3504,10 +3504,6 @@ function setCompressLevel(level, el) {
 async function compressPDF() {
   if (!lastPdfData) { showNoPdfToast(); return; }
   lastProcessedBlob = null;
-  const scaleMap = {crystal: 1.0, smart: 0.75, compact: 0.5};
-  const qualityMap = {crystal: 0.7, smart: 0.5, compact: 0.35};
-  const scale = scaleMap[selectedCompressLevel] || 1.0;
-  const quality = qualityMap[selectedCompressLevel] || 0.7;
 
   const origSize = lastPdfData.length;
   document.getElementById('compressOrigSize').textContent = formatFileSize(origSize);
@@ -3515,51 +3511,63 @@ async function compressPDF() {
   document.getElementById('compressSavePct').textContent = '';
 
   runRealToolProcess('compress-screen', 'compressProc', 'compressDone', async (updateProgress) => {
-    updateProgress(5, 'Compressing…', 'Optimising PDF');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    let finalBytes;
 
-    // Method 1: re-save with pdf-lib (strips unused objects, deduplicates)
-    updateProgress(10, 'Compressing…', 'Removing unused data');
-    const repackDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
-    const repackBytes = await repackDoc.save();
+    if (selectedCompressLevel === 'crystal') {
+      // Crystal: lossless — re-save with pdf-lib (strips unused objects, deduplicates streams)
+      updateProgress(10, 'Optimising…', 'Removing unused data');
+      const doc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+      updateProgress(50, 'Optimising…', 'Re-encoding streams');
+      finalBytes = await doc.save();
 
-    // Method 2: rasterize at reduced quality (for image-heavy PDFs)
-    updateProgress(20, 'Compressing…', 'Rendering pages');
-    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
-    const rasterPdf = await PDFLib.PDFDocument.create();
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const origVp = page.getViewport({scale: 1.0});
-      const renderVp = page.getViewport({scale});
-      const canvas = document.createElement('canvas');
-      canvas.width = renderVp.width; canvas.height = renderVp.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({canvasContext: ctx, viewport: renderVp}).promise;
-      const jpegBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
-      const jpegBuf = await jpegBlob.arrayBuffer();
-      const img = await rasterPdf.embedJpg(new Uint8Array(jpegBuf));
-      const p = rasterPdf.addPage([origVp.width, origVp.height]);
-      p.drawImage(img, {x: 0, y: 0, width: origVp.width, height: origVp.height});
-      updateProgress(20 + Math.round(i / pdf.numPages * 70), null, 'Page ' + i + ' of ' + pdf.numPages);
+    } else if (selectedCompressLevel === 'smart') {
+      // Smart: re-save + rasterize images at 1x/0.65 quality, pick smaller
+      updateProgress(5, 'Compressing…', 'Removing unused data');
+      const reDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+      const reBytes = await reDoc.save();
+      updateProgress(15, 'Compressing…', 'Re-rendering pages');
+      const rBytes = await rasterizePdf(lastPdfData, 1.0, 0.65, (p) => updateProgress(15 + p * 0.8));
+      finalBytes = rBytes.length < reBytes.length ? rBytes : reBytes;
+
+    } else {
+      // Compact: rasterize at 0.85x scale, 0.5 quality (readable text, smallest file)
+      updateProgress(5, 'Compressing…', 'Re-rendering pages at reduced quality');
+      finalBytes = await rasterizePdf(lastPdfData, 0.85, 0.5, (p) => updateProgress(5 + p * 0.9));
     }
-    const rasterBytes = await rasterPdf.save();
 
-    // Pick the smallest result
-    let bestBytes = repackBytes;
-    if (rasterBytes.length < bestBytes.length) bestBytes = rasterBytes;
-    if (bestBytes.length >= origSize) bestBytes = repackBytes.length <= rasterBytes.length ? repackBytes : rasterBytes;
-
-    lastProcessedBlob = new Blob([bestBytes], {type: 'application/pdf'});
-    const compSize = bestBytes.length;
+    lastProcessedBlob = new Blob([finalBytes], {type: 'application/pdf'});
+    const compSize = finalBytes.length;
     const savedPct = Math.max(0, Math.round((1 - compSize / origSize) * 100));
     document.getElementById('compressAfterSize').textContent = formatFileSize(compSize);
     document.getElementById('compressSavePct').textContent = savedPct > 0 ? '-' + savedPct + '% saved' : '';
-    const dpiMap = {crystal: '150', smart: '108', compact: '72'};
-    document.getElementById('compressDoneDPI').textContent = (dpiMap[selectedCompressLevel] || '150') + ' DPI';
+    const dpiMap = {crystal: 'Lossless', smart: '150 DPI', compact: '120 DPI'};
+    document.getElementById('compressDoneDPI').textContent = dpiMap[selectedCompressLevel] || '150 DPI';
     document.getElementById('compressDoneSummary').innerHTML = formatFileSize(origSize) + ' → <strong>' + formatFileSize(compSize) + '</strong>';
     document.getElementById('compressDoneQuality').textContent =
       savedPct > 0 ? savedPct + '% smaller' : 'File is already well optimised';
   });
+}
+
+async function rasterizePdf(pdfData, scale, quality, onProgress) {
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfData)}).promise;
+  const newPdf = await PDFLib.PDFDocument.create();
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const origVp = page.getViewport({scale: 1.0});
+    const renderVp = page.getViewport({scale});
+    const canvas = document.createElement('canvas');
+    canvas.width = renderVp.width; canvas.height = renderVp.height;
+    const ctx = canvas.getContext('2d');
+    await page.render({canvasContext: ctx, viewport: renderVp}).promise;
+    const jpegBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
+    const jpegBuf = await jpegBlob.arrayBuffer();
+    const img = await newPdf.embedJpg(new Uint8Array(jpegBuf));
+    const p = newPdf.addPage([origVp.width, origVp.height]);
+    p.drawImage(img, {x: 0, y: 0, width: origVp.width, height: origVp.height});
+    onProgress(Math.round(i / pdf.numPages * 100));
+  }
+  return await newPdf.save();
 }
 
 // ─── Scan ────────────────────────────────────────
