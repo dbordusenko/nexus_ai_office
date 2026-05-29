@@ -2116,11 +2116,7 @@
                 <span style="font-size:15px;font-weight:700;color:var(--label)">Crystal</span>
                 <span style="font-size:10px;font-weight:700;color:#fff;background:var(--blue);padding:2px 8px;border-radius:100px">RECOMMENDED</span>
               </div>
-              <div style="font-size:12px;color:var(--label3);margin-top:2px">300 DPI · Images print-ready · -25%</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:16px;font-weight:800;color:var(--success)">1.8 MB</div>
-              <div style="font-size:10px;color:var(--label3)">result</div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">Best quality · Print-ready images</div>
             </div>
           </div>
           <div class="compress-quality-bar-row">
@@ -2135,11 +2131,7 @@
             <div style="font-size:24px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <div style="flex:1">
               <div style="font-size:15px;font-weight:700;color:var(--label)">Smart</div>
-              <div style="font-size:12px;color:var(--label3);margin-top:2px">200 DPI · Sharp for screen & print · -54%</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:16px;font-weight:800;color:var(--blue)">1.1 MB</div>
-              <div style="font-size:10px;color:var(--label3)">result</div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">Balanced · Sharp for screen &amp; print</div>
             </div>
           </div>
           <div class="compress-quality-bar-row">
@@ -2154,11 +2146,7 @@
             <div style="font-size:24px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
             <div style="flex:1">
               <div style="font-size:15px;font-weight:700;color:var(--label)">Compact</div>
-              <div style="font-size:12px;color:var(--label3);margin-top:2px">150 DPI · For email / web sharing · -73%</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:16px;font-weight:800;color:var(--warning)">640 KB</div>
-              <div style="font-size:10px;color:var(--label3)">result</div>
+              <div style="font-size:12px;color:var(--label3);margin-top:2px">Smallest file · For email &amp; web</div>
             </div>
           </div>
           <div class="compress-quality-bar-row">
@@ -2179,9 +2167,9 @@
 
       <!-- Size preview -->
       <div class="compress-size-row">
-        <div class="compress-size-card"><div class="compress-size-label">Original</div><div class="compress-size-val">2.4 MB</div><div class="compress-size-sub">Before</div></div>
+        <div class="compress-size-card"><div class="compress-size-label">Original</div><div class="compress-size-val" id="compressOrigSize">—</div><div class="compress-size-sub">Before</div></div>
         <div style="display:flex;align-items:center;font-size:20px;color:var(--label3)">→</div>
-        <div class="compress-size-card after"><div class="compress-size-label">Compressed</div><div class="compress-size-val" id="compressAfterSize">1.8 MB</div><div class="compress-size-sub" id="compressSavePct">-25% saved</div></div>
+        <div class="compress-size-card after"><div class="compress-size-label">Compressed</div><div class="compress-size-val" id="compressAfterSize">—</div><div class="compress-size-sub" id="compressSavePct"></div></div>
       </div>
 
       <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
@@ -2202,7 +2190,7 @@
       <div id="compressDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">Compressed!</div>
-      <div class="tool-overlay-sub">2.4 MB → <strong id="compressFinalSize">1.8 MB</strong><br><span id="compressDoneQuality">Crystal quality · Text &amp; images perfect</span></div>
+      <div class="tool-overlay-sub"><span id="compressDoneSummary"></span><br><span id="compressDoneQuality"></span></div>
       <div style="display:flex;gap:8px;margin-top:4px">
         <div style="flex:1;padding:10px;background:rgba(52,199,89,0.1);border-radius:var(--r-md);border:1px solid rgba(52,199,89,0.2);text-align:center">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -3509,12 +3497,6 @@ function setCompressLevel(level, el) {
   document.querySelectorAll('.compress-level-card').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   const d = compressData[level];
-  document.getElementById('compressAfterSize').textContent = d.size;
-  document.getElementById('compressSavePct').textContent = d.save + ' saved';
-  document.getElementById('compressFinalSize').textContent = d.size;
-  document.getElementById('compressDoneQuality').innerHTML = d.quality;
-  document.getElementById('compressDoneDPI').textContent = d.dpi;
-  // Update CTA button icon
   const btn = document.querySelector('#compress-screen .btn-primary');
   if(btn && !btn.id) btn.innerHTML = d.btnLabel;
 }
@@ -3528,14 +3510,23 @@ async function compressPDF() {
   const quality = qualityMap[selectedCompressLevel] || 0.7;
 
   const origSize = lastPdfData.length;
-  document.querySelector('#compress-screen .compress-size-card .compress-size-val').textContent = formatFileSize(origSize);
+  document.getElementById('compressOrigSize').textContent = formatFileSize(origSize);
+  document.getElementById('compressAfterSize').textContent = '…';
+  document.getElementById('compressSavePct').textContent = '';
 
   runRealToolProcess('compress-screen', 'compressProc', 'compressDone', async (updateProgress) => {
-    updateProgress(5, 'Compressing…', 'Rendering pages at reduced quality');
+    updateProgress(5, 'Compressing…', 'Optimising PDF');
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
-    const newPdf = await PDFLib.PDFDocument.create();
 
+    // Method 1: re-save with pdf-lib (strips unused objects, deduplicates)
+    updateProgress(10, 'Compressing…', 'Removing unused data');
+    const repackDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+    const repackBytes = await repackDoc.save();
+
+    // Method 2: rasterize at reduced quality (for image-heavy PDFs)
+    updateProgress(20, 'Compressing…', 'Rendering pages');
+    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+    const rasterPdf = await PDFLib.PDFDocument.create();
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const origVp = page.getViewport({scale: 1.0});
@@ -3546,23 +3537,28 @@ async function compressPDF() {
       await page.render({canvasContext: ctx, viewport: renderVp}).promise;
       const jpegBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', quality));
       const jpegBuf = await jpegBlob.arrayBuffer();
-      const jpegBytes = new Uint8Array(jpegBuf);
-      const img = await newPdf.embedJpg(jpegBytes);
-      const p = newPdf.addPage([origVp.width, origVp.height]);
+      const img = await rasterPdf.embedJpg(new Uint8Array(jpegBuf));
+      const p = rasterPdf.addPage([origVp.width, origVp.height]);
       p.drawImage(img, {x: 0, y: 0, width: origVp.width, height: origVp.height});
-      updateProgress(5 + Math.round(i / pdf.numPages * 90), null, 'Page ' + i + ' of ' + pdf.numPages);
+      updateProgress(20 + Math.round(i / pdf.numPages * 70), null, 'Page ' + i + ' of ' + pdf.numPages);
     }
+    const rasterBytes = await rasterPdf.save();
 
-    const pdfBytes = await newPdf.save();
-    lastProcessedBlob = new Blob([pdfBytes], {type: 'application/pdf'});
-    const compSize = pdfBytes.length;
+    // Pick the smallest result
+    let bestBytes = repackBytes;
+    if (rasterBytes.length < bestBytes.length) bestBytes = rasterBytes;
+    if (bestBytes.length >= origSize) bestBytes = repackBytes.length <= rasterBytes.length ? repackBytes : rasterBytes;
+
+    lastProcessedBlob = new Blob([bestBytes], {type: 'application/pdf'});
+    const compSize = bestBytes.length;
     const savedPct = Math.max(0, Math.round((1 - compSize / origSize) * 100));
     document.getElementById('compressAfterSize').textContent = formatFileSize(compSize);
-    document.getElementById('compressSavePct').textContent = savedPct > 0 ? '-' + savedPct + '% saved' : 'Optimised';
-    document.getElementById('compressFinalSize').textContent = formatFileSize(compSize);
-    document.getElementById('compressDoneQuality').innerHTML =
-      compSize < origSize ? 'Compressed from ' + formatFileSize(origSize) + ' to ' + formatFileSize(compSize)
-                          : 'File is already well optimised (' + formatFileSize(compSize) + ')';
+    document.getElementById('compressSavePct').textContent = savedPct > 0 ? '-' + savedPct + '% saved' : '';
+    const dpiMap = {crystal: '150', smart: '108', compact: '72'};
+    document.getElementById('compressDoneDPI').textContent = (dpiMap[selectedCompressLevel] || '150') + ' DPI';
+    document.getElementById('compressDoneSummary').innerHTML = formatFileSize(origSize) + ' → <strong>' + formatFileSize(compSize) + '</strong>';
+    document.getElementById('compressDoneQuality').textContent =
+      savedPct > 0 ? savedPct + '% smaller' : 'File is already well optimised';
   });
 }
 
