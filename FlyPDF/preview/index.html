@@ -1805,8 +1805,8 @@
       <div style="background:var(--glass-bg);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--r-lg);padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06)">
         <div style="width:42px;height:52px;background:rgba(255,59,48,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div>
-          <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
-          <div style="font-size:12px;color:var(--label3)">24 pages · 2.4 MB</div>
+          <div class="tool-doc-name" style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
+          <div class="tool-doc-meta" style="font-size:12px;color:var(--label3)">24 pages · 2.4 MB</div>
         </div>
       </div>
     </div>
@@ -1814,27 +1814,27 @@
     <div style="padding:0 20px 12px;font-size:20px;font-weight:700;color:var(--label)">Choose format</div>
 
     <div class="conv-grid">
-      <div class="format-card" onclick="startConversion('Word','word','#2B7CD3','Service_Agreement.docx')">
+      <div class="format-card" onclick="startConversion('Word','word','#2B7CD3','.docx')">
         <div class="format-icon-wrap" style="background:rgba(43,124,211,0.12);color:#2B7CD3"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
         <div><div class="format-name">Word</div><div class="format-ext">.docx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('Excel','excel','#217346','Financial_Report.xlsx')">
+      <div class="format-card" onclick="startConversion('Excel','excel','#217346','.xlsx')">
         <div class="format-icon-wrap" style="background:rgba(33,115,70,0.12);color:#217346"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
         <div><div class="format-name">Excel</div><div class="format-ext">.xlsx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('PowerPoint','pptx','#D24726','Roadmap_2026.pptx')">
+      <div class="format-card" onclick="startConversion('PowerPoint','pptx','#D24726','.pptx')">
         <div class="format-icon-wrap" style="background:rgba(210,71,38,0.12);color:#D24726"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
         <div><div class="format-name">PowerPoint</div><div class="format-ext">.pptx</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('Images','images','#5E5CE6','Report_pages.zip')">
+      <div class="format-card" onclick="startConversion('Images','images','#5E5CE6','.zip')">
         <div class="format-icon-wrap" style="background:rgba(94,92,230,0.12);color:#5E5CE6"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
         <div><div class="format-name">Images</div><div class="format-ext">.jpg</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('TXT','txt','#8E8E93','Report_text.txt')">
+      <div class="format-card" onclick="startConversion('TXT','txt','#8E8E93','.txt')">
         <div class="format-icon-wrap" style="background:rgba(142,142,147,0.12);color:#8E8E93"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
         <div><div class="format-name">Plain Text</div><div class="format-ext">.txt</div></div>
       </div>
-      <div class="format-card" onclick="startConversion('EPUB','epub','#FF9F0A','Report.epub')">
+      <div class="format-card" onclick="startConversion('EPUB','epub','#FF9F0A','.epub')">
         <div class="format-icon-wrap" style="background:rgba(255,159,10,0.12);color:#FF9F0A"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
         <div><div class="format-name">EPUB</div><div class="format-ext">.epub</div></div>
       </div>
@@ -1971,10 +1971,10 @@
     <div class="sign-doc-banner">
       <div class="sign-doc-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF3B30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
       <div>
-        <div class="sign-doc-name">Service Agreement 2026.pdf</div>
-        <div class="sign-doc-sub">8 pages · 890 KB</div>
+        <div class="sign-doc-name">Document.pdf</div>
+        <div class="sign-doc-sub">0 pages</div>
       </div>
-      <div class="sign-page-badge">Page 7 of 8</div>
+      <div class="sign-page-badge" id="signPageBadge">Page 1</div>
     </div>
 
     <!-- Tabs -->
@@ -2026,9 +2026,9 @@
       <div id="signSuccessConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="sign-success-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="sign-success-title">Signed!</div>
-      <div class="sign-success-sub">Service Agreement 2026.pdf</div>
+      <div class="sign-success-sub" id="signSuccessDocName">Document.pdf</div>
       <div class="sign-success-btns">
-        <div class="btn-primary" onclick="downloadFile('Service_Agreement_2026_signed.pdf',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Signed Document</div>
+        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_signed.pdf',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Signed Document</div>
         <div class="btn-secondary" onclick="shareSignedFile()" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary" onclick="showScreen('home-screen');document.getElementById('signSuccess').classList.remove('show')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;">Back to Home</div>
       </div>
@@ -2103,8 +2103,8 @@
       <div class="compress-doc-card">
         <div class="compress-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span style="font-size:7px;font-weight:700;color:#5E5CE6">REPORT</span></div>
         <div style="flex:1">
-          <div style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
-          <div style="font-size:12px;color:var(--label3);margin-top:2px">24 pages · 2.4 MB · Contains 8 images</div>
+          <div class="tool-doc-name" style="font-size:14px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div>
+          <div class="tool-doc-meta" style="font-size:12px;color:var(--label3);margin-top:2px">24 pages · 2.4 MB</div>
         </div>
       </div>
 
@@ -2190,8 +2190,8 @@
       </div>
 
       <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
-        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…','Q4_Financial_Report_compressed.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
-        <div class="btn-primary" style="background:linear-gradient(135deg,#34C759,#28a745)" onclick="runToolProcess('compress-screen','compressProc','extractDone','Extracting files…','Q4_Financial_Report_extracted/')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Extract Files from PDF</div>
+        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…',(getDocBaseName()||'Document')+'_compressed.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
+        <div class="btn-primary" style="background:linear-gradient(135deg,#34C759,#28a745)" onclick="runToolProcess('compress-screen','compressProc','extractDone','Extracting files…',(getDocBaseName()||'Document')+'_extracted/')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Extract Files from PDF</div>
       </div>
     </div>
 
@@ -2256,7 +2256,7 @@
         </div>
       </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile('Q4_Financial_Report_extracted.zip',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save All</div>
+        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_extracted.zip',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save All</div>
         <div class="btn-secondary-tool" onclick="closeDone('extractDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -2367,8 +2367,8 @@
     <div style="flex-shrink:0;padding:8px 20px 14px;border-top:1px solid var(--separator)">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 12px;background:var(--card);border-radius:var(--r-md);border:0.5px solid var(--separator)">
         <div style="width:30px;height:36px;border-radius:6px;background:rgba(94,92,230,0.1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;flex-shrink:0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span style="font-size:5px;font-weight:700;color:#5E5CE6">REPORT</span></div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div><div style="font-size:11px;color:var(--label3);margin-top:1px">24 pages · English</div></div>
-        <div class="translate-pages-badge">24p</div>
+        <div style="flex:1"><div id="translateDocName" style="font-size:13px;font-weight:600;color:var(--label)">Q4 Financial Report.pdf</div><div id="translateDocMeta" style="font-size:11px;color:var(--label3);margin-top:1px">24 pages · English</div></div>
+        <div class="translate-pages-badge" id="translatePagesBadge">24p</div>
       </div>
       <div class="btn-primary" id="translateCTA" onclick="startTranslation()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Translate to Spanish</div>
     </div>
@@ -2377,16 +2377,16 @@
       <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#32ADE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
       <div class="tool-progress-pct" id="translatePct">0%</div>
       <div class="tool-overlay-title" id="translateProcText">Translating…</div>
-      <div class="tool-overlay-sub" id="translateProcSub">Processing page 1 of 24</div>
+      <div class="tool-overlay-sub" id="translateProcSub">Processing pages</div>
       <div class="tool-progress-wrap"><div class="tool-progress-fill" id="translateFill"></div></div>
     </div>
     <div class="tool-overlay" id="translateDone">
       <div id="translateDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">Translated!</div>
-      <div class="tool-overlay-sub" id="translateDoneFile">Q4_Report_Spanish.pdf<br>24 pages · 100% accuracy</div>
+      <div class="tool-overlay-sub" id="translateDoneFile">Document_Spanish.pdf<br>24 pages · 100% accuracy</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile('Q4_Report_Translated.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_translated.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2415,7 +2415,7 @@
       </div>
       <div class="ocr-stat-row">
         <div class="ocr-stat"><div class="ocr-stat-val" id="ocrWords">—</div><div class="ocr-stat-label">Words</div></div>
-        <div class="ocr-stat"><div class="ocr-stat-val" id="ocrPages">24</div><div class="ocr-stat-label">Pages</div></div>
+        <div class="ocr-stat"><div class="ocr-stat-val" id="ocrPages">—</div><div class="ocr-stat-label">Pages</div></div>
         <div class="ocr-stat"><div class="ocr-stat-val" id="ocrAccuracy">—</div><div class="ocr-stat-label">Accuracy</div></div>
       </div>
       <div class="ocr-result-card" id="ocrResultCard" style="display:none">
@@ -2430,16 +2430,16 @@
       <div class="tool-overlay-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg></div>
       <div class="tool-progress-pct" id="ocrPct">0%</div>
       <div class="tool-overlay-title" id="ocrProcText">Running OCR…</div>
-      <div class="tool-overlay-sub">Recognising text in 24 pages</div>
+      <div class="tool-overlay-sub" id="ocrProcSub">Recognising text in 24 pages</div>
       <div class="tool-progress-wrap"><div class="tool-progress-fill" id="ocrFill"></div></div>
     </div>
     <div class="tool-overlay" id="ocrDone">
       <div id="ocrDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">OCR Complete!</div>
-      <div class="tool-overlay-sub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
+      <div class="tool-overlay-sub" id="ocrDoneSub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile('Q4_Financial_Report_OCR.txt',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
+        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_OCR.txt',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2686,6 +2686,34 @@ function addRecentFile(name, pages, size) {
 
 // ─── Document Viewer ───────────────────────────
 let lastPdfData = null;
+let lastPdfName = '';
+let lastPdfPages = 0;
+let lastPdfSize = '';
+
+function getDocBaseName() {
+  return lastPdfName ? lastPdfName.replace(/\.pdf$/i, '') : '';
+}
+
+function populateToolScreens() {
+  const name = lastPdfName || 'No file loaded';
+  const pages = lastPdfPages || 0;
+  const size = lastPdfSize || '';
+  const meta = pages + ' pages · ' + size;
+  document.querySelectorAll('.tool-doc-name').forEach(el => el.textContent = name);
+  document.querySelectorAll('.tool-doc-meta').forEach(el => el.textContent = meta);
+  const signDocName = document.querySelector('.sign-doc-name');
+  if (signDocName) signDocName.textContent = name;
+  const signDocSub = document.querySelector('.sign-doc-sub');
+  if (signDocSub) signDocSub.textContent = meta;
+  const translateDoc = document.getElementById('translateDocName');
+  if (translateDoc) translateDoc.textContent = name;
+  const translateMeta = document.getElementById('translateDocMeta');
+  if (translateMeta) translateMeta.textContent = pages + ' pages · English';
+  const translatePages = document.getElementById('translatePagesBadge');
+  if (translatePages) translatePages.textContent = pages + 'p';
+  const signBadge = document.getElementById('signPageBadge');
+  if (signBadge) signBadge.textContent = 'Page ' + pages + ' of ' + pages;
+}
 
 async function openDocViewer(name, pages, size, pdfData) {
   document.getElementById('docViewerName').textContent = name;
@@ -2697,6 +2725,10 @@ async function openDocViewer(name, pages, size, pdfData) {
 
   if (!pdfData) return;
   lastPdfData = pdfData;
+  lastPdfName = name;
+  lastPdfPages = pages;
+  lastPdfSize = size;
+  populateToolScreens();
 
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -2782,8 +2814,8 @@ function downloadFile(filename, btn) {
 
 function downloadCompressedPDF() {
   const btn = event.target.closest('.btn-primary');
-  const size = document.getElementById('compressFinalSize').textContent;
-  downloadFile('Q4_Financial_Report_compressed.pdf', btn);
+  const base = getDocBaseName() || 'Document';
+  downloadFile(base + '_compressed.pdf', btn);
 }
 
 // ─── AI Chat ───────────────────────────────────
@@ -2883,7 +2915,9 @@ function sendFromInput() {
 
 // ─── Conversion ────────────────────────────────
 let convTarget = '';
-function startConversion(format, emoji, color, filename) {
+function startConversion(format, emoji, color, ext) {
+  const base = getDocBaseName() || 'Document';
+  const filename = base + ext;
   convTarget = filename;
   const overlay = document.getElementById('processingOverlay');
   overlay.classList.add('show');
@@ -3125,6 +3159,8 @@ function placeSignature() {
     return;
   }
   const success = document.getElementById('signSuccess');
+  const nameEl = document.getElementById('signSuccessDocName');
+  if (nameEl) nameEl.textContent = lastPdfName || 'Document.pdf';
   success.classList.add('show');
   const cc = document.getElementById('signSuccessConfetti');
   if(cc) spawnConfettiIn(cc);
@@ -3221,8 +3257,10 @@ function selectTranslateLang(code, el) {
   document.getElementById('tToFlag').textContent = l.flag;
   document.getElementById('tToName').textContent = l.name;
   document.getElementById('translateCTA').innerHTML = svgIcons.globe + 'Translate to ' + l.name;
+  const tBase = getDocBaseName() || 'Document';
+  const tPages = lastPdfPages || 24;
   document.getElementById('translateDoneFile').innerHTML =
-    `Q4_Report_${l.name}.pdf<br>24 pages · 100% accuracy`;
+    `${tBase}_${l.name}.pdf<br>${tPages} pages · 100% accuracy`;
 }
 
 function swapTranslateLangs() {
@@ -3232,24 +3270,34 @@ function swapTranslateLangs() {
 }
 
 function startTranslation() {
-  runToolProcess('translate-screen','translateProc','translateDone','Translating…','Q4_Report.pdf');
+  const base = getDocBaseName() || 'Document';
+  const lang = translateLangs.find(l=>l.code===currentTargetLang);
+  const langName = lang ? lang.name : 'Translated';
+  const pages = lastPdfPages || 24;
+  const sub = document.getElementById('translateProcSub');
+  if (sub) sub.textContent = 'Processing page 1 of ' + pages;
+  const doneFile = document.getElementById('translateDoneFile');
+  if (doneFile) doneFile.innerHTML = base+'_'+langName+'.pdf<br>'+pages+' pages · 100% accuracy';
+  runToolProcess('translate-screen','translateProc','translateDone','Translating…',base+'_'+langName+'.pdf');
 }
 
 // ─── OCR ─────────────────────────────────────────
 function runOCR() {
-  // Animate scan lines
+  const pages = lastPdfPages || 24;
+  const sub = document.getElementById('ocrProcSub');
+  if (sub) sub.textContent = 'Recognising text in ' + pages + ' pages';
   document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
   setTimeout(()=>{
     document.getElementById('ocrHighlight').classList.add('show');
   }, 600);
-  runToolProcess('ocr-screen','ocrProc','ocrDone','Running OCR…','Q4_Financial_Report_OCR.pdf');
-  // After done overlay shows, populate stats
+  runToolProcess('ocr-screen','ocrProc','ocrDone','Running OCR…',(getDocBaseName()||'Document')+'_OCR.pdf');
   setTimeout(()=>{
+    document.getElementById('ocrPages').textContent = lastPdfPages || 24;
     document.getElementById('ocrWords').textContent = '1,240';
     document.getElementById('ocrAccuracy').textContent = '99%';
     document.getElementById('ocrResultCard').style.display = 'block';
     document.getElementById('ocrResultText').textContent =
-      'Q4 2025 Financial Report\n\nTotal Revenue: $4,200,000\nGross Margin: 72%\nNet Profit: $840,000\nARR: $16.8M…';
+      'Extracted text from ' + (lastPdfName||'document') + '…';
     document.querySelectorAll('[id^="ocrL"]').forEach(l=>l.classList.remove('scanning'));
   }, 4500);
 }
