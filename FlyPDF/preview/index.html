@@ -3745,30 +3745,45 @@ async function downloadTranslatedAs(format, btn) {
     downloadBlob(blob, filename + '.docx', btn);
 
   } else if (format === 'pdf') {
-    const pdfDoc = await PDFLib.PDFDocument.create();
-    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const pageW = 595, pageH = 842, margin = 50, lineH = 18, fontSize = 13;
+    const maxLineW = pageW - 2 * margin;
+    const canvas = document.createElement('canvas');
+    canvas.width = pageW * 2; canvas.height = pageH * 2;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2, 2);
+    ctx.font = fontSize + 'px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
     const lines = lastTranslatedText.split(/\n/);
-    let page = null, yPos = 0;
-    const margin = 50, lineH = 16, pageW = 595, pageH = 842;
+    const wrappedLines = [];
     for (const line of lines) {
-      if (!page || yPos < margin + lineH) {
-        page = pdfDoc.addPage([pageW, pageH]);
-        yPos = pageH - margin;
-      }
-      const chunks = [];
+      if (!line.trim()) { wrappedLines.push(''); continue; }
       let remaining = line;
       while (remaining.length > 0) {
-        let fit = remaining.length;
-        while (fit > 0 && font.widthOfTextAtSize(remaining.substring(0, fit), 11) > pageW - 2 * margin) fit--;
-        if (fit === 0) fit = 1;
-        chunks.push(remaining.substring(0, fit));
-        remaining = remaining.substring(fit);
+        let end = remaining.length;
+        while (end > 1 && ctx.measureText(remaining.substring(0, end)).width > maxLineW) end--;
+        wrappedLines.push(remaining.substring(0, end));
+        remaining = remaining.substring(end);
       }
-      for (const chunk of chunks) {
-        if (yPos < margin + lineH) { page = pdfDoc.addPage([pageW, pageH]); yPos = pageH - margin; }
-        try { page.drawText(chunk, {x: margin, y: yPos, size: 11, font}); } catch(e) {}
-        yPos -= lineH;
-      }
+    }
+
+    const linesPerPage = Math.floor((pageH - 2 * margin) / lineH);
+    const totalPages = Math.ceil(wrappedLines.length / linesPerPage);
+    const pdfDoc = await PDFLib.PDFDocument.create();
+
+    for (let p = 0; p < totalPages; p++) {
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0, 0, pageW, pageH);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = fontSize + 'px -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+      const start = p * linesPerPage;
+      const pageLines = wrappedLines.slice(start, start + linesPerPage);
+      pageLines.forEach((line, i) => {
+        ctx.fillText(line, margin, margin + fontSize + i * lineH);
+      });
+      const jpegBlob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.9));
+      const img = await pdfDoc.embedJpg(new Uint8Array(await jpegBlob.arrayBuffer()));
+      const page = pdfDoc.addPage([pageW, pageH]);
+      page.drawImage(img, {x: 0, y: 0, width: pageW, height: pageH});
     }
     const pdfBytes = await pdfDoc.save();
     downloadBlob(new Blob([pdfBytes], {type: 'application/pdf'}), filename + '.pdf', btn);
