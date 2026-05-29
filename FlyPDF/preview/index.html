@@ -2368,9 +2368,13 @@
       <div id="translateDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">Translated!</div>
-      <div class="tool-overlay-sub" id="translateDoneFile">Document_Spanish.pdf<br>24 pages · 100% accuracy</div>
+      <div class="tool-overlay-sub" id="translateDoneFile"></div>
+      <div style="display:flex;gap:8px;margin:8px 0 4px;width:100%">
+        <div class="btn-primary" style="flex:1;font-size:12px;padding:10px 0" onclick="downloadTranslatedAs('pdf',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Save as PDF</div>
+        <div class="btn-primary" style="flex:1;font-size:12px;padding:10px 0;background:linear-gradient(135deg,#007AFF,#5856D6)" onclick="downloadTranslatedAs('docx',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Save as Word</div>
+        <div class="btn-primary" style="flex:1;font-size:12px;padding:10px 0;background:linear-gradient(135deg,#8E8E93,#636366)" onclick="downloadTranslatedAs('txt',this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Save as TXT</div>
+      </div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadTranslatedFile(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2895,9 +2899,8 @@ const API_BASE = 'http://localhost:8001';
 let backendAvailable = null;
 
 async function checkBackend() {
-  if (backendAvailable !== null) return backendAvailable;
   try {
-    const r = await fetch(API_BASE + '/health', {signal: AbortSignal.timeout(1500)});
+    const r = await fetch(API_BASE + '/health', {signal: AbortSignal.timeout(2000)});
     const d = await r.json();
     backendAvailable = d.status === 'ok' && d.has_key;
   } catch { backendAvailable = false; }
@@ -3666,49 +3669,109 @@ function swapTranslateLangs() {
   setTimeout(()=>swapBtn.style.transform = '', 300);
 }
 
+let lastTranslatedText = '';
+
 function startTranslation() {
   if (!lastPdfData) { showNoPdfToast(); return; }
   const base = getDocBaseName() || 'Document';
   const lang = translateLangs.find(l=>l.code===currentTargetLang);
   const langName = lang ? lang.name : 'Translated';
+  lastTranslatedText = '';
 
   runRealToolProcess('translate-screen', 'translateProc', 'translateDone', async (updateProgress) => {
     updateProgress(0, 'Extracting text…', 'Reading pages');
-    const result = await extractAllTextWithProgress(lastPdfData, (pct) => updateProgress(pct * 0.3));
-    updateProgress(30, 'Translating…', 'Sending to AI');
+    const result = await extractAllTextWithProgress(lastPdfData, (pct) => updateProgress(pct * 0.25));
+    updateProgress(25, 'Translating…', 'Connecting to AI');
 
     const live = await checkBackend();
+    if (!live) {
+      updateProgress(30, 'Translating…', 'Backend offline — retrying');
+      backendAvailable = null;
+      await checkBackend();
+    }
+
     let translated = '';
-    if (live) {
+    if (backendAvailable) {
       try {
-        const res = await fetch(API_BASE + '/chat', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({message: 'Translate the following text to ' + langName + '. Return only the translated text, no explanations:\n\n' + result.fullText.substring(0, 8000)})
-        });
-        const data = await res.json();
-        translated = data.response || data.message || '';
-        updateProgress(90, 'Finalizing…');
+        updateProgress(30, 'Translating…', 'Sending to AI');
+        const textChunks = [];
+        const fullText = result.fullText;
+        for (let i = 0; i < fullText.length; i += 6000) {
+          textChunks.push(fullText.substring(i, i + 6000));
+        }
+        for (let c = 0; c < textChunks.length; c++) {
+          const res = await fetch(API_BASE + '/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: 'Translate the following text to ' + langName + '. Return ONLY the translated text, nothing else:\n\n' + textChunks[c]})
+          });
+          const data = await res.json();
+          translated += (data.response || data.message || '') + '\n';
+          updateProgress(30 + Math.round((c + 1) / textChunks.length * 60), 'Translating…', 'Chunk ' + (c+1) + ' of ' + textChunks.length);
+        }
       } catch(e) {
         translated = '[Translation error: ' + e.message + ']\n\nOriginal text:\n' + result.fullText;
       }
     } else {
-      translated = '[AI backend offline — showing extracted text for manual translation]\n\n' + result.fullText;
+      translated = '[AI backend offline — start backend with: cd backend && node server.js]\n\nOriginal text:\n' + result.fullText;
       updateProgress(90);
     }
 
-    lastProcessedBlob = new Blob([translated], {type: 'text/plain'});
-    convTarget = base + '_' + langName + '.txt';
+    lastTranslatedText = translated.trim();
+    lastProcessedBlob = new Blob([lastTranslatedText], {type: 'text/plain'});
     const doneFile = document.getElementById('translateDoneFile');
-    if (doneFile) doneFile.innerHTML = base + '_' + langName + '.txt<br>' + result.numPages + ' pages translated';
+    if (doneFile) doneFile.innerHTML = base + '_' + langName + '<br>' + result.numPages + ' pages · Choose format below';
   });
 }
 
-function downloadTranslatedFile(btn) {
-  if (lastProcessedBlob) {
-    const base = getDocBaseName() || 'Document';
-    const lang = translateLangs.find(l=>l.code===currentTargetLang);
-    downloadBlob(lastProcessedBlob, base + '_' + (lang?lang.name:'Translated') + '.txt', btn);
+async function downloadTranslatedAs(format, btn) {
+  if (!lastTranslatedText) return;
+  const base = getDocBaseName() || 'Document';
+  const lang = translateLangs.find(l=>l.code===currentTargetLang);
+  const langName = lang ? lang.name : 'Translated';
+  const filename = base + '_' + langName;
+
+  if (format === 'txt') {
+    downloadBlob(new Blob([lastTranslatedText], {type: 'text/plain'}), filename + '.txt', btn);
+
+  } else if (format === 'docx') {
+    const lines = lastTranslatedText.split(/\n/);
+    const children = lines.map(line => new docx.Paragraph({
+      children: [new docx.TextRun({text: line || ' ', size: 24})],
+      spacing: {after: 120}
+    }));
+    const doc = new docx.Document({sections: [{properties: {}, children}]});
+    const blob = await docx.Packer.toBlob(doc);
+    downloadBlob(blob, filename + '.docx', btn);
+
+  } else if (format === 'pdf') {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const lines = lastTranslatedText.split(/\n/);
+    let page = null, yPos = 0;
+    const margin = 50, lineH = 16, pageW = 595, pageH = 842;
+    for (const line of lines) {
+      if (!page || yPos < margin + lineH) {
+        page = pdfDoc.addPage([pageW, pageH]);
+        yPos = pageH - margin;
+      }
+      const chunks = [];
+      let remaining = line;
+      while (remaining.length > 0) {
+        let fit = remaining.length;
+        while (fit > 0 && font.widthOfTextAtSize(remaining.substring(0, fit), 11) > pageW - 2 * margin) fit--;
+        if (fit === 0) fit = 1;
+        chunks.push(remaining.substring(0, fit));
+        remaining = remaining.substring(fit);
+      }
+      for (const chunk of chunks) {
+        if (yPos < margin + lineH) { page = pdfDoc.addPage([pageW, pageH]); yPos = pageH - margin; }
+        try { page.drawText(chunk, {x: margin, y: yPos, size: 11, font}); } catch(e) {}
+        yPos -= lineH;
+      }
+    }
+    const pdfBytes = await pdfDoc.save();
+    downloadBlob(new Blob([pdfBytes], {type: 'application/pdf'}), filename + '.pdf', btn);
   }
 }
 
