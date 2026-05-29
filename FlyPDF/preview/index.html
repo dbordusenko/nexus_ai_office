@@ -3128,21 +3128,18 @@ async function convertToExcel(updatePct) {
 }
 
 async function convertToPptx(updatePct) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+  updatePct(5);
+  const result = await extractAllTextWithProgress(lastPdfData, (pct) => updatePct(5 + pct * 0.6));
+  updatePct(70);
   const pptx = new PptxGenJS();
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({scale: 2.0});
-    const canvas = document.createElement('canvas');
-    canvas.width = viewport.width; canvas.height = viewport.height;
-    const ctx = canvas.getContext('2d');
-    await page.render({canvasContext: ctx, viewport}).promise;
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  result.pages.forEach((pageText, idx) => {
     const slide = pptx.addSlide();
-    slide.addImage({data: dataUrl, x: 0, y: 0, w: '100%', h: '100%'});
-    updatePct(Math.round(i / pdf.numPages * 90));
-  }
+    slide.addText('Page ' + (idx + 1), {x: 0.5, y: 0.3, w: 9, h: 0.5, fontSize: 20, bold: true, color: '1a1a1a'});
+    const lines = pageText.split(/\n/).filter(l => l.trim());
+    const body = lines.join('\n') || '(empty page)';
+    slide.addText(body, {x: 0.5, y: 1.0, w: 9, h: 5.5, fontSize: 11, color: '333333', valign: 'top', wrap: true});
+    updatePct(70 + Math.round((idx + 1) / result.numPages * 25));
+  });
   lastProcessedBlob = await pptx.write({outputType: 'blob'});
   updatePct(100);
 }
