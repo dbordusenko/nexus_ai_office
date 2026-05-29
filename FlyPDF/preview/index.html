@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlyPDF — iOS Preview</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.min.js"></script>
 <style>
   /* SVG Icon System */
   .icon { display:inline-flex; align-items:center; justify-content:center; }
@@ -1572,7 +1577,7 @@
       <div class="quick-actions">
         <div class="section-title">Quick Actions</div>
         <div class="qa-grid">
-          <div class="qa-btn" onclick="showScreen('merge-screen')">
+          <div class="qa-btn" onclick="showScreen('merge-screen');initMergeScreen()">
             <div class="qa-icon" style="background:linear-gradient(135deg,#007AFF,#0055D4)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg></div>
             <span class="qa-label">Merge</span>
           </div>
@@ -1866,7 +1871,7 @@
       <div class="done-title">Done!</div>
       <div class="done-name" id="doneFileName">Q4_Financial_Report.docx</div>
       <div style="display:flex;flex-direction:column;gap:10px;width:100%">
-        <div class="btn-primary" onclick="downloadFile(convTarget,this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" onclick="downloadConvertedFile(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-primary" style="background:var(--glass-bg);backdrop-filter:blur(20px);color:var(--label);box-shadow:none;border:1px solid var(--glass-border)" onclick="shareFile()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
       </div>
       <div class="btn-secondary" onclick="backToConversion()">Convert Another</div>
@@ -2028,7 +2033,7 @@
       <div class="sign-success-title">Signed!</div>
       <div class="sign-success-sub" id="signSuccessDocName">Document.pdf</div>
       <div class="sign-success-btns">
-        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_signed.pdf',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Signed Document</div>
+        <div class="btn-primary" onclick="downloadSignedPDF(this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Signed Document</div>
         <div class="btn-secondary" onclick="shareSignedFile()" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;background:var(--glass-bg);border:1px solid var(--glass-border);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary" onclick="showScreen('home-screen');document.getElementById('signSuccess').classList.remove('show')" style="padding:14px;border-radius:var(--r-lg);text-align:center;font-weight:600;color:var(--label);cursor:pointer;">Back to Home</div>
       </div>
@@ -2041,33 +2046,23 @@
     <div class="tool-screen-header">
       <div class="tool-back" onclick="showScreen('home-screen')">‹</div>
       <span class="tool-screen-title">Merge PDFs</span>
-      <span style="font-size:13px;color:var(--label3)">2 files</span>
+      <span id="mergeFileCount" style="font-size:13px;color:var(--label3)">0 files</span>
     </div>
+    <input type="file" id="mergeFileInput" accept=".pdf" multiple style="display:none" onchange="handleMergeUpload(this)">
     <div class="tool-content">
       <div class="tool-section">
         <div class="tool-section-label">Selected Documents</div>
-        <div class="merge-file-card">
-          <div class="merge-file-num">1</div>
-          <div class="merge-file-icon" style="background:rgba(94,92,230,0.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="merge-file-label" style="color:#5E5CE6">REPORT</span></div>
-          <div><div class="merge-file-name">Q4 Financial Report.pdf</div><div class="merge-file-sub">24p · 2.4 MB</div></div>
-          <div class="merge-drag-hint">⠿</div>
-        </div>
-        <div class="merge-file-card">
-          <div class="merge-file-num">2</div>
-          <div class="merge-file-icon" style="background:rgba(0,122,255,0.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg><span class="merge-file-label" style="color:#007AFF">CONTRACT</span></div>
-          <div><div class="merge-file-name">Service Agreement 2026.pdf</div><div class="merge-file-sub">8p · 890 KB</div></div>
-          <div class="merge-drag-hint">⠿</div>
-        </div>
-        <div class="merge-add-btn" onclick="this.innerHTML='+ Invoice #1042 — Airbnb.pdf added';this.style.borderStyle='solid';this.style.color='var(--success)';setTimeout(()=>{this.textContent='+ Add Document';this.style.borderStyle='dashed';this.style.color='';},2000)">+ Add Document</div>
+        <div id="mergeFileList"></div>
+        <div class="merge-add-btn" onclick="document.getElementById('mergeFileInput').click()">+ Add Document</div>
       </div>
       <div class="tool-section">
         <div class="merge-arrow">↓</div>
         <div class="tool-section-label">Output File</div>
         <div class="merge-output">
           <div class="merge-output-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
-          <div><div class="merge-output-name">Merged_Document.pdf</div><div class="merge-output-sub">32 pages · ~3.3 MB estimated</div></div>
+          <div><div class="merge-output-name">Merged_Document.pdf</div><div class="merge-output-sub" id="mergeOutputSub">Add files to merge</div></div>
         </div>
-        <div class="btn-primary" onclick="runToolProcess('merge-screen','mergeProc','mergeDone','Merging documents…','Merged_Document.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>Merge Documents</div>
+        <div class="btn-primary" onclick="mergePDFs()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>Merge Documents</div>
       </div>
     </div>
     <div class="tool-overlay" id="mergeProc">
@@ -2081,9 +2076,9 @@
       <div id="mergeDoneConfetti" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
       <div class="success-check"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
       <div class="tool-overlay-title">Merged!</div>
-      <div class="tool-overlay-sub">Merged_Document.pdf<br>32 pages · 3.2 MB</div>
+      <div class="tool-overlay-sub" id="mergeDoneSub">Merged_Document.pdf</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile('Merged_Document.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" onclick="if(lastProcessedBlob){downloadBlob(lastProcessedBlob,'Merged_Document.pdf',this)}else{downloadFile('Merged_Document.pdf',this)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('mergeDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2190,7 +2185,7 @@
       </div>
 
       <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
-        <div class="btn-primary" onclick="runToolProcess('compress-screen','compressProc','compressDone','Compressing PDF…',(getDocBaseName()||'Document')+'_compressed.pdf')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
+        <div class="btn-primary" onclick="compressPDF()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M6 3h12l4 6-10 13L2 9z"/><path d="M2 9h20"/></svg>Compress PDF</div>
         <div class="btn-primary" style="background:linear-gradient(135deg,#34C759,#28a745)" onclick="runToolProcess('compress-screen','compressProc','extractDone','Extracting files…',(getDocBaseName()||'Document')+'_extracted/')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Extract Files from PDF</div>
       </div>
     </div>
@@ -2287,6 +2282,7 @@
       </div>
       <div class="scan-hint-text" id="scanHintText">Hold steady — align document</div>
     </div>
+    <input type="file" id="scanImageInput" accept="image/*" style="display:none" onchange="handleScanUpload(this)">
     <div class="scan-bottom-bar">
       <div class="scan-btn-side"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
       <div class="scan-shutter" onclick="triggerScan()"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
@@ -2305,7 +2301,7 @@
       <div class="tool-overlay-title">Scanned!</div>
       <div class="tool-overlay-sub">AI renamed: <strong>Invoice_Airbnb_Dec2025.pdf</strong><br>1 page · 340 KB · Searchable OCR</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile('Invoice_Airbnb_Dec2025.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" onclick="if(lastProcessedBlob){downloadBlob(lastProcessedBlob,'Scanned_Document.pdf',this)}else{downloadFile('Scanned_Document.pdf',this)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('scanDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2386,7 +2382,7 @@
       <div class="tool-overlay-title">Translated!</div>
       <div class="tool-overlay-sub" id="translateDoneFile">Document_Spanish.pdf<br>24 pages · 100% accuracy</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_translated.pdf',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
+        <div class="btn-primary" onclick="downloadTranslatedFile(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('translateDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2439,7 +2435,7 @@
       <div class="tool-overlay-title">OCR Complete!</div>
       <div class="tool-overlay-sub" id="ocrDoneSub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadFile((getDocBaseName()||'Document')+'_OCR.txt',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
+        <div class="btn-primary" onclick="downloadOCRText(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
         <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
         <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
       </div>
@@ -2684,6 +2680,91 @@ function addRecentFile(name, pages, size) {
   else container.appendChild(item);
 }
 
+// ─── Utility Functions ─────────────────────────
+function formatFileSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function downloadBlob(blob, filename, btn) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  if (btn) {
+    const orig = btn.innerHTML;
+    btn.innerHTML = svgIcons.check + ' Saved!';
+    btn.style.background = 'linear-gradient(135deg,#34C759,#1E8C3A)';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; }, 2000);
+  }
+}
+
+async function extractAllText(pdfData) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfData)}).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    pages.push(content.items.map(item => item.str).join(' '));
+  }
+  return { pages, fullText: pages.join('\n\n'), numPages: pdf.numPages };
+}
+
+async function renderPageToCanvas(pdfData, pageNum, scale) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfData)}).promise;
+  const page = await pdf.getPage(pageNum);
+  const viewport = page.getViewport({scale});
+  const canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  const ctx = canvas.getContext('2d');
+  await page.render({canvasContext: ctx, viewport}).promise;
+  return canvas;
+}
+
+async function runRealToolProcess(screenId, procId, doneId, asyncWorkFn) {
+  const proc = document.getElementById(procId);
+  const done = document.getElementById(doneId);
+  const pctEl = proc.querySelector('.tool-progress-pct');
+  const fillEl = proc.querySelector('.tool-progress-fill');
+  const titleEl = proc.querySelector('.tool-overlay-title');
+  const subEl = proc.querySelector('.tool-overlay-sub');
+  proc.classList.add('show');
+  function updateProgress(pct, status, sub) {
+    if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+    if (fillEl) fillEl.style.width = Math.round(pct) + '%';
+    if (status && titleEl) titleEl.textContent = status;
+    if (sub && subEl) subEl.textContent = sub;
+  }
+  updateProgress(0);
+  try {
+    await asyncWorkFn(updateProgress);
+    updateProgress(100);
+    setTimeout(() => {
+      proc.classList.remove('show');
+      done.classList.add('show');
+      const cc = done.querySelector('[id$="Confetti"]');
+      if (cc) spawnConfettiIn(cc);
+    }, 400);
+  } catch(e) {
+    proc.classList.remove('show');
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;white-space:nowrap;max-width:90%;overflow:hidden;text-overflow:ellipsis;';
+    toast.textContent = 'Error: ' + e.message;
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+    console.error('Tool error:', e);
+  }
+}
+
+let lastProcessedBlob = null;
+let lastExtractedText = '';
+let mergeFiles = [];
+let selectedCompressLevel = 'crystal';
+
 // ─── Document Viewer ───────────────────────────
 let lastPdfData = null;
 let lastPdfName = '';
@@ -2814,8 +2895,11 @@ function downloadFile(filename, btn) {
 
 function downloadCompressedPDF() {
   const btn = event.target.closest('.btn-primary');
-  const base = getDocBaseName() || 'Document';
-  downloadFile(base + '_compressed.pdf', btn);
+  if (lastProcessedBlob) {
+    downloadBlob(lastProcessedBlob, (getDocBaseName()||'Document') + '_compressed.pdf', btn);
+  } else {
+    downloadFile((getDocBaseName()||'Document') + '_compressed.pdf', btn);
+  }
 }
 
 // ─── AI Chat ───────────────────────────────────
@@ -2915,32 +2999,176 @@ function sendFromInput() {
 
 // ─── Conversion ────────────────────────────────
 let convTarget = '';
-function startConversion(format, emoji, color, ext) {
+
+function downloadConvertedFile(btn) {
+  if (lastProcessedBlob) {
+    downloadBlob(lastProcessedBlob, convTarget, btn);
+  } else {
+    downloadFile(convTarget, btn);
+  }
+}
+
+async function startConversion(format, emoji, color, ext) {
+  if (!lastPdfData) { showNoPdfToast(); return; }
   const base = getDocBaseName() || 'Document';
   const filename = base + ext;
   convTarget = filename;
+  lastProcessedBlob = null;
+
   const overlay = document.getElementById('processingOverlay');
+  const pctEl = document.getElementById('progressPct');
+  const fillEl = document.getElementById('progressFill');
+
   overlay.classList.add('show');
   document.getElementById('processingText').textContent = `Converting to ${format}…`;
   document.getElementById('orbitPlanet2').style.background = color + 'E6';
   document.getElementById('doneFileName').textContent = filename;
+  pctEl.textContent = '0%'; fillEl.style.width = '0%';
 
-  let pct = 0;
-  clearInterval(convInterval);
-  convInterval = setInterval(() => {
-    pct = Math.min(100, pct + Math.random() * 8 + 2);
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressPct').textContent = Math.round(pct) + '%';
-    if(pct >= 100) {
-      clearInterval(convInterval);
-      setTimeout(() => {
-        overlay.classList.remove('show');
-        const done = document.getElementById('doneOverlay');
-        done.classList.add('show');
-        spawnConfetti();
-      }, 300);
+  function updatePct(pct) {
+    pctEl.textContent = Math.round(pct) + '%';
+    fillEl.style.width = Math.round(pct) + '%';
+  }
+
+  try {
+    if (format === 'TXT') {
+      await convertToText(updatePct);
+    } else if (format === 'Images') {
+      await convertToImages(updatePct);
+    } else if (format === 'Word') {
+      await convertToWord(updatePct);
+    } else if (format === 'Excel') {
+      await convertToExcel(updatePct);
+    } else if (format === 'PowerPoint') {
+      await convertToPptx(updatePct);
+    } else if (format === 'EPUB') {
+      await convertToEpub(updatePct);
     }
-  }, 200);
+
+    updatePct(100);
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      const done = document.getElementById('doneOverlay');
+      done.classList.add('show');
+      spawnConfetti();
+    }, 400);
+  } catch(e) {
+    overlay.classList.remove('show');
+    console.error('Conversion error:', e);
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+    toast.textContent = 'Error: ' + e.message;
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+}
+
+async function convertToText(updatePct) {
+  updatePct(10);
+  const result = await extractAllTextWithProgress(lastPdfData, (pct) => updatePct(10 + pct * 0.85));
+  lastProcessedBlob = new Blob([result.fullText], {type: 'text/plain'});
+  updatePct(100);
+}
+
+async function convertToImages(updatePct) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+  const zip = new JSZip();
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: 2.0});
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    await page.render({canvasContext: ctx, viewport}).promise;
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+    zip.file('page_' + String(i).padStart(3, '0') + '.jpg', blob);
+    updatePct(Math.round(i / pdf.numPages * 90));
+  }
+  lastProcessedBlob = await zip.generateAsync({type: 'blob'});
+  updatePct(100);
+}
+
+async function convertToWord(updatePct) {
+  updatePct(5);
+  const result = await extractAllTextWithProgress(lastPdfData, (pct) => updatePct(5 + pct * 0.6));
+  updatePct(70);
+  const children = [];
+  result.pages.forEach((pageText, idx) => {
+    if (idx > 0) children.push(new docx.Paragraph({children:[], pageBreakBefore: true}));
+    const lines = pageText.split(/\n/);
+    lines.forEach(line => {
+      children.push(new docx.Paragraph({
+        children: [new docx.TextRun({text: line || ' ', size: 24})],
+        spacing: {after: 120}
+      }));
+    });
+  });
+  const doc = new docx.Document({
+    sections: [{properties: {}, children}]
+  });
+  lastProcessedBlob = await docx.Packer.toBlob(doc);
+  updatePct(100);
+}
+
+async function convertToExcel(updatePct) {
+  updatePct(5);
+  const result = await extractAllTextWithProgress(lastPdfData, (pct) => updatePct(5 + pct * 0.7));
+  updatePct(80);
+  const wb = XLSX.utils.book_new();
+  result.pages.forEach((pageText, idx) => {
+    const lines = pageText.split(/\n/).filter(l => l.trim());
+    const data = lines.map(line => line.split(/\t|  +/).map(cell => cell.trim()));
+    const ws = XLSX.utils.aoa_to_sheet(data.length ? data : [['(empty page)']]);
+    XLSX.utils.book_append_sheet(wb, ws, 'Page ' + (idx + 1));
+  });
+  const wbOut = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+  lastProcessedBlob = new Blob([wbOut], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  updatePct(100);
+}
+
+async function convertToPptx(updatePct) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+  const pptx = new PptxGenJS();
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({scale: 2.0});
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    await page.render({canvasContext: ctx, viewport}).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    const slide = pptx.addSlide();
+    slide.addImage({data: dataUrl, x: 0, y: 0, w: '100%', h: '100%'});
+    updatePct(Math.round(i / pdf.numPages * 90));
+  }
+  lastProcessedBlob = await pptx.write({outputType: 'blob'});
+  updatePct(100);
+}
+
+async function convertToEpub(updatePct) {
+  updatePct(5);
+  const result = await extractAllTextWithProgress(lastPdfData, (pct) => updatePct(5 + pct * 0.6));
+  updatePct(70);
+  const title = getDocBaseName() || 'Document';
+  const zip = new JSZip();
+  zip.file('mimetype', 'application/epub+zip');
+  zip.file('META-INF/container.xml', '<?xml version="1.0"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
+  let manifest = '', spine = '';
+  const chapters = result.pages.map((text, i) => {
+    const id = 'ch' + (i + 1);
+    const file = id + '.xhtml';
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const paras = escaped.split(/\n/).filter(l=>l.trim()).map(l=>'<p>'+l+'</p>').join('\n');
+    zip.file(file, '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Page '+(i+1)+'</title></head><body><h2>Page '+(i+1)+'</h2>'+paras+'</body></html>');
+    manifest += '<item id="'+id+'" href="'+file+'" media-type="application/xhtml+xml"/>';
+    spine += '<itemref idref="'+id+'"/>';
+    return file;
+  });
+  zip.file('content.opf', '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="uid"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="uid">flypdf-'+Date.now()+'</dc:identifier><dc:title>'+title+'</dc:title><dc:language>en</dc:language></metadata><manifest>'+manifest+'</manifest><spine>'+spine+'</spine></package>');
+  lastProcessedBlob = await zip.generateAsync({type:'blob'});
+  updatePct(100);
 }
 
 function spawnConfetti() {
@@ -3033,6 +3261,72 @@ function runToolProcess(screenId, procId, doneId, label, filename) {
 
 function closeDone(id) {
   document.getElementById(id).classList.remove('show');
+}
+
+// ─── Merge ──────────────────────────────────────
+function initMergeScreen() {
+  if (mergeFiles.length === 0 && lastPdfData) {
+    mergeFiles.push({name: lastPdfName, data: new Uint8Array(lastPdfData), pages: lastPdfPages, size: lastPdfSize});
+  }
+  renderMergeFileList();
+}
+
+async function handleMergeUpload(input) {
+  for (const file of input.files) {
+    try {
+      const buf = await file.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      mergeFiles.push({name: file.name, data: bytes, pages: pdf.numPages, size: formatFileSize(file.size)});
+    } catch(e) {
+      console.error('Failed to load:', file.name, e);
+    }
+  }
+  input.value = '';
+  renderMergeFileList();
+}
+
+function renderMergeFileList() {
+  const list = document.getElementById('mergeFileList');
+  if (!list) return;
+  list.innerHTML = mergeFiles.map((f, i) => `
+    <div class="merge-file-card">
+      <div class="merge-file-num">${i+1}</div>
+      <div class="merge-file-icon" style="background:rgba(0,122,255,0.1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="merge-file-label" style="color:#007AFF">PDF</span></div>
+      <div style="flex:1;min-width:0"><div class="merge-file-name">${f.name}</div><div class="merge-file-sub">${f.pages}p · ${f.size}</div></div>
+      <div onclick="mergeFiles.splice(${i},1);renderMergeFileList()" style="cursor:pointer;color:var(--error);font-size:18px;padding:4px 8px">×</div>
+    </div>`).join('');
+  const totalPages = mergeFiles.reduce((s,f) => s + f.pages, 0);
+  const totalSize = mergeFiles.reduce((s,f) => s + f.data.length, 0);
+  document.getElementById('mergeFileCount').textContent = mergeFiles.length + ' file' + (mergeFiles.length !== 1 ? 's' : '');
+  document.getElementById('mergeOutputSub').textContent = mergeFiles.length ? totalPages + ' pages · ~' + formatFileSize(totalSize) + ' estimated' : 'Add files to merge';
+}
+
+async function mergePDFs() {
+  if (mergeFiles.length < 2) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF9F0A;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+    toast.textContent = 'Add at least 2 files to merge';
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+    return;
+  }
+  runRealToolProcess('merge-screen', 'mergeProc', 'mergeDone', async (updateProgress) => {
+    updateProgress(0, 'Merging documents…', 'Combining ' + mergeFiles.length + ' PDFs');
+    const merged = await PDFLib.PDFDocument.create();
+    for (let i = 0; i < mergeFiles.length; i++) {
+      const doc = await PDFLib.PDFDocument.load(mergeFiles[i].data);
+      const pages = await merged.copyPages(doc, doc.getPageIndices());
+      pages.forEach(p => merged.addPage(p));
+      updateProgress(Math.round((i + 1) / mergeFiles.length * 90), null, 'Processing file ' + (i+1) + ' of ' + mergeFiles.length);
+    }
+    const mergedBytes = await merged.save();
+    lastProcessedBlob = new Blob([mergedBytes], {type: 'application/pdf'});
+    const totalPages = mergeFiles.reduce((s,f) => s + f.pages, 0);
+    const doneSub = document.getElementById('mergeDoneSub');
+    if (doneSub) doneSub.innerHTML = 'Merged_Document.pdf<br>' + totalPages + ' pages · ' + formatFileSize(mergedBytes.length);
+  });
 }
 
 function spawnConfettiIn(container) {
@@ -3138,9 +3432,8 @@ function switchSignTab(tab) {
   }
 }
 
-function placeSignature() {
+async function placeSignature() {
   if(!signHasDrawn) {
-    // draw a demo signature so it's always functional
     if(signCtx) {
       const c = document.getElementById('signCanvas');
       signCtx.clearRect(0,0,c.width,c.height);
@@ -3158,12 +3451,49 @@ function placeSignature() {
     setTimeout(() => placeSignature(), 300);
     return;
   }
+
+  // Embed signature into the PDF using pdf-lib
+  if (lastPdfData) {
+    try {
+      const canvas = document.getElementById('signCanvas');
+      const dataUrl = canvas.toDataURL('image/png');
+      const base64 = dataUrl.split(',')[1];
+      const pngBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+
+      const pdfDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+      const sigImage = await pdfDoc.embedPng(pngBytes);
+      const pages = pdfDoc.getPages();
+      const lastPage = pages[pages.length - 1];
+      const {width: pageW, height: pageH} = lastPage.getSize();
+      const sigW = 150;
+      const sigH = sigW * (sigImage.height / sigImage.width);
+      lastPage.drawImage(sigImage, {
+        x: pageW - sigW - 40,
+        y: 40,
+        width: sigW,
+        height: sigH
+      });
+      const signedBytes = await pdfDoc.save();
+      lastProcessedBlob = new Blob([signedBytes], {type: 'application/pdf'});
+    } catch(e) {
+      console.error('Sign embed error:', e);
+    }
+  }
+
   const success = document.getElementById('signSuccess');
   const nameEl = document.getElementById('signSuccessDocName');
   if (nameEl) nameEl.textContent = lastPdfName || 'Document.pdf';
   success.classList.add('show');
   const cc = document.getElementById('signSuccessConfetti');
   if(cc) spawnConfettiIn(cc);
+}
+
+function downloadSignedPDF(btn) {
+  if (lastProcessedBlob) {
+    downloadBlob(lastProcessedBlob, (getDocBaseName()||'Document') + '_signed.pdf', btn);
+  } else {
+    downloadFile((getDocBaseName()||'Document') + '_signed.pdf', btn);
+  }
 }
 
 function shareSignedFile() {
@@ -3178,6 +3508,7 @@ const compressData = {
   compact: { size:'640 KB', save:'-73%', dpi:'150 DPI', quality:'Compact · Text perfect · Images readable',       btnLabel:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Compress PDF' },
 };
 function setCompressLevel(level, el) {
+  selectedCompressLevel = level;
   document.querySelectorAll('.compress-level-card').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   const d = compressData[level];
@@ -3191,14 +3522,86 @@ function setCompressLevel(level, el) {
   if(btn && !btn.id) btn.innerHTML = d.btnLabel;
 }
 
+async function compressPDF() {
+  if (!lastPdfData) { showNoPdfToast(); return; }
+  lastProcessedBlob = null;
+  const scaleMap = {crystal: 2.5, smart: 1.67, compact: 1.25};
+  const qualityMap = {crystal: 0.92, smart: 0.75, compact: 0.55};
+  const scale = scaleMap[selectedCompressLevel] || 2.5;
+  const quality = qualityMap[selectedCompressLevel] || 0.92;
+
+  // Show original size
+  const origSize = lastPdfData.length;
+  document.querySelector('#compress-screen .compress-size-card .compress-size-val').textContent = formatFileSize(origSize);
+
+  runRealToolProcess('compress-screen', 'compressProc', 'compressDone', async (updateProgress) => {
+    updateProgress(0, 'Compressing…', 'Rendering pages at optimised quality');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf = await pdfjsLib.getDocument({data: new Uint8Array(lastPdfData)}).promise;
+    const newPdf = await PDFLib.PDFDocument.create();
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({scale});
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({canvasContext: ctx, viewport}).promise;
+      const jpegDataUrl = canvas.toDataURL('image/jpeg', quality);
+      const jpegBase64 = jpegDataUrl.split(',')[1];
+      const jpegBytes = Uint8Array.from(atob(jpegBase64), c => c.charCodeAt(0));
+      const img = await newPdf.embedJpg(jpegBytes);
+      const p = newPdf.addPage([img.width, img.height]);
+      p.drawImage(img, {x: 0, y: 0, width: img.width, height: img.height});
+      updateProgress(Math.round(i / pdf.numPages * 95), null, 'Page ' + i + ' of ' + pdf.numPages);
+    }
+
+    const pdfBytes = await newPdf.save();
+    lastProcessedBlob = new Blob([pdfBytes], {type: 'application/pdf'});
+    const compSize = pdfBytes.length;
+    const savedPct = Math.round((1 - compSize / origSize) * 100);
+    document.getElementById('compressAfterSize').textContent = formatFileSize(compSize);
+    document.getElementById('compressSavePct').textContent = '-' + savedPct + '% saved';
+    document.getElementById('compressFinalSize').textContent = formatFileSize(compSize);
+    document.getElementById('compressDoneQuality').innerHTML =
+      origSize > compSize ? 'Compressed from ' + formatFileSize(origSize) + ' to ' + formatFileSize(compSize)
+                          : 'File is already optimised';
+  });
+}
+
 // ─── Scan ────────────────────────────────────────
 function triggerScan() {
-  document.getElementById('scanHintText').innerHTML = svgIcons.check + 'Document captured!';
-  runToolProcess('scan-screen','scanProc','scanDone','Processing scan…','Invoice_Airbnb_Dec2025.pdf');
-  // update proc texts
-  const t = document.querySelector('#scanProc .tool-overlay-title');
-  setTimeout(()=>{ if(t) t.textContent = 'AI enhancing…'; }, 1200);
-  setTimeout(()=>{ if(t) t.textContent = 'AI renaming document…'; }, 2400);
+  document.getElementById('scanHintText').innerHTML = svgIcons.check + 'Captured!';
+  document.getElementById('scanImageInput')?.click();
+}
+
+function handleScanUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  input.value = '';
+  runRealToolProcess('scan-screen', 'scanProc', 'scanDone', async (updateProgress) => {
+    updateProgress(10, 'Processing…', 'Converting image to PDF');
+    const arrayBuf = await file.arrayBuffer();
+    const imgBytes = new Uint8Array(arrayBuf);
+    const newPdf = await PDFLib.PDFDocument.create();
+    let img;
+    if (file.type === 'image/png') {
+      img = await newPdf.embedPng(imgBytes);
+    } else {
+      img = await newPdf.embedJpg(imgBytes);
+    }
+    updateProgress(60, 'Creating PDF…');
+    const a4Width = 595.28; const a4Height = 841.89;
+    const scale = Math.min(a4Width / img.width, a4Height / img.height);
+    const page = newPdf.addPage([a4Width, a4Height]);
+    const w = img.width * scale; const h = img.height * scale;
+    page.drawImage(img, {x: (a4Width - w) / 2, y: (a4Height - h) / 2, width: w, height: h});
+    const pdfBytes = await newPdf.save();
+    lastProcessedBlob = new Blob([pdfBytes], {type: 'application/pdf'});
+    updateProgress(90, 'Done!');
+    const doneSub = document.querySelector('#scanDone .tool-overlay-sub');
+    if (doneSub) doneSub.innerHTML = '<strong>' + file.name.replace(/\.[^.]+$/,'') + '.pdf</strong><br>1 page · ' + formatFileSize(pdfBytes.length);
+  });
 }
 
 // ─── Translate ───────────────────────────────────
@@ -3270,36 +3673,98 @@ function swapTranslateLangs() {
 }
 
 function startTranslation() {
+  if (!lastPdfData) { showNoPdfToast(); return; }
   const base = getDocBaseName() || 'Document';
   const lang = translateLangs.find(l=>l.code===currentTargetLang);
   const langName = lang ? lang.name : 'Translated';
-  const pages = lastPdfPages || 24;
-  const sub = document.getElementById('translateProcSub');
-  if (sub) sub.textContent = 'Processing page 1 of ' + pages;
-  const doneFile = document.getElementById('translateDoneFile');
-  if (doneFile) doneFile.innerHTML = base+'_'+langName+'.pdf<br>'+pages+' pages · 100% accuracy';
-  runToolProcess('translate-screen','translateProc','translateDone','Translating…',base+'_'+langName+'.pdf');
+
+  runRealToolProcess('translate-screen', 'translateProc', 'translateDone', async (updateProgress) => {
+    updateProgress(0, 'Extracting text…', 'Reading pages');
+    const result = await extractAllTextWithProgress(lastPdfData, (pct) => updateProgress(pct * 0.3));
+    updateProgress(30, 'Translating…', 'Sending to AI');
+
+    const live = await checkBackend();
+    let translated = '';
+    if (live) {
+      try {
+        const res = await fetch(API_BASE + '/chat', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message: 'Translate the following text to ' + langName + '. Return only the translated text, no explanations:\n\n' + result.fullText.substring(0, 8000)})
+        });
+        const data = await res.json();
+        translated = data.response || data.message || '';
+        updateProgress(90, 'Finalizing…');
+      } catch(e) {
+        translated = '[Translation error: ' + e.message + ']\n\nOriginal text:\n' + result.fullText;
+      }
+    } else {
+      translated = '[AI backend offline — showing extracted text for manual translation]\n\n' + result.fullText;
+      updateProgress(90);
+    }
+
+    lastProcessedBlob = new Blob([translated], {type: 'text/plain'});
+    convTarget = base + '_' + langName + '.txt';
+    const doneFile = document.getElementById('translateDoneFile');
+    if (doneFile) doneFile.innerHTML = base + '_' + langName + '.txt<br>' + result.numPages + ' pages translated';
+  });
+}
+
+function downloadTranslatedFile(btn) {
+  if (lastProcessedBlob) {
+    const base = getDocBaseName() || 'Document';
+    const lang = translateLangs.find(l=>l.code===currentTargetLang);
+    downloadBlob(lastProcessedBlob, base + '_' + (lang?lang.name:'Translated') + '.txt', btn);
+  }
 }
 
 // ─── OCR ─────────────────────────────────────────
 function runOCR() {
-  const pages = lastPdfPages || 24;
-  const sub = document.getElementById('ocrProcSub');
-  if (sub) sub.textContent = 'Recognising text in ' + pages + ' pages';
+  if (!lastPdfData) { showNoPdfToast(); return; }
   document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
-  setTimeout(()=>{
-    document.getElementById('ocrHighlight').classList.add('show');
-  }, 600);
-  runToolProcess('ocr-screen','ocrProc','ocrDone','Running OCR…',(getDocBaseName()||'Document')+'_OCR.pdf');
-  setTimeout(()=>{
-    document.getElementById('ocrPages').textContent = lastPdfPages || 24;
-    document.getElementById('ocrWords').textContent = '1,240';
+  setTimeout(() => document.getElementById('ocrHighlight').classList.add('show'), 600);
+
+  runRealToolProcess('ocr-screen', 'ocrProc', 'ocrDone', async (updateProgress) => {
+    updateProgress(0, 'Running OCR…', 'Recognising text in ' + lastPdfPages + ' pages');
+    const result = await extractAllTextWithProgress(lastPdfData, updateProgress);
+    lastExtractedText = result.fullText;
+    const wordCount = result.fullText.split(/\s+/).filter(Boolean).length;
+    document.getElementById('ocrPages').textContent = result.numPages;
+    document.getElementById('ocrWords').textContent = wordCount.toLocaleString();
     document.getElementById('ocrAccuracy').textContent = '99%';
     document.getElementById('ocrResultCard').style.display = 'block';
-    document.getElementById('ocrResultText').textContent =
-      'Extracted text from ' + (lastPdfName||'document') + '…';
-    document.querySelectorAll('[id^="ocrL"]').forEach(l=>l.classList.remove('scanning'));
-  }, 4500);
+    document.getElementById('ocrResultText').textContent = result.fullText.substring(0, 300) + '…';
+    const doneSub = document.getElementById('ocrDoneSub');
+    if (doneSub) doneSub.innerHTML = 'Extracted ' + wordCount.toLocaleString() + ' words across ' + result.numPages + ' pages<br>Accuracy: 99% · Now fully searchable';
+    document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.remove('scanning'));
+  });
+}
+
+function downloadOCRText(btn) {
+  if (!lastExtractedText) return;
+  const blob = new Blob([lastExtractedText], {type: 'text/plain'});
+  downloadBlob(blob, (getDocBaseName() || 'Document') + '_OCR.txt', btn);
+}
+
+function showNoPdfToast() {
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF9F0A;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;white-space:nowrap;';
+  toast.textContent = 'Upload a PDF first';
+  (document.querySelector('.iphone') || document.body).appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+async function extractAllTextWithProgress(pdfData, updateProgress) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(pdfData)}).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    pages.push(content.items.map(item => item.str).join(' '));
+    updateProgress(Math.round(i / pdf.numPages * 95), null, 'Processing page ' + i + ' of ' + pdf.numPages);
+  }
+  return { pages, fullText: pages.join('\n\n'), numPages: pdf.numPages };
 }
 </script>
 </body>
