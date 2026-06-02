@@ -3395,9 +3395,11 @@ async function handleMergeUpload(input) {
     try {
       const buf = await file.arrayBuffer();
       const bytes = new Uint8Array(buf);
+      // Keep a pristine copy — PDF.js detaches the buffer we pass to getDocument
+      const storedBytes = bytes.slice();
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
-      mergeFiles.push({name: file.name, data: bytes, pages: pdf.numPages, size: formatFileSize(file.size)});
+      mergeFiles.push({name: file.name, data: storedBytes, pages: pdf.numPages, size: formatFileSize(file.size)});
     } catch(e) {
       const toast = document.createElement('div');
       toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
