@@ -2694,6 +2694,10 @@
           <span class="share-app-label">Slack</span>
         </div>
       </div>
+      <div class="share-action" onclick="openEmailForm()">
+        <div class="share-action-icon" style="background:rgba(0,122,255,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <span class="share-action-text">Email Document</span>
+      </div>
       <div class="share-action" onclick="shareVia('Copy Link')">
         <div class="share-action-icon" style="background:rgba(142,142,147,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--label)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></div>
         <span class="share-action-text">Copy Link</span>
@@ -2707,6 +2711,22 @@
         <span class="share-action-text">Print</span>
       </div>
       <div class="share-cancel" onclick="closeShareSheet()">Cancel</div>
+    </div>
+  </div>
+
+  <!-- Email form overlay -->
+  <div class="share-sheet-backdrop" id="emailFormBackdrop" onclick="closeEmailForm()">
+    <div class="share-sheet" onclick="event.stopPropagation()">
+      <div class="share-sheet-handle"></div>
+      <div class="share-sheet-title">Email Document</div>
+      <div class="share-sheet-file" id="emailFormFile">Document.pdf</div>
+      <div style="padding:4px 4px 0">
+        <input type="email" id="emailTo" placeholder="Recipient email" autocomplete="email" style="width:100%;padding:13px 16px;border:1.5px solid var(--separator);border-radius:12px;font-size:15px;outline:none;box-sizing:border-box;background:var(--bg-secondary);color:var(--label);margin-bottom:10px" onfocus="this.style.borderColor='#007AFF'" onblur="this.style.borderColor='var(--separator)'">
+        <textarea id="emailMessage" placeholder="Add a message (optional)" rows="3" style="width:100%;padding:13px 16px;border:1.5px solid var(--separator);border-radius:12px;font-size:15px;outline:none;box-sizing:border-box;background:var(--bg-secondary);color:var(--label);resize:none;font-family:inherit" onfocus="this.style.borderColor='#007AFF'" onblur="this.style.borderColor='var(--separator)'"></textarea>
+        <div id="emailFormError" style="display:none;color:#FF3B30;font-size:13px;margin:8px 2px;text-align:center"></div>
+        <div id="emailSendBtn" onclick="sendEmailShare()" style="margin-top:12px;background:linear-gradient(135deg,#007AFF,#0055D4);color:#fff;text-align:center;padding:14px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer">Send Email</div>
+      </div>
+      <div class="share-cancel" onclick="closeEmailForm()">Cancel</div>
     </div>
   </div>
 
@@ -3174,6 +3194,69 @@ async function shareVia(appName) {
     return;
   }
   shareToast('Shared via ' + appName + '!');
+}
+
+// ─── Email sharing (with attachment via backend) ──
+let emailShareName = 'Document.pdf';
+function openEmailForm() {
+  emailShareName = document.getElementById('shareSheetFile')?.textContent || 'Document.pdf';
+  closeShareSheet();
+  document.getElementById('emailFormFile').textContent = emailShareName;
+  document.getElementById('emailFormError').style.display = 'none';
+  document.getElementById('emailFormBackdrop').classList.add('show');
+}
+function closeEmailForm() {
+  document.getElementById('emailFormBackdrop').classList.remove('show');
+}
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+async function sendEmailShare() {
+  const to = document.getElementById('emailTo').value.trim();
+  const message = document.getElementById('emailMessage').value;
+  const errEl = document.getElementById('emailFormError');
+  errEl.style.display = 'none';
+  if (!to || !to.includes('@')) { errEl.textContent = 'Enter a valid recipient email'; errEl.style.display = 'block'; return; }
+
+  const blob = getShareableBlob();
+  if (!blob) { errEl.textContent = 'No file available to send'; errEl.style.display = 'block'; return; }
+
+  const live = await checkBackend();
+  if (!backendAvailable) { errEl.textContent = 'Server offline — start the backend to send email'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('emailSendBtn');
+  const orig = btn.textContent;
+  btn.textContent = 'Sending…'; btn.style.opacity = '0.7';
+
+  try {
+    const fileBase64 = await blobToBase64(blob);
+    const token = getAuthToken();
+    const res = await fetch(API_BASE + '/share/email', {
+      method: 'POST',
+      headers: Object.assign({'Content-Type': 'application/json'}, token ? {'Authorization': 'Bearer ' + token} : {}),
+      body: JSON.stringify({to, filename: emailShareName, message, fileBase64})
+    });
+    const data = await res.json();
+    btn.textContent = orig; btn.style.opacity = '1';
+    if (!res.ok) { errEl.textContent = data.error || 'Failed to send'; errEl.style.display = 'block'; return; }
+    closeEmailForm();
+    document.getElementById('emailTo').value = '';
+    document.getElementById('emailMessage').value = '';
+    shareToast('📧 Email sent to ' + to);
+    // In test mode, log the preview URL so it can be opened
+    if (data.preview) {
+      console.log('Email preview (test mode):', data.preview);
+      shareToast('Test mode — preview link in console', '#FF9F0A');
+    }
+  } catch(e) {
+    btn.textContent = orig; btn.style.opacity = '1';
+    errEl.textContent = 'Send failed: ' + e.message; errEl.style.display = 'block';
+  }
 }
 
 function shareDoc() {

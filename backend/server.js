@@ -2,6 +2,7 @@ import { createServer } from 'http';
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { randomBytes, scryptSync, timingSafeEqual, createHmac } from 'crypto';
 import Groq from 'groq-sdk';
+import nodemailer from 'nodemailer';
 
 // Load .env
 if (existsSync('.env')) {
@@ -84,6 +85,38 @@ function publicUser(email, u) {
     subscription: u.subscription || { plan: 'free', status: 'active', since: u.createdAt },
     createdAt: u.createdAt,
   };
+}
+
+// ─── Email (share via email with attachment) ─────────────────
+// Build a transport. Uses real SMTP from .env if configured, otherwise
+// falls back to an Ethereal test account (delivers to a preview URL).
+let cachedTransport = null;
+async function getMailTransport() {
+  if (cachedTransport) return cachedTransport;
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    cachedTransport = {
+      transport: nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: Number(process.env.SMTP_PORT) || 587,
+        secure: String(process.env.SMTP_SECURE) === 'true',
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      }),
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      mode: 'smtp',
+    };
+  } else {
+    // No real SMTP — create a throwaway Ethereal account for testing
+    const testAccount = await nodemailer.createTestAccount();
+    cachedTransport = {
+      transport: nodemailer.createTransport({
+        host: 'smtp.ethereal.email', port: 587, secure: false,
+        auth: { user: testAccount.user, pass: testAccount.pass },
+      }),
+      from: 'FlyPDF <no-reply@flypdf.app>',
+      mode: 'ethereal',
+    };
+  }
+  return cachedTransport;
 }
 
 const SYSTEM = 'You are FlyPDF AI Assistant — a helpful PDF analysis tool. Be concise and use markdown formatting. When analyzing documents, highlight key numbers with **bold**.';
@@ -200,6 +233,44 @@ const server = createServer(async (req, res) => {
     return json(res, { user: publicUser(u.email, users[u.email]) });
   }
 
+  // ─── Share via email (with PDF attachment) ──────────────
+  if (url.pathname === '/share/email' && req.method === 'POST') {
+    const sender = authUser(req);
+    let body;
+    try { body = JSON.parse(await readBody(req)); } catch { return json(res, { error: 'Invalid request' }, 400); }
+    const to = (body.to || '').trim();
+    const filename = (body.filename || 'Document.pdf').replace(/[\r\n]/g, '');
+    const message = (body.message || '').toString().slice(0, 2000);
+    const fileBase64 = body.fileBase64 || '';
+    if (!to || !to.includes('@')) return json(res, { error: 'Valid recipient email required' }, 400);
+    if (!fileBase64) return json(res, { error: 'No file to send' }, 400);
+
+    // Limit attachment size (~10MB of base64)
+    if (fileBase64.length > 14_000_000) return json(res, { error: 'File too large to email (max ~10MB)' }, 413);
+
+    try {
+      const { transport, from, mode } = await getMailTransport();
+      const senderName = sender ? (sender.name || sender.email) : 'A FlyPDF user';
+      const info = await transport.sendMail({
+        from,
+        to,
+        subject: `${senderName} shared "${filename}" with you`,
+        text: (message ? message + '\n\n' : '') + `${senderName} sent you a document via FlyPDF.`,
+        html: `<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:480px">
+          <h2 style="color:#0A84FF;margin:0 0 8px">FlyPDF</h2>
+          <p style="font-size:15px;color:#222">${senderName} shared a document with you:</p>
+          ${message ? `<p style="font-size:14px;color:#444;background:#F5F5F7;padding:12px;border-radius:10px">${message.replace(/</g,'&lt;')}</p>` : ''}
+          <p style="font-size:14px;color:#666">📎 <strong>${filename}</strong> is attached to this email.</p>
+        </div>`,
+        attachments: [{ filename, content: Buffer.from(fileBase64, 'base64'), contentType: 'application/pdf' }],
+      });
+      const preview = mode === 'ethereal' ? nodemailer.getTestMessageUrl(info) : null;
+      return json(res, { ok: true, mode, messageId: info.messageId, preview });
+    } catch (e) {
+      return json(res, { error: 'Failed to send: ' + e.message }, 500);
+    }
+  }
+
   // Chat
   if (url.pathname === '/chat' && req.method === 'POST') {
     if (!groq) return json(res, { error: 'API key not configured' }, 503);
@@ -278,4 +349,6 @@ server.listen(PORT, () => {
   console.log(`Model: ${MODEL}`);
   console.log(`Groq API: ${groq ? 'connected' : 'NOT configured'}`);
   console.log(`Auth: enabled · ${Object.keys(loadUsers()).length} user(s) registered`);
+  const smtpReal = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
+  console.log(`Email: ${smtpReal ? 'real SMTP (' + process.env.SMTP_HOST + ')' : 'test mode (Ethereal — preview URLs)'}`);
 });

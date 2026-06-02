@@ -7,6 +7,7 @@
     "dev": "node --watch server.js"
   },
   "dependencies": {
-    "groq-sdk": "^0.15.0"
+    "groq-sdk": "^0.15.0",
+    "nodemailer": "^8.0.10"
   }
 }
