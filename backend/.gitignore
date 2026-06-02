@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 node_modules/
+users.json
+.auth_secret

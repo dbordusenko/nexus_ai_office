@@ -1516,9 +1516,62 @@
   </div>
 
   <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: AUTH (Sign In / Sign Up) -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="auth-screen" class="screen active" style="background:linear-gradient(160deg,#0A84FF,#5E5CE6);display:flex;flex-direction:column;padding:0">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:32px 28px;overflow-y:auto">
+      <!-- Logo -->
+      <div style="text-align:center;margin-bottom:28px">
+        <div style="width:72px;height:72px;border-radius:20px;background:rgba(255,255,255,0.18);display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;backdrop-filter:blur(10px)">
+          <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-0.5px">FlyPDF</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.85);margin-top:4px" id="authSubtitle">Sign in to continue</div>
+      </div>
+
+      <!-- Card -->
+      <div style="background:#fff;border-radius:22px;padding:24px 20px;box-shadow:0 20px 50px rgba(0,0,0,0.25)">
+        <!-- Toggle -->
+        <div style="display:flex;background:#F2F2F7;border-radius:12px;padding:4px;margin-bottom:20px">
+          <div id="authTabSignIn" onclick="setAuthMode('signin')" style="flex:1;text-align:center;padding:9px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:#000;box-shadow:0 1px 3px rgba(0,0,0,0.1);transition:all 0.2s">Sign In</div>
+          <div id="authTabSignUp" onclick="setAuthMode('signup')" style="flex:1;text-align:center;padding:9px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;color:#8E8E93;transition:all 0.2s">Sign Up</div>
+        </div>
+
+        <!-- Name (signup only) -->
+        <div id="authNameRow" style="display:none;margin-bottom:12px">
+          <input type="text" id="authName" placeholder="Full name" autocomplete="name" style="width:100%;padding:13px 16px;border:1.5px solid #E5E5EA;border-radius:12px;font-size:15px;outline:none;box-sizing:border-box;color:#000;background:#fff" onfocus="this.style.borderColor='#0A84FF'" onblur="this.style.borderColor='#E5E5EA'">
+        </div>
+        <!-- Email -->
+        <div style="margin-bottom:12px">
+          <input type="email" id="authEmail" placeholder="Email" autocomplete="email" style="width:100%;padding:13px 16px;border:1.5px solid #E5E5EA;border-radius:12px;font-size:15px;outline:none;box-sizing:border-box;color:#000;background:#fff" onfocus="this.style.borderColor='#0A84FF'" onblur="this.style.borderColor='#E5E5EA'">
+        </div>
+        <!-- Password -->
+        <div style="margin-bottom:8px">
+          <input type="password" id="authPassword" placeholder="Password" autocomplete="current-password" style="width:100%;padding:13px 16px;border:1.5px solid #E5E5EA;border-radius:12px;font-size:15px;outline:none;box-sizing:border-box;color:#000;background:#fff" onfocus="this.style.borderColor='#0A84FF'" onblur="this.style.borderColor='#E5E5EA'">
+        </div>
+
+        <!-- Error message -->
+        <div id="authError" style="display:none;color:#FF3B30;font-size:13px;margin:8px 2px;text-align:center"></div>
+
+        <!-- Submit -->
+        <div id="authSubmit" onclick="submitAuth()" style="margin-top:16px;background:linear-gradient(135deg,#0A84FF,#5E5CE6);color:#fff;text-align:center;padding:14px;border-radius:13px;font-size:16px;font-weight:700;cursor:pointer;user-select:none">Sign In</div>
+
+        <!-- Skip / offline note -->
+        <div style="text-align:center;margin-top:14px">
+          <span onclick="skipAuth()" style="font-size:13px;color:#8E8E93;cursor:pointer">Continue without account</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:20px;font-size:11px;color:rgba(255,255,255,0.7);line-height:1.5">
+        Your data is stored securely on your FlyPDF account.<br>By continuing you agree to the Terms &amp; Privacy Policy.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
   <!-- SCREEN: ONBOARDING -->
   <!-- ═══════════════════════════════════ -->
-  <div id="onboarding-screen" class="screen active">
+  <div id="onboarding-screen" class="screen">
     <div class="onb-skip" onclick="skipOnboarding()">Skip</div>
 
     <div class="onb-illustration">
@@ -1725,7 +1778,7 @@
         <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <div class="tab-label">Vault</div>
       </div>
-      <div class="tab-item" onclick="showScreen('paywall-screen');switchTab(this,'profile')">
+      <div class="tab-item" onclick="openProfile();switchTab(this,'profile')">
         <div class="tab-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="tab-label">Profile</div>
       </div>
@@ -1734,6 +1787,59 @@
 
   <!-- ═══════════════════════════════════ -->
   <!-- SCREEN: DOCUMENT VIEWER -->
+  <!-- ═══════════════════════════════════ -->
+  <!-- SCREEN: PROFILE -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="profile-screen" class="screen">
+    <div class="tool-screen-header">
+      <div class="back-chevron" onclick="switchTab(document.querySelector('.tab-item'),'home');showScreen('home-screen')">‹</div>
+      <span class="tool-screen-title">Profile</span>
+    </div>
+    <div class="tool-content" style="padding-top:10px">
+      <!-- User card -->
+      <div style="display:flex;align-items:center;gap:14px;padding:20px;margin:0 16px 16px;background:var(--card);border-radius:18px;box-shadow:0 2px 10px rgba(0,0,0,0.04)">
+        <div id="profileAvatar" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#0A84FF,#5E5CE6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700">G</div>
+        <div style="flex:1;min-width:0">
+          <div id="profileUserName" style="font-size:18px;font-weight:700;color:var(--label)">Guest</div>
+          <div id="profileUserEmail" style="font-size:13px;color:var(--label3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Not signed in</div>
+        </div>
+        <div id="profilePlanBadge" style="font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;background:#E5E5EA;color:#8E8E93;letter-spacing:0.5px">FREE</div>
+      </div>
+
+      <!-- Subscription card -->
+      <div style="margin:0 16px 16px;padding:18px;background:linear-gradient(135deg,#1C1C1E,#2C2C2E);border-radius:18px;color:#fff">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <span style="font-size:15px;font-weight:700">FlyPDF Pro</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFD700" stroke="none"><path d="M2 20h20L18 8l-4 6-2-8-2 8-4-6z"/></svg>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:14px">Unlock OCR, unlimited conversions, batch tools, and priority AI processing.</div>
+        <div onclick="goPro()" style="background:#fff;color:#000;text-align:center;padding:12px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Upgrade to Pro</div>
+      </div>
+
+      <!-- Settings list -->
+      <div style="margin:0 16px;background:var(--card);border-radius:14px;overflow:hidden">
+        <div onclick="showScreen('paywall-screen')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--separator);cursor:pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span style="flex:1;font-size:15px;color:var(--label)">Manage Subscription</span>
+          <span style="color:var(--label3)">›</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--separator);cursor:pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span style="flex:1;font-size:15px;color:var(--label)">Privacy &amp; Security</span>
+          <span style="color:var(--label3)">›</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span style="flex:1;font-size:15px;color:var(--label)">Help &amp; Support</span>
+          <span style="color:var(--label3)">›</span>
+        </div>
+      </div>
+
+      <!-- Sign out -->
+      <div id="profileAuthBtn" onclick="logout()" style="margin:16px;padding:14px;text-align:center;background:var(--card);border-radius:14px;color:#FF3B30;font-size:15px;font-weight:600;cursor:pointer">Sign Out</div>
+    </div>
+  </div>
+
   <!-- ═══════════════════════════════════ -->
   <div id="doc-viewer-screen" class="screen">
     <div style="display:flex;align-items:center;padding:12px 16px;gap:12px;background:var(--card);border-bottom:1px solid var(--separator)">
@@ -2650,6 +2756,9 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 10000);
 
+// On launch: validate any saved session and route to the right screen
+initAuth();
+
 // ─── Dark mode ─────────────────────────────────
 function toggleDark() {
   isDark = !isDark;
@@ -3029,6 +3138,198 @@ async function checkBackend() {
     backendAvailable = d.status === 'ok' && d.has_key;
   } catch { backendAvailable = false; }
   return backendAvailable;
+}
+
+// ─── Authentication ──────────────────────────────
+let authMode = 'signin';
+let currentUser = null;
+function getAuthToken() { try { return localStorage.getItem('flypdf_token') || ''; } catch { return ''; } }
+function setAuthToken(t) { try { t ? localStorage.setItem('flypdf_token', t) : localStorage.removeItem('flypdf_token'); } catch {} }
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === 'signup';
+  document.getElementById('authNameRow').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('authSubtitle').textContent = isSignup ? 'Create your free account' : 'Sign in to continue';
+  document.getElementById('authSubmit').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('authPassword').setAttribute('autocomplete', isSignup ? 'new-password' : 'current-password');
+  // Tab styles
+  const si = document.getElementById('authTabSignIn'), su = document.getElementById('authTabSignUp');
+  const on = 'flex:1;text-align:center;padding:9px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:#000;box-shadow:0 1px 3px rgba(0,0,0,0.1);transition:all 0.2s';
+  const off = 'flex:1;text-align:center;padding:9px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;color:#8E8E93;transition:all 0.2s';
+  si.style.cssText = isSignup ? off : on;
+  su.style.cssText = isSignup ? on : off;
+  document.getElementById('authError').style.display = 'none';
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function submitAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim();
+  if (!email || !password) { showAuthError('Please enter email and password'); return; }
+
+  const btn = document.getElementById('authSubmit');
+  const origText = btn.textContent;
+  btn.textContent = 'Please wait…';
+  btn.style.opacity = '0.7';
+
+  const live = await checkBackend();
+  if (!backendAvailable) {
+    btn.textContent = origText; btn.style.opacity = '1';
+    showAuthError('Server offline. Start backend or continue without account.');
+    return;
+  }
+
+  try {
+    const endpoint = authMode === 'signup' ? '/auth/register' : '/auth/login';
+    const res = await fetch(API_BASE + endpoint, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({email, password, name})
+    });
+    const data = await res.json();
+    if (!res.ok) { showAuthError(data.error || 'Something went wrong'); btn.textContent = origText; btn.style.opacity = '1'; return; }
+    setAuthToken(data.token);
+    currentUser = data.user;
+    btn.textContent = origText; btn.style.opacity = '1';
+    document.getElementById('authPassword').value = '';
+    updateProfileUI();
+    // First-time signups see onboarding, returning users go home
+    if (authMode === 'signup') { showScreen('onboarding-screen'); }
+    else { showScreen('home-screen'); }
+  } catch(e) {
+    btn.textContent = origText; btn.style.opacity = '1';
+    showAuthError('Connection failed: ' + e.message);
+  }
+}
+
+function skipAuth() {
+  currentUser = null;
+  showScreen('onboarding-screen');
+}
+
+async function logout() {
+  setAuthToken('');
+  currentUser = null;
+  updateProfileUI();
+  setAuthMode('signin');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPassword').value = '';
+  document.getElementById('authName').value = '';
+  showScreen('auth-screen');
+}
+
+// Validate stored token on app launch and route accordingly
+async function initAuth() {
+  const token = getAuthToken();
+  if (!token) { showScreen('auth-screen'); return; }
+  try {
+    const res = await fetch(API_BASE + '/auth/me', {
+      headers: {'Authorization': 'Bearer ' + token},
+      signal: AbortSignal.timeout(2500)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      currentUser = data.user;
+      updateProfileUI();
+      showScreen('home-screen');
+    } else {
+      setAuthToken('');
+      showScreen('auth-screen');
+    }
+  } catch {
+    // Backend offline but token exists — let them in offline
+    showScreen('auth-screen');
+  }
+}
+
+function updateProfileUI() {
+  const nameEl = document.getElementById('profileUserName');
+  const emailEl = document.getElementById('profileUserEmail');
+  const planEl = document.getElementById('profilePlanBadge');
+  const initialEl = document.getElementById('profileAvatar');
+  if (currentUser) {
+    if (nameEl) nameEl.textContent = currentUser.name || 'FlyPDF User';
+    if (emailEl) emailEl.textContent = currentUser.email;
+    if (initialEl) initialEl.textContent = (currentUser.name || currentUser.email || '?').charAt(0).toUpperCase();
+    const plan = currentUser.subscription ? currentUser.subscription.plan : 'free';
+    if (planEl) {
+      planEl.textContent = plan === 'pro' ? 'PRO' : 'FREE';
+      planEl.style.background = plan === 'pro' ? 'linear-gradient(135deg,#FFD700,#FFA500)' : '#E5E5EA';
+      planEl.style.color = plan === 'pro' ? '#000' : '#8E8E93';
+    }
+  } else {
+    if (nameEl) nameEl.textContent = 'Guest';
+    if (emailEl) emailEl.textContent = 'Not signed in';
+    if (initialEl) initialEl.textContent = 'G';
+    if (planEl) { planEl.textContent = 'FREE'; planEl.style.background = '#E5E5EA'; planEl.style.color = '#8E8E93'; }
+  }
+}
+
+// Upgrade subscription (called from paywall / profile)
+async function upgradeSubscription(plan) {
+  const token = getAuthToken();
+  if (!token) { showScreen('auth-screen'); return false; }
+  try {
+    const res = await fetch(API_BASE + '/auth/subscription', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+      body: JSON.stringify({plan})
+    });
+    if (res.ok) {
+      const data = await res.json();
+      currentUser = data.user;
+      updateProfileUI();
+      return true;
+    }
+  } catch {}
+  return false;
+}
+
+// Open the profile screen, reflecting sign-in state on the auth button
+function openProfile() {
+  updateProfileUI();
+  const authBtn = document.getElementById('profileAuthBtn');
+  if (authBtn) {
+    if (currentUser) {
+      authBtn.textContent = 'Sign Out';
+      authBtn.style.color = '#FF3B30';
+      authBtn.setAttribute('onclick', 'logout()');
+    } else {
+      authBtn.textContent = 'Sign In / Sign Up';
+      authBtn.style.color = '#0A84FF';
+      authBtn.setAttribute('onclick', "showScreen('auth-screen')");
+    }
+  }
+  showScreen('profile-screen');
+}
+
+// Upgrade to Pro (requires sign-in)
+async function goPro() {
+  if (!currentUser) {
+    showScreen('auth-screen');
+    return;
+  }
+  const ok = await upgradeSubscription('pro');
+  if (ok) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#34C759;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+    toast.textContent = '🎉 Welcome to FlyPDF Pro!';
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  } else {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+    toast.textContent = 'Upgrade failed. Check connection.';
+    (document.querySelector('.iphone') || document.body).appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
 }
 
 function appendAiBubble(messages, text) {
