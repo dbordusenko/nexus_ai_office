@@ -2050,12 +2050,13 @@
       <span class="tool-screen-title">Merge PDFs</span>
       <span id="mergeFileCount" style="font-size:13px;color:var(--label3)">0 files</span>
     </div>
-    <input type="file" id="mergeFileInput" accept=".pdf" multiple style="display:none" onchange="handleMergeUpload(this)">
     <div class="tool-content">
       <div class="tool-section">
         <div class="tool-section-label">Selected Documents</div>
         <div id="mergeFileList"></div>
-        <div class="merge-add-btn" onclick="document.getElementById('mergeFileInput').click()">+ Add Document</div>
+        <label class="merge-add-btn" style="cursor:pointer">+ Add Document
+          <input type="file" id="mergeFileInput" accept=".pdf" multiple style="position:absolute;opacity:0;width:0;height:0" onchange="handleMergeUpload(this)">
+        </label>
       </div>
       <div class="tool-section">
         <div class="merge-arrow">↓</div>
@@ -3386,22 +3387,35 @@ function closeDone(id) {
 
 // ─── Merge ──────────────────────────────────────
 function initMergeScreen() {
-  if (mergeFiles.length === 0 && lastPdfData) {
-    mergeFiles.push({name: lastPdfName, data: new Uint8Array(lastPdfData), pages: lastPdfPages, size: lastPdfSize});
+  if (mergeFiles.length === 0 && lastPdfData && lastPdfData.length > 4) {
+    try {
+      const testData = new Uint8Array(lastPdfData);
+      // Quick check: PDF starts with %PDF
+      if (testData[0] === 0x25 && testData[1] === 0x50 && testData[2] === 0x44 && testData[3] === 0x46) {
+        mergeFiles.push({name: lastPdfName || 'Current.pdf', data: testData, pages: lastPdfPages || 1, size: lastPdfSize || formatFileSize(testData.length)});
+      }
+    } catch(e) {}
   }
   renderMergeFileList();
 }
 
 async function handleMergeUpload(input) {
+  let added = 0;
   for (const file of input.files) {
     try {
       const buf = await file.arrayBuffer();
       const bytes = new Uint8Array(buf);
+      if (bytes[0] !== 0x25 || bytes[1] !== 0x50) throw new Error('Not a PDF');
       pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
       mergeFiles.push({name: file.name, data: bytes, pages: pdf.numPages, size: formatFileSize(file.size)});
+      added++;
     } catch(e) {
-      console.error('Failed to load:', file.name, e);
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
+      toast.textContent = file.name + ': invalid PDF';
+      (document.querySelector('.iphone') || document.body).appendChild(toast);
+      setTimeout(() => toast.remove(), 2500);
     }
   }
   input.value = '';
