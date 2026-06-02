@@ -3439,7 +3439,7 @@ async function mergePDFs() {
     updateProgress(0, 'Merging documents…', 'Combining ' + mergeFiles.length + ' PDFs');
     const merged = await PDFLib.PDFDocument.create();
     for (let i = 0; i < mergeFiles.length; i++) {
-      const doc = await PDFLib.PDFDocument.load(mergeFiles[i].data);
+      const doc = await PDFLib.PDFDocument.load(mergeFiles[i].data, {ignoreEncryption: true});
       const pages = await merged.copyPages(doc, doc.getPageIndices());
       pages.forEach(p => merged.addPage(p));
       updateProgress(Math.round((i + 1) / mergeFiles.length * 90), null, 'Processing file ' + (i+1) + ' of ' + mergeFiles.length);
@@ -3583,7 +3583,7 @@ async function placeSignature() {
       const base64 = dataUrl.split(',')[1];
       const pngBytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
 
-      const pdfDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+      const pdfDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData), {ignoreEncryption: true});
       const sigImage = await pdfDoc.embedPng(pngBytes);
       const pages = pdfDoc.getPages();
       const lastPage = pages[pages.length - 1];
@@ -3778,7 +3778,7 @@ async function splitPDF() {
   }
 
   runRealToolProcess('split-screen', 'splitProc', 'splitDone', async (updateProgress) => {
-    const srcDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+    const srcDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData), {ignoreEncryption: true});
     const totalPages = srcDoc.getPageCount();
 
     if (splitMode === 'each') {
@@ -3836,7 +3836,7 @@ async function protectPDF() {
 
   runRealToolProcess('protect-screen', 'protectProc', 'protectDone', async (updateProgress) => {
     updateProgress(10, 'Encrypting…', 'Loading document');
-    const pdfDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData));
+    const pdfDoc = await PDFLib.PDFDocument.load(new Uint8Array(lastPdfData), {ignoreEncryption: true});
     updateProgress(40, 'Encrypting…', 'Applying password protection');
 
     // pdf-lib doesn't support native PDF encryption, so we use a workaround:
