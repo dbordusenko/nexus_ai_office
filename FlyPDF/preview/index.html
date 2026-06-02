@@ -3068,6 +3068,47 @@ async function openDocViewer(name, pages, size, pdfData) {
   }
 }
 
+// Resolve the file currently available for sharing/saving
+function getShareableBlob() {
+  if (lastProcessedBlob) return lastProcessedBlob;
+  if (lastPdfData && lastPdfData.length) return new Blob([new Uint8Array(lastPdfData)], {type: 'application/pdf'});
+  return null;
+}
+
+// Open the device's NATIVE share sheet (real contacts, Messages, Mail,
+// AirDrop, WhatsApp, …) with the actual file attached. Falls back to the
+// in-app sheet on browsers without the Web Share API (most desktops).
+async function shareCurrentFile(filename) {
+  filename = filename || 'Document.pdf';
+  const blob = getShareableBlob();
+
+  // 1) Native share WITH the real file → opens OS contact/app picker
+  if (blob && navigator.canShare) {
+    const file = new File([blob], filename, {type: blob.type || 'application/pdf'});
+    if (navigator.canShare({files: [file]})) {
+      try {
+        await navigator.share({files: [file], title: filename, text: 'Shared from FlyPDF' });
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // user dismissed the sheet
+      }
+    }
+  }
+
+  // 2) Native share without a file (title/text) — still reaches contacts/apps
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: filename, text: 'Check out this document from FlyPDF: ' + filename });
+      return;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+  }
+
+  // 3) Fallback: in-app share sheet (desktop browsers)
+  openShareSheet(filename);
+}
+
 function openShareSheet(filename) {
   document.getElementById('shareSheetFile').textContent = filename || 'Document.pdf';
   document.getElementById('shareSheetBackdrop').classList.add('show');
@@ -3077,23 +3118,67 @@ function closeShareSheet() {
   document.getElementById('shareSheetBackdrop').classList.remove('show');
 }
 
-function shareVia(appName) {
-  closeShareSheet();
+function shareToast(msg, color) {
   const toast = document.createElement('div');
-  let msg = '';
-  if (appName === 'Copy Link') msg = 'Link copied to clipboard!';
-  else if (appName === 'Save to Files') msg = 'Saved to Files!';
-  else if (appName === 'Print') msg = 'Sent to printer!';
-  else msg = 'Shared via ' + appName + '!';
-  toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#34C759;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;white-space:nowrap;';
+  toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:' + (color||'#34C759') + ';color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;white-space:nowrap;';
   toast.textContent = msg;
   (document.querySelector('.iphone') || document.body).appendChild(toast);
-  setTimeout(() => toast.remove(), 2000);
+  setTimeout(() => toast.remove(), 2200);
+}
+
+async function shareVia(appName) {
+  const name = document.getElementById('shareSheetFile')?.textContent || 'Document.pdf';
+  closeShareSheet();
+
+  // Contact / messaging apps → try the device's native share (real contacts) first
+  const contactApps = ['AirDrop', 'Messages', 'Mail', 'WhatsApp', 'Telegram', 'Slack'];
+  if (contactApps.includes(appName)) {
+    const blob = getShareableBlob();
+    if (blob && navigator.canShare) {
+      const file = new File([blob], name, {type: blob.type || 'application/pdf'});
+      if (navigator.canShare({files: [file]})) {
+        try { await navigator.share({files: [file], title: name, text: 'Shared from FlyPDF'}); return; }
+        catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+    }
+    // Web fallbacks that reach real contacts where possible
+    const text = encodeURIComponent('Check out this document from FlyPDF: ' + name);
+    if (appName === 'WhatsApp') { window.open('https://wa.me/?text=' + text, '_blank'); return; }
+    if (appName === 'Telegram') { window.open('https://t.me/share/url?url=&text=' + text, '_blank'); return; }
+    if (appName === 'Mail') { window.location.href = 'mailto:?subject=' + encodeURIComponent(name) + '&body=' + text; return; }
+    shareToast(appName + ' isn’t available on this device', '#FF9F0A');
+    return;
+  }
+
+  // Utility actions — make them real
+  if (appName === 'Copy Link') {
+    const link = window.location.href;
+    try { await navigator.clipboard.writeText(link); shareToast('Link copied to clipboard!'); }
+    catch { shareToast('Copy not available here', '#FF9F0A'); }
+    return;
+  }
+  if (appName === 'Save to Files') {
+    const blob = getShareableBlob();
+    if (blob) { downloadBlob(blob, name); shareToast('Saving ' + name + '…'); }
+    else shareToast('No file to save', '#FF9F0A');
+    return;
+  }
+  if (appName === 'Print') {
+    const blob = getShareableBlob();
+    if (blob) {
+      const url = URL.createObjectURL(blob);
+      const w = window.open(url, '_blank');
+      if (w) { w.onload = () => { try { w.print(); } catch {} }; }
+      shareToast('Opening print…');
+    } else shareToast('No file to print', '#FF9F0A');
+    return;
+  }
+  shareToast('Shared via ' + appName + '!');
 }
 
 function shareDoc() {
   const name = document.getElementById('docViewerName').textContent;
-  openShareSheet(name);
+  shareCurrentFile(name);
 }
 
 function downloadFile(filename, btn) {
@@ -3606,8 +3691,8 @@ function spawnConfetti() {
 }
 
 function shareFile() {
-  const name = document.getElementById('docViewerName')?.textContent || 'Document.pdf';
-  openShareSheet(name);
+  const name = (typeof convTarget !== 'undefined' && convTarget) ? convTarget : (getDocBaseName() ? getDocBaseName() + '.pdf' : 'Document.pdf');
+  shareCurrentFile(name);
 }
 
 function backToHome() {
@@ -3767,13 +3852,13 @@ function spawnConfettiIn(container) {
 }
 
 function toolShareBtn(btn, type) {
-  const name = document.getElementById('docViewerName')?.textContent || 'Document.pdf';
-  openShareSheet(name);
+  const name = (typeof convTarget !== 'undefined' && convTarget) ? convTarget : (getDocBaseName() ? getDocBaseName() + '.pdf' : 'Document.pdf');
+  shareCurrentFile(name);
 }
 
 function showShareSheet() {
   const name = document.getElementById('docViewerName')?.textContent || 'Document.pdf';
-  openShareSheet(name);
+  shareCurrentFile(name);
 }
 
 // ─── Sign ────────────────────────────────────────
