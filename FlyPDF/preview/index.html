@@ -2646,6 +2646,24 @@
         <div class="ocr-result-title">Extracted Text Preview</div>
         <div class="ocr-result-text" id="ocrResultText"></div>
       </div>
+      <div style="padding:0 20px 10px">
+        <div style="font-size:12px;font-weight:600;color:var(--label3);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.4px">OCR Language (for photos)</div>
+        <select id="ocrLang" style="width:100%;padding:12px 14px;border:1.5px solid var(--separator);border-radius:12px;font-size:15px;background:var(--bg-secondary);color:var(--label);outline:none">
+          <option value="eng">English</option>
+          <option value="rus">Русский (Russian)</option>
+          <option value="spa">Español (Spanish)</option>
+          <option value="fra">Français (French)</option>
+          <option value="deu">Deutsch (German)</option>
+          <option value="por">Português (Portuguese)</option>
+          <option value="ita">Italiano (Italian)</option>
+          <option value="chi_sim">中文 (Chinese)</option>
+          <option value="ara">العربية (Arabic)</option>
+          <option value="hin">हिन्दी (Hindi)</option>
+          <option value="jpn">日本語 (Japanese)</option>
+          <option value="ukr">Українська (Ukrainian)</option>
+          <option value="eng+rus">English + Русский</option>
+        </select>
+      </div>
       <div id="ocrFileLabel" style="padding:0 20px 4px;font-size:13px;color:var(--label3);text-align:center"></div>
       <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
         <label class="btn-primary" style="background:linear-gradient(135deg,#34C759,#1E8C3A);cursor:pointer;position:relative;overflow:hidden;display:block;text-align:center">
@@ -4567,12 +4585,16 @@ async function handleOcrUpload(input) {
       return;
     }
     const imgUrl = URL.createObjectURL(file);
+    const ocrLang = (document.getElementById('ocrLang') && document.getElementById('ocrLang').value) || 'eng';
     if (labelEl) labelEl.textContent = '🖼️ ' + file.name + ' — recognising text…';
     runRealToolProcess('ocr-screen', 'ocrProc', 'ocrDone', async (updateProgress) => {
-      updateProgress(0, 'Running OCR…', 'Recognising text in image');
+      updateProgress(0, 'Running OCR…', 'Loading ' + ocrLang + ' model…');
       document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
-      const result = await Tesseract.recognize(imgUrl, 'eng', {
-        logger: m => { if (m.status === 'recognizing text') updateProgress(Math.round(m.progress * 95), 'Running OCR…', 'Recognising text in image'); }
+      const result = await Tesseract.recognize(imgUrl, ocrLang, {
+        logger: m => {
+          if (m.status === 'recognizing text') updateProgress(Math.round(m.progress * 95), 'Running OCR…', 'Recognising text');
+          else if (m.status && m.status.indexOf('loading') !== -1) updateProgress(Math.min(15, Math.round((m.progress||0) * 15)), 'Running OCR…', 'Downloading language model…');
+        }
       });
       URL.revokeObjectURL(imgUrl);
       const text = result.data.text || '';
