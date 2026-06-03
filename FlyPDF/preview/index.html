@@ -2397,7 +2397,11 @@
       <div class="tool-overlay-sub">AI renamed: <strong>Invoice_Airbnb_Dec2025.pdf</strong><br>1 page · 340 KB · Searchable OCR</div>
       <div class="tool-btn-row">
         <div class="btn-primary" onclick="if(lastProcessedBlob){downloadBlob(lastProcessedBlob,'Scanned_Document.pdf',this)}else{downloadFile('Scanned_Document.pdf',this)}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save File</div>
-        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <label class="btn-secondary-tool" style="cursor:pointer;position:relative;overflow:hidden">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Retake
+          <input type="file" accept="image/*" capture="environment" onchange="handleScanUpload(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+        </label>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
         <div class="btn-secondary-tool" onclick="closeDone('scanDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -4221,6 +4225,9 @@ function handleScanUpload(input) {
   const file = input.files[0];
   if (!file) return;
   input.value = '';
+  // Retake: clear any previous result so the new scan starts clean
+  closeDone('scanDone');
+  showScreen('scan-screen');
   runRealToolProcess('scan-screen', 'scanProc', 'scanDone', async (updateProgress) => {
     updateProgress(10, 'Processing…', 'Converting image to PDF');
     const arrayBuf = await file.arrayBuffer();
