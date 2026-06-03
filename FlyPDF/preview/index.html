@@ -4554,6 +4554,18 @@ async function downloadTranslatedAs(format, btn) {
 }
 
 // ─── OCR ─────────────────────────────────────────
+// Show a real document/image preview inside the OCR preview box
+function setOcrPreview(el) {
+  const box = document.getElementById('ocrPreview');
+  if (!box) return;
+  box.innerHTML = '';
+  el.style.cssText = 'display:block;max-width:100%;max-height:100%;width:auto;height:auto;margin:0 auto;object-fit:contain';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f5f5f7;overflow:hidden';
+  wrap.appendChild(el);
+  box.appendChild(wrap);
+}
+
 // Load a PDF or photo from the device for OCR
 async function handleOcrUpload(input) {
   const file = input.files && input.files[0];
@@ -4573,6 +4585,8 @@ async function handleOcrUpload(input) {
       lastPdfName = file.name;
       lastPdfPages = pdf.numPages;
       lastPdfSize = formatFileSize(file.size);
+      // Render first-page preview
+      try { const thumb = await renderPageToCanvas(lastPdfData, 1, 1.5); setOcrPreview(thumb); } catch(e) {}
       if (labelEl) labelEl.textContent = '📄 ' + file.name + ' · ' + pdf.numPages + ' pages — tap "Extract Text"';
       runOCR();
     } catch(e) {
@@ -4586,6 +4600,10 @@ async function handleOcrUpload(input) {
     }
     const imgUrl = URL.createObjectURL(file);
     const ocrLang = (document.getElementById('ocrLang') && document.getElementById('ocrLang').value) || 'eng';
+    // Show the photo as preview
+    const previewImg = document.createElement('img');
+    previewImg.src = imgUrl;
+    setOcrPreview(previewImg);
     if (labelEl) labelEl.textContent = '🖼️ ' + file.name + ' — recognising text…';
     runRealToolProcess('ocr-screen', 'ocrProc', 'ocrDone', async (updateProgress) => {
       updateProgress(0, 'Running OCR…', 'Loading ' + ocrLang + ' model…');
