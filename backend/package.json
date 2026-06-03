@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "groq-sdk": "^0.15.0",
-    "nodemailer": "^8.0.10"
+    "nodemailer": "^8.0.10",
+    "stripe": "^22.2.0"
   }
 }

@@ -1814,13 +1814,14 @@
           <span style="font-size:15px;font-weight:700">FlyPDF Pro</span>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="#FFD700" stroke="none"><path d="M2 20h20L18 8l-4 6-2-8-2 8-4-6z"/></svg>
         </div>
-        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:14px">Unlock OCR, unlimited conversions, batch tools, and priority AI processing.</div>
-        <div onclick="goPro()" style="background:#fff;color:#000;text-align:center;padding:12px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Upgrade to Pro</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5;margin-bottom:6px">Unlock OCR, unlimited conversions, batch tools, and priority AI processing.</div>
+        <div style="font-size:13px;color:#fff;font-weight:700;margin-bottom:14px">7 days free, then $5/month · cancel anytime</div>
+        <div onclick="goPro()" style="background:#fff;color:#000;text-align:center;padding:12px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer">Start 7-Day Free Trial</div>
       </div>
 
       <!-- Settings list -->
       <div style="margin:0 16px;background:var(--card);border-radius:14px;overflow:hidden">
-        <div onclick="showScreen('paywall-screen')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--separator);cursor:pointer">
+        <div onclick="manageSubscription()" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--separator);cursor:pointer">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
           <span style="flex:1;font-size:15px;color:var(--label)">Manage Subscription</span>
           <span style="color:var(--label3)">›</span>
@@ -2815,6 +2816,8 @@ setInterval(updateClock, 10000);
 
 // On launch: validate any saved session and route to the right screen
 initAuth();
+// Handle return from Stripe Checkout (?checkout=success / cancel)
+handleCheckoutReturn();
 
 // ─── Dark mode ─────────────────────────────────
 function toggleDark() {
@@ -3524,24 +3527,65 @@ function openProfile() {
 }
 
 // Upgrade to Pro (requires sign-in)
+// Start the 7-day free trial → $5/mo via Stripe Checkout
 async function goPro() {
-  if (!currentUser) {
-    showScreen('auth-screen');
-    return;
+  if (!currentUser) { showScreen('auth-screen'); return; }
+  const live = await checkBackend();
+  if (!backendAvailable) { shareToast('Server offline', '#FF3B30'); return; }
+  shareToast('Opening secure checkout…', '#007AFF');
+  try {
+    const token = getAuthToken();
+    const res = await fetch(API_BASE + '/billing/checkout', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+    });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      window.location.href = data.url;   // redirect to Stripe Checkout
+    } else {
+      shareToast(data.error || 'Billing not set up yet', '#FF9F0A');
+    }
+  } catch(e) {
+    shareToast('Checkout error: ' + e.message, '#FF3B30');
   }
-  const ok = await upgradeSubscription('pro');
-  if (ok) {
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#34C759;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
-    toast.textContent = '🎉 Welcome to FlyPDF Pro!';
-    (document.querySelector('.iphone') || document.body).appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  } else {
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:absolute;top:80px;left:50%;transform:translateX(-50%);background:#FF3B30;color:#fff;padding:10px 20px;border-radius:20px;z-index:10000;font-size:13px;';
-    toast.textContent = 'Upgrade failed. Check connection.';
-    (document.querySelector('.iphone') || document.body).appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
+}
+
+// Open Stripe customer portal to manage / cancel the subscription
+async function manageSubscription() {
+  if (!currentUser) { showScreen('auth-screen'); return; }
+  const live = await checkBackend();
+  if (!backendAvailable) { shareToast('Server offline', '#FF3B30'); return; }
+  try {
+    const token = getAuthToken();
+    const res = await fetch(API_BASE + '/billing/portal', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token}
+    });
+    const data = await res.json();
+    if (res.ok && data.url) window.location.href = data.url;
+    else shareToast(data.error || 'No subscription yet — start your free trial', '#FF9F0A');
+  } catch(e) {
+    shareToast('Error: ' + e.message, '#FF3B30');
+  }
+}
+
+// After returning from Stripe Checkout, refresh the user's subscription
+async function handleCheckoutReturn() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('checkout') === 'success') {
+    // Give the webhook a moment, then refresh from /auth/me
+    setTimeout(async () => {
+      const token = getAuthToken();
+      if (!token) return;
+      try {
+        const res = await fetch(API_BASE + '/auth/me', {headers: {'Authorization': 'Bearer ' + token}});
+        if (res.ok) { const d = await res.json(); currentUser = d.user; updateProfileUI(); }
+      } catch {}
+      shareToast('🎉 Welcome to FlyPDF Pro! Trial started.', '#34C759');
+    }, 1500);
+    history.replaceState({}, '', location.pathname);
+  } else if (params.get('checkout') === 'cancel') {
+    history.replaceState({}, '', location.pathname);
   }
 }
 

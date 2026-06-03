@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { randomBytes, scryptSync, timingSafeEqual, createHmac } from 'crypto';
 import Groq from 'groq-sdk';
 import nodemailer from 'nodemailer';
+import Stripe from 'stripe';
 
 // Load .env
 if (existsSync('.env')) {
@@ -18,6 +19,13 @@ const API_KEY = process.env.GROQ_API_KEY;
 
 const groq = API_KEY ? new Groq({ apiKey: API_KEY }) : null;
 const documents = new Map();
+
+// ─── Billing (Stripe) ────────────────────────────────────────
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
+const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || '';        // $5/mo recurring price
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
+const APP_URL = process.env.APP_URL || 'https://192.18.131.82.sslip.io';
+const TRIAL_DAYS = Number(process.env.TRIAL_DAYS || 7);
 
 // ─── Auth & user storage ─────────────────────────────────────
 const USERS_FILE = 'users.json';
@@ -238,6 +246,95 @@ const server = createServer(async (req, res) => {
     return json(res, { user: publicUser(u.email, users[u.email]) });
   }
 
+  // ─── Billing (Stripe) ───────────────────────────────────
+  // Start a subscription with a free trial → returns Stripe Checkout URL
+  if (url.pathname === '/billing/checkout' && req.method === 'POST') {
+    const user = authUser(req);
+    if (!user) return json(res, { error: 'Not authenticated' }, 401);
+    if (!stripe || !STRIPE_PRICE_ID) return json(res, { error: 'Billing not configured on server' }, 503);
+    try {
+      const users = loadUsers();
+      let customerId = users[user.email].stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({ email: user.email, name: user.name || undefined });
+        customerId = customer.id;
+        users[user.email].stripeCustomerId = customerId;
+        saveUsers(users);
+      }
+      const session = await stripe.checkout.sessions.create({
+        mode: 'subscription',
+        customer: customerId,
+        line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+        subscription_data: { trial_period_days: TRIAL_DAYS },
+        allow_promotion_codes: true,
+        success_url: APP_URL + '/?checkout=success',
+        cancel_url: APP_URL + '/?checkout=cancel',
+      });
+      return json(res, { url: session.url });
+    } catch (e) {
+      return json(res, { error: 'Checkout failed: ' + e.message }, 500);
+    }
+  }
+
+  // Customer portal → manage / cancel subscription
+  if (url.pathname === '/billing/portal' && req.method === 'POST') {
+    const user = authUser(req);
+    if (!user) return json(res, { error: 'Not authenticated' }, 401);
+    if (!stripe) return json(res, { error: 'Billing not configured' }, 503);
+    const users = loadUsers();
+    const customerId = users[user.email].stripeCustomerId;
+    if (!customerId) return json(res, { error: 'No subscription yet' }, 400);
+    try {
+      const portal = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: APP_URL + '/',
+      });
+      return json(res, { url: portal.url });
+    } catch (e) {
+      return json(res, { error: 'Portal failed: ' + e.message }, 500);
+    }
+  }
+
+  // Stripe webhook → keep each user's subscription status in sync
+  if (url.pathname === '/billing/webhook' && req.method === 'POST') {
+    const raw = await readBody(req);
+    let event;
+    try {
+      if (STRIPE_WEBHOOK_SECRET) {
+        event = stripe.webhooks.constructEvent(raw, req.headers['stripe-signature'], STRIPE_WEBHOOK_SECRET);
+      } else {
+        event = JSON.parse(raw); // dev fallback (no signature check)
+      }
+    } catch (e) {
+      res.writeHead(400); return res.end('Webhook signature error: ' + e.message);
+    }
+
+    const updateByCustomer = (customerId, sub) => {
+      const users = loadUsers();
+      const email = Object.keys(users).find(e => users[e].stripeCustomerId === customerId);
+      if (!email) return;
+      const active = ['active', 'trialing'].includes(sub.status);
+      users[email].subscription = {
+        plan: active ? 'pro' : 'free',
+        status: sub.status,
+        trialEnd: sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null,
+        currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+        since: new Date().toISOString(),
+      };
+      saveUsers(users);
+    };
+
+    if (['customer.subscription.created', 'customer.subscription.updated', 'customer.subscription.trial_will_end'].includes(event.type)) {
+      updateByCustomer(event.data.object.customer, event.data.object);
+    } else if (event.type === 'customer.subscription.deleted') {
+      const users = loadUsers();
+      const cid = event.data.object.customer;
+      const email = Object.keys(users).find(e => users[e].stripeCustomerId === cid);
+      if (email) { users[email].subscription = { plan: 'free', status: 'canceled', since: new Date().toISOString() }; saveUsers(users); }
+    }
+    res.writeHead(200); return res.end('ok');
+  }
+
   // ─── Share via email (with PDF attachment) ──────────────
   if (url.pathname === '/share/email' && req.method === 'POST') {
     const sender = authUser(req);
@@ -356,4 +453,5 @@ server.listen(PORT, () => {
   console.log(`Auth: enabled · ${Object.keys(loadUsers()).length} user(s) registered`);
   const smtpReal = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
   console.log(`Email: ${smtpReal ? 'real SMTP (' + process.env.SMTP_HOST + ')' : 'test mode (Ethereal — preview URLs)'}`);
+  console.log(`Billing: ${stripe && STRIPE_PRICE_ID ? 'Stripe configured · ' + TRIAL_DAYS + '-day trial' : 'NOT configured (set STRIPE_SECRET_KEY + STRIPE_PRICE_ID)'}`);
 });
