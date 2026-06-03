@@ -2691,8 +2691,9 @@
       <div class="tool-overlay-title">OCR Complete!</div>
       <div class="tool-overlay-sub" id="ocrDoneSub">Extracted 1,240 words across 24 pages<br>Accuracy: 99.2% · Now fully searchable</div>
       <div class="tool-btn-row">
-        <div class="btn-primary" onclick="downloadOCRText(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save as .txt</div>
-        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share File</div>
+        <div class="btn-primary" style="background:linear-gradient(135deg,#007AFF,#0055D4)" onclick="downloadOCRDocx(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Save as Word (.docx)</div>
+        <div class="btn-secondary-tool" onclick="downloadOCRText(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Save as .txt</div>
+        <div class="btn-secondary-tool" onclick="toolShareBtn(this,'share')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:5px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share</div>
         <div class="btn-secondary-tool" onclick="closeDone('ocrDone');showScreen('home-screen')">Back to Home</div>
       </div>
     </div>
@@ -4663,6 +4664,18 @@ function downloadOCRText(btn) {
   if (!lastExtractedText) return;
   const blob = new Blob([lastExtractedText], {type: 'text/plain'});
   downloadBlob(blob, (getDocBaseName() || 'Document') + '_OCR.txt', btn);
+}
+
+async function downloadOCRDocx(btn) {
+  if (!lastExtractedText) return;
+  const lines = lastExtractedText.split(/\n/);
+  const children = lines.map(line => new docx.Paragraph({
+    children: [new docx.TextRun({text: line || ' ', size: 24})],
+    spacing: {after: 120}
+  }));
+  const doc = new docx.Document({sections: [{properties: {}, children}]});
+  const blob = await docx.Packer.toBlob(doc);
+  downloadBlob(blob, (getDocBaseName() || 'Document') + '_OCR.docx', btn);
 }
 
 function showNoPdfToast() {
