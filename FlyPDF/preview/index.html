@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@4.0.1/dist/pptxgen.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
 <style>
   /* SVG Icon System */
   .icon { display:inline-flex; align-items:center; justify-content:center; }
@@ -2645,7 +2646,12 @@
         <div class="ocr-result-title">Extracted Text Preview</div>
         <div class="ocr-result-text" id="ocrResultText"></div>
       </div>
-      <div style="padding:0 20px">
+      <div id="ocrFileLabel" style="padding:0 20px 4px;font-size:13px;color:var(--label3);text-align:center"></div>
+      <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
+        <label class="btn-primary" style="background:linear-gradient(135deg,#34C759,#1E8C3A);cursor:pointer;position:relative;overflow:hidden;display:block;text-align:center">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Upload PDF or Photo
+          <input type="file" id="ocrFileInput" accept=".pdf,image/*" onchange="handleOcrUpload(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+        </label>
         <div class="btn-primary" onclick="runOCR()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="4 7 4 4 7 4"/><polyline points="20 7 20 4 17 4"/><polyline points="4 17 4 20 7 20"/><polyline points="20 17 20 20 17 20"/><line x1="4" y1="12" x2="20" y2="12"/></svg>Extract Text</div>
       </div>
     </div>
@@ -4530,6 +4536,60 @@ async function downloadTranslatedAs(format, btn) {
 }
 
 // ─── OCR ─────────────────────────────────────────
+// Load a PDF or photo from the device for OCR
+async function handleOcrUpload(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  input.value = '';
+  const labelEl = document.getElementById('ocrFileLabel');
+
+  if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+    // PDF → store as lastPdfData, then run text extraction
+    try {
+      const buf = await file.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      const stored = bytes.slice();
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
+      lastPdfData = Array.from(stored);
+      lastPdfName = file.name;
+      lastPdfPages = pdf.numPages;
+      lastPdfSize = formatFileSize(file.size);
+      if (labelEl) labelEl.textContent = '📄 ' + file.name + ' · ' + pdf.numPages + ' pages — tap "Extract Text"';
+      runOCR();
+    } catch(e) {
+      if (labelEl) labelEl.textContent = 'Could not read PDF: ' + e.message;
+    }
+  } else if (file.type.startsWith('image/')) {
+    // Photo → real OCR with Tesseract
+    if (typeof Tesseract === 'undefined') {
+      if (labelEl) labelEl.textContent = 'OCR engine still loading, try again in a moment…';
+      return;
+    }
+    const imgUrl = URL.createObjectURL(file);
+    if (labelEl) labelEl.textContent = '🖼️ ' + file.name + ' — recognising text…';
+    runRealToolProcess('ocr-screen', 'ocrProc', 'ocrDone', async (updateProgress) => {
+      updateProgress(0, 'Running OCR…', 'Recognising text in image');
+      document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
+      const result = await Tesseract.recognize(imgUrl, 'eng', {
+        logger: m => { if (m.status === 'recognizing text') updateProgress(Math.round(m.progress * 95), 'Running OCR…', 'Recognising text in image'); }
+      });
+      URL.revokeObjectURL(imgUrl);
+      const text = result.data.text || '';
+      lastExtractedText = text;
+      const wordCount = text.split(/\s+/).filter(Boolean).length;
+      document.getElementById('ocrPages').textContent = '1';
+      document.getElementById('ocrWords').textContent = wordCount.toLocaleString();
+      document.getElementById('ocrAccuracy').textContent = Math.round(result.data.confidence || 90) + '%';
+      document.getElementById('ocrResultCard').style.display = 'block';
+      document.getElementById('ocrResultText').textContent = text.substring(0, 300) + (text.length > 300 ? '…' : '');
+      const doneSub = document.getElementById('ocrDoneSub');
+      if (doneSub) doneSub.innerHTML = 'Extracted ' + wordCount.toLocaleString() + ' words from image<br>Now searchable & copyable';
+      document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.remove('scanning'));
+    });
+  }
+}
+
 function runOCR() {
   if (!lastPdfData) { showNoPdfToast(); return; }
   document.querySelectorAll('[id^="ocrL"]').forEach(l => l.classList.add('scanning'));
