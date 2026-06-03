@@ -62,7 +62,12 @@ function verifyToken(token) {
   if (!payload || !sig) return null;
   const expected = createHmac('sha256', AUTH_SECRET).update(payload).digest('base64url');
   if (sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
-  try { return JSON.parse(Buffer.from(payload, 'base64url').toString()); } catch { return null; }
+  let claim;
+  try { claim = JSON.parse(Buffer.from(payload, 'base64url').toString()); } catch { return null; }
+  // Session lasts 30 days from login; after that the user must sign in again
+  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  if (!claim.ts || (Date.now() - claim.ts) > THIRTY_DAYS) return null;
+  return claim;
 }
 
 // Returns the user record (minus secrets) for a request's bearer token, or null
