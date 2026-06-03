@@ -1,0 +1,18 @@
+[Unit]
+Description=FlyPDF Backend API
+After=network.target
+
+[Service]
+Type=simple
+# Adjust User and paths to match your server
+User=ubuntu
+WorkingDirectory=/opt/flypdf/backend
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=8001
+# Secrets (GROQ_API_KEY, SMTP_*, AUTH_SECRET) are read from /opt/flypdf/backend/.env
+
+[Install]
+WantedBy=multi-user.target

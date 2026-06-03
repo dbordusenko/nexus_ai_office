@@ -3296,7 +3296,15 @@ function downloadCompressedPDF() {
 }
 
 // ─── AI Chat ───────────────────────────────────
-const API_BASE = 'http://localhost:8001';
+// API base: use the deployed backend when not on localhost, else local dev server.
+// Override anytime with: localStorage.setItem('flypdf_api', 'https://your-domain')
+const API_BASE = (function() {
+  try { const o = localStorage.getItem('flypdf_api'); if (o) return o; } catch {}
+  const h = location.hostname;
+  if (h === 'localhost' || h === '127.0.0.1' || h === '') return 'http://localhost:8001';
+  // Same host as the served frontend, on the /api path (nginx proxies it)
+  return location.origin + '/api';
+})();
 let backendAvailable = null;
 
 async function checkBackend() {
